@@ -28,6 +28,7 @@ namespace gui
 		Button(Icon&& visual, std::function<eventFunction>&& onClick);
 		Button(const Button& copy);
 		Button(Button&& temp) = default;
+		Button() = default;
 		~Button() = default;
 
 		Button<eventFunction, predicateFunction>& operator=(const Button& copy);

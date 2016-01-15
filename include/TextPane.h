@@ -16,6 +16,7 @@ namespace gui
 		TextPane(const ColoredString& text, const sf::Font& font, const unsigned char characterSize = 13);
 		TextPane(const TextPane& copy);
 		TextPane(TextPane&& temp) = default;
+		TextPane() = default;
 		~TextPane() = default;
 
 		using Hoverable::input;

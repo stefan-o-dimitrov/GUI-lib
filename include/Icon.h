@@ -19,7 +19,7 @@ namespace gui
 		/// <summary>
 		/// Constructs an Icon from given texture.
 		/// </summary>
-		Icon(const sf::Texture& texture);
+		Icon(const sf::Texture& texture, const bool transparecyCheck = false);
 
 		/// <summary>
 		/// Constructs an Icon by making a deep copy of the given one.
@@ -30,6 +30,11 @@ namespace gui
 		/// Constructs and Icon by moving the temp Icon given.
 		/// </summary>
 		Icon(Icon&& temp);
+
+		/// <summary>
+		/// Constructs and empty Icon.
+		/// </summary>
+		Icon() = default;
 
 		/// <summary>
 		/// Destructor.

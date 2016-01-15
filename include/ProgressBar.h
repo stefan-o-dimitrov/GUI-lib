@@ -37,6 +37,11 @@ namespace gui
 		ProgressBar(ProgressBar&& temp) = default;
 
 		/// <summary>
+		/// Constructs and empty Progress Bar.
+		/// </summary>
+		ProgressBar() = default;
+
+		/// <summary>
 		/// Destructor.
 		/// </summary>
 		~ProgressBar() = default;

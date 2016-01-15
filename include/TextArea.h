@@ -17,6 +17,7 @@ namespace gui {
 		TextArea(const ColoredString& text, const sf::Font& font, const unsigned char characterSize = 13);
 		TextArea(const TextArea& copy);
 		TextArea(TextArea&& temp) = default;
+		TextArea() = default;
 		~TextArea() = default;
 
 		TextArea& operator=(const TextArea& copy);

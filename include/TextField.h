@@ -16,6 +16,7 @@ namespace gui
 		TextField(const std::function<processTextInputFunction>& processTextInputFunction, const unsigned short fieldWidth, const sf::Font& font, const unsigned char characterSize = 13);
 		TextField(const TextField& copy);
 		TextField(TextField&& temp) = default; 
+		TextField() = default;
 		~TextField() = default;
 		
 		TextField& operator=(const TextField& copy);

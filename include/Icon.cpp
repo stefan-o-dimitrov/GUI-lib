@@ -1,8 +1,8 @@
 #include "Icon.h"
 
-gui::Icon::Icon(const sf::Texture& tex)
+gui::Icon::Icon(const sf::Texture& tex, const bool transparencyCheck)
 {
-	spr.setTexture(tex);
+	spr.setTexture(tex, transparencyCheck);
 }
 
 gui::Icon::Icon(const Icon& _lVal)

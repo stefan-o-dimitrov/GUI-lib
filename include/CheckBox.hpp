@@ -17,6 +17,7 @@ namespace gui
 		CheckBox(Button<eventFunctionFalse, predicateFunctionFalse>&& falseState, Button<eventFunctionTrue, predicateFunctionTrue>&& trueState, const sf::Vector2f& position = sf::Vector2f(0, 0), const bool state = false);
 		CheckBox(const CheckBox& copy) = default;
 		CheckBox(CheckBox&& temp) = default;
+		CheckBox() = default;
 		~CheckBox() = default;
 
 		CheckBox& operator=(const CheckBox& copy) = default;
