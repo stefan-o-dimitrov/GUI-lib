@@ -1,4 +1,5 @@
 #include "AudioSystem.h"
+
 #include <fstream>
 #include <random>
 
@@ -79,21 +80,21 @@ void gui::AudioSystem::loadGameSound(const std::string& _path)
 	}
 }
 
-void gui::AudioSystem::playInterfaceSound(const unsigned short _soundKey)
+void gui::AudioSystem::playInterfaceSound(const unsigned short soundKey)
 {
-	if (interfaceSound.count(_soundKey))
+	if (interfaceSound.count(soundKey) && interfaceSound.at(soundKey).first.getStatus() != sf::Sound::Playing)
 	{
-		interfaceSound[_soundKey].first.setVolume((musicVolume * masterVolume) / 100);
-		interfaceSound[_soundKey].first.play();
+		interfaceSound[soundKey].first.setVolume((musicVolume * masterVolume) / 100);
+		interfaceSound[soundKey].first.play();
 	}
 }
 
-void gui::AudioSystem::playGameSound(const unsigned short _soundKey)
+void gui::AudioSystem::playGameSound(const unsigned short soundKey)
 {
-	if (gameSound.count(_soundKey))
+	if (gameSound.count(soundKey) && gameSound.at(soundKey).first.getStatus() != sf::Sound::Playing)
 	{
-		gameSound[_soundKey].first.setVolume((musicVolume * masterVolume) / 100);
-		gameSound[_soundKey].first.play();
+		gameSound[soundKey].first.setVolume((musicVolume * masterVolume) / 100);
+		gameSound[soundKey].first.play();
 	}
 }
 
@@ -101,7 +102,7 @@ void gui::AudioSystem::playSong(const unsigned short _song)
 {
 	if (music.count(_song))
 	{
-		if (music.count(currentSong) && music[currentSong]->getStatus() != sf::SoundStream::Stopped) music[currentSong]->stop();
+		if (music.count(currentSong) && music[currentSong]->getStatus() != sf::Music::Stopped) music[currentSong]->stop();
 		music[_song]->play();
 		currentSong = _song;
 	}
