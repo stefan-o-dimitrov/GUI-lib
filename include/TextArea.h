@@ -11,7 +11,6 @@
 namespace gui {
 	class TextArea final : public Hoverable
 	{
-		template <typename first, typename second>
 		friend class Button;
 	public:
 		TextArea(const std::string& text, const sf::Font& font, const unsigned char characterSize = 13);

@@ -34,29 +34,26 @@ void main()
 	
 	std::vector<std::unique_ptr<gui::Interactive>> elements;
 	
-	elements.emplace_back(new gui::Button<void(), const bool()>(dynamic_cast<gui::Button<void(), const bool()>&&>(gui::Button<void(), const bool()>(
+	elements.emplace_back(new gui::Button(dynamic_cast<gui::Button&&>(gui::Button(
 		gui::Icon(buttonTex, true),
 		std::bind(increment, -AMOUNT))
-		.setClickSound(0)
-		.setPredicates(gui::Button<void(), const bool()>::predicateArray { std::make_pair(std::bind(canChange, -LIMIT, 1), "Integer less than 10.") },
+		.setPredicates(gui::Button::predicateArray { std::make_pair(std::bind(canChange, -LIMIT, true), "Integer less than 10.") },
 			font)
 		.setDelay(0.5f)
 		.setMessage(gui::HoverMessage(
-			gui::bind("This button ", sf::Color::White) + gui::bind(" reduces ", sf::Color::Red) + gui::bind(" the integer.", sf::Color::White),
+			gui::bind("This button ", sf::Color::White) + gui::bind("reduces ", sf::Color::Red) + gui::bind("the integer.", sf::Color::White),
 			font)
 			.setBackgroundFill(sf::Color::Black)
 			.setBorderFill(sf::Color::Blue)
 			.setBorderThickness(2.0f)
 			.setCharacterSize(15))
-		.setPosition(320, 450)
+		.setPosition(110, 200)
 		)));
-
-
-	elements.emplace_back(new gui::Button<void(), const bool()>(dynamic_cast<gui::Button<void(), const bool()>&&>(gui::Button<void(), const bool()>(
+	
+	elements.emplace_back(new gui::Button(dynamic_cast<gui::Button&&>(gui::Button(
 		gui::Icon(buttonTex, true),
 		std::bind(increment, AMOUNT))
-		.setClickSound(0)
-		.setPredicates(gui::Button<void(), const bool()>::predicateArray{ std::make_pair(std::bind(canChange, LIMIT, 0), "Integer greater than 10.") },
+		.setPredicates(gui::Button::predicateArray{ std::make_pair(std::bind(canChange, LIMIT, false), "Integer greater than 10.") },
 			font)
 		.setDelay(0.5f)
 		.setMessage(gui::HoverMessage(
@@ -66,7 +63,7 @@ void main()
 			.setBorderFill(sf::Color::Blue)
 			.setBorderThickness(2.0f)
 			.setCharacterSize(15))
-		.setPosition(700, 450)
+		.setPosition(700, 200)
 		)));
 
 	elements.emplace_back(new gui::TextArea(dynamic_cast<gui::TextArea&&>(
@@ -95,12 +92,9 @@ void main()
 				return;
 			}
 
-			for (auto it = elements.begin(), end = elements.end(); it != end; ++it)
+			for (auto it = elements.rbegin(), end = elements.rend(); it != end; ++it)
 				if ((*it)->input(event))
-				{
-					elements.begin()->swap(*it);
 					break;
-				}
 		}
 
 		for (auto it = elements.begin(), end = elements.end(); it != end; ++it)

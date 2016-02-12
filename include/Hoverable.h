@@ -119,6 +119,11 @@ namespace gui
 		float delay = 0.75f;
 
 		/// <summary>
+		/// Whether or not the object has been pressed; false when the mouse is outside it.
+		/// </summary>
+		bool hasBeenPressed = false;
+
+		/// <summary>
 		/// Pointer to the time at which the mouse entered, in seconds since program startup.
 		/// </summary>
 		std::unique_ptr<float> timeMouseEntered = nullptr;

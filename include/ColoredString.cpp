@@ -2,7 +2,7 @@
 
 #include "ColoredString.h"
 
-gui::ColoredString::ColoredString() {}
+const float gui::ColoredString::LINE_SPACING = 5.0f;
 
 gui::ColoredString::ColoredString(const ColoredString& _lVal)
 {
@@ -21,15 +21,15 @@ std::vector<std::unique_ptr<sf::Text>> gui::ColoredString::interpret(const Color
 {
 	std::vector<std::unique_ptr<sf::Text>> returnValue;
 	if (string.vec.empty()) return returnValue;
-
-	const float TEXT_HEIGHT = sf::Text("|", font, characterSize).getLocalBounds().height;
+	
+	const float TEXT_HEIGHT = sf::Text("I", font, characterSize).getGlobalBounds().height + LINE_SPACING;
 	sf::Vector2f addPosition(0, 0);
 
 	for (auto it = string.vec.begin(), end = string.vec.end(); it != end; ++it)
 	{
 		std::string lines((*it)->first);
 
-		while (lines.size() != 0)
+		while (lines.size() > 0)
 		{
 			std::string line;
 

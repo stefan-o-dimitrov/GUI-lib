@@ -145,7 +145,7 @@ void gui::HoverMessage::draw(sf::RenderTarget& target, sf::RenderStates states)c
 
 	target.draw(textBox, states);
 
-	states.transform.translate(TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING);
+	states.transform.translate(TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING - 5.0f);
 
 	for (auto it = text.begin(), end = text.end(); it != end; ++it)
 		target.draw(**it, states);

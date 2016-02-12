@@ -1,8 +1,8 @@
 #pragma once
 
 #include "AudioSystem.h"   //
-#include "Button.hpp"      /// + s
-#include "CheckBox.hpp"    ///
+#include "Button.h"      /// + s
+#include "CheckBox.h"    ///
 #include "ColoredString.h" ///
 #include "HoverMessage.h"  ///
 #include "Icon.h"          /// + s

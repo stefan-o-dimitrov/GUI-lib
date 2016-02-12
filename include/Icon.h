@@ -114,6 +114,11 @@ namespace gui
 		/// Draws the Icon on a given render target with the given render states.
 		/// </summary>
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const;
+
+		/// <summary>
+		/// Sprite containing the Icon image.
+		/// </summary>
+		mutable sf::Sprite spr;
 				
 	private:
 
@@ -176,10 +181,5 @@ namespace gui
 		/// Pointer to the transparency map for the Icon to use.
 		/// </summary>
 		std::unique_ptr<TransparencyMap> transparency = nullptr;
-				
-		/// <summary>
-		/// Sprite containing the Icon image.
-		/// </summary>
-		sf::Sprite spr;
 	};
 };

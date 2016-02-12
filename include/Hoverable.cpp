@@ -8,19 +8,14 @@ const bool gui::Hoverable::input(const sf::Event& event)
 	{
 		const sf::Vector2f mousePos = sf::Vector2f(event.mouseMove.x, event.mouseMove.y);
 		if (!contains(mousePos)) { mouseLeft(); return false; }
-		else { mouseEntered(mousePos); return true; }
+		else { if(!hasBeenPressed) mouseEntered(mousePos); return true; }
 	}
 	case sf::Event::MouseButtonPressed:
-	{
-		const sf::Vector2f mousePos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
 		mouseLeft();
-		return contains(mousePos);
-	}
+		hasBeenPressed = true;
+		return contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
 	case sf::Event::MouseButtonReleased:
-	{
-		const sf::Vector2f mousePos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
-		return contains(mousePos);
-	}
+		return contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
 	default:
 		return false;
 	}
@@ -71,11 +66,12 @@ gui::Hoverable& gui::Hoverable::operator=(const Hoverable& _lVal)
 void gui::Hoverable::mouseEntered(const sf::Vector2f& mousePos)
 {
 	if(!timeMouseEntered) timeMouseEntered.reset(new float(clock.getElapsedTime().asSeconds()));
-	if (message) message->setPosition(mousePos);
+	if (message) message->setPosition(mousePos.x, mousePos.y + 32);
 }
 
 void gui::Hoverable::mouseLeft()
 {
+	hasBeenPressed = false;
 	messageDelayPassed = false;
 	timeMouseEntered.reset();
 }
@@ -87,8 +83,9 @@ const bool gui::Hoverable::hasMessageDelayPassed() const
 
 void gui::Hoverable::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	if (timeMouseEntered && (messageDelayPassed || clock.getElapsedTime().asSeconds() - *timeMouseEntered < delay) && message)
+	if (timeMouseEntered && (messageDelayPassed || clock.getElapsedTime().asSeconds() - *timeMouseEntered > delay) && message)
 	{
+		states.shader = nullptr;
 		messageDelayPassed = true;
 		target.draw(*message, states);
 	}

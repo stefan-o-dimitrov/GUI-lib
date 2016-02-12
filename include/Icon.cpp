@@ -2,7 +2,7 @@
 
 gui::Icon::Icon(const sf::Texture& tex, const bool transparencyCheck)
 {
-	spr.setTexture(tex, transparencyCheck);
+	setTexture(tex, transparencyCheck);
 }
 
 gui::Icon::Icon(const Icon& _lVal)
@@ -35,12 +35,7 @@ const bool gui::Icon::contains(const sf::Vector2f& pos)const
 	if (spr.getGlobalBounds().contains(pos))
 	{
 		if (!transparency) return true;
-		if (pos.x >= spr.getPosition().x &&
-			pos.y >= spr.getPosition().y &&
-			pos.x < spr.getTexture()->getSize().x &&
-			pos.y < spr.getTexture()->getSize().y &&
-			!(*transparency)[sf::Vector2i(pos.x - spr.getPosition().x, pos.y - spr.getPosition().y)])
-			 return true;
+		if (!(*transparency)[sf::Vector2i(pos.x - spr.getPosition().x, pos.y - spr.getPosition().y)]) return true;
 	}
 	return false;
 }
@@ -150,14 +145,13 @@ gui::Icon::TransparencyMap& gui::Icon::TransparencyMap::operator=(const Transpar
 
 void gui::Icon::TransparencyMap::generateTransparencyMap(const sf::Texture& tex)
 {
-	const sf::Image transpCheck = tex.copyToImage();
-	const sf::Vector2f texSize = sf::Vector2f(tex.getSize());
+	const sf::Image transpCheck(tex.copyToImage());
 
-	transparency.reset(new std::unique_ptr<bool[]>[transpCheck.getSize().x]);
-	for (unsigned short i = 0, end = texSize.x; i != end; i++)
+	transparency.reset(new std::unique_ptr<bool[]>[mapSize.x]);
+	for (unsigned short i = 0; i < mapSize.x; i++)
 	{
-		transparency[i].reset(new bool[transpCheck.getSize().y]);
-		for (unsigned short j = 0, end1 = texSize.y; j != end1; j++)
-			transparency[i][j] = !transpCheck.getPixel(i, j).a;
+		transparency[i].reset(new bool[mapSize.y]);
+		for (unsigned short j = 0; j < mapSize.y; j++)
+			transparency[i][j] = transpCheck.getPixel(i, j).a < 25 ? true : false;
 	}
 }
