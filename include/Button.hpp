@@ -17,8 +17,11 @@ namespace gui
 		PressedDown,
 		Unavailable
 	};
+
 	template <typename eventFunction = void(), typename predicateFunction = bool()> class Button : public Icon
 	{
+		static_assert(std::is_function<eventFunction>::value && std::is_function<predicateFunction>::value, "Template arguments must be function signatures.");
+
 		template <typename evFuncFalse, typename evFuncTrue, typename predFuncFalse, typename predFuncTrue>
 		friend class CheckBox;
 	public:
@@ -77,7 +80,7 @@ namespace gui
 #include "AudioSystem.h"
 
 template <typename eventFunction, typename predicateFunction>
-const std::string gui::Button<eventFunction, predicateFunction>::STATE_SHADER = 
+const std::string gui::Button<eventFunction, predicateFunction>::STATE_SHADER =
 "uniform sampler2D tex;\
 uniform int buttonState;\
 \
@@ -97,9 +100,9 @@ void main()\
 	}\
 	else if( buttonState == 3 )\
 	{\
-		vec4 rgba = texture2D( tex, gl_TexCoord[0].xy).rgba;\
-		float greyValue = ( rgba.r + rgba.g + rgba.b ) / 3.0f;\
-		gl_FragColor = vec4(greyValue, greyValue, greyValue, rgba.a);\
+		vec4 color = texture2D( tex, gl_TexCoord[0].xy );\
+		float greyValue = color.rgb * vec4(0.29, 0.58, 0.13, 1.0);\
+		gl_FragColor = vec4(greyValue, greyValue, greyValue, color.a);\
 	}\
 }";
 

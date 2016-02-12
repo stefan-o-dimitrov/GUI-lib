@@ -36,6 +36,7 @@ namespace gui
 
 	private:
 
+		void updateBox();
 		const sf::Vector2f& getPosition()const;
 		HoverMessage& setPosition(const float x, const float y);
 		HoverMessage& setPosition(const sf::Vector2f& position);

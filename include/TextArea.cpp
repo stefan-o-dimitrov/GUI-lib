@@ -3,11 +3,8 @@
 #include "TextArea.h"
 #include "Internals.h"
 
-gui::TextArea::TextArea(const ColoredString& _text, const sf::Font& _font, const unsigned char _characterSize)
-: text((*(*_text.vec.begin())).first, _font, _characterSize)
-{
-	text.setColor((*(*_text.vec.begin())).second);
-}
+gui::TextArea::TextArea(const std::string& _text, const sf::Font& _font, const unsigned char _characterSize)
+	: text(_text, _font, _characterSize) {}
 
 gui::TextArea::TextArea(const TextArea& _lVal)
 	: text(_lVal.text)
@@ -74,6 +71,11 @@ gui::TextArea& gui::TextArea::setCharacterSize(const unsigned char _characterSiz
 
 void gui::TextArea::draw(sf::RenderTarget& target, sf::RenderStates states)const
 {
+	if (updateFunction && clock.getElapsedTime().asSeconds() > timeSinceUpdate + (1.0f / 25.0f))
+	{
+		text.setString((*updateFunction)());
+		timeSinceUpdate = clock.getElapsedTime().asSeconds();
+	}
 	target.draw(text, states);
 	Hoverable::draw(target, states);
 }

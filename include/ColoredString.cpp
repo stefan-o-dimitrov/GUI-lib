@@ -7,13 +7,13 @@ gui::ColoredString::ColoredString() {}
 gui::ColoredString::ColoredString(const ColoredString& _lVal)
 {
 	for (auto it = _lVal.vec.begin(), end = _lVal.vec.end(); it != end; ++it)
-		vec.push_back(std::unique_ptr<cString>(new cString(*(*it))));
+		vec.emplace_back(new cString(*(*it)));
 }
 
 gui::ColoredString& gui::ColoredString::operator=(const ColoredString& _lVal)
 {
 	for (auto it = _lVal.vec.begin(), end = _lVal.vec.end(); it != end; ++it)
-		vec.push_back(std::unique_ptr<cString>(new cString(*(*it))));
+		vec.emplace_back(new cString(*(*it)));
 	return *this;
 }
 
@@ -22,22 +22,35 @@ std::vector<std::unique_ptr<sf::Text>> gui::ColoredString::interpret(const Color
 	std::vector<std::unique_ptr<sf::Text>> returnValue;
 	if (string.vec.empty()) return returnValue;
 
-	const unsigned char TEXT_HEIGHT = sf::Text("|", font, characterSize).getLocalBounds().height;
+	const float TEXT_HEIGHT = sf::Text("|", font, characterSize).getLocalBounds().height;
 	sf::Vector2f addPosition(0, 0);
-	unsigned short rectWidth = 0;
 
 	for (auto it = string.vec.begin(), end = string.vec.end(); it != end; ++it)
 	{
-		std::stringstream lines((*it)->first);
-		for (std::string line; std::getline(lines, line);)
+		std::string lines((*it)->first);
+
+		while (lines.size() != 0)
 		{
-			returnValue.push_back(std::unique_ptr<sf::Text>(new sf::Text(line, font, characterSize)));
-			returnValue.back()->setPosition(addPosition.x = 0, addPosition.y += TEXT_HEIGHT);
+			std::string line;
+
+			const size_t pos = lines.find_first_of('\n');
+			if (pos != std::string::npos)
+			{
+				line = lines.substr(0, pos);
+				lines = lines.substr(pos + 1);
+				addPosition.x = 0;
+				addPosition.y += TEXT_HEIGHT;
+			}
+			else
+			{
+				line = lines;
+				lines.clear();
+			}
+			returnValue.emplace_back(new sf::Text(line, font, characterSize));
+			returnValue.back()->setPosition(addPosition);
 			returnValue.back()->setColor((*it)->second);
 
-			float width = returnValue.back()->getGlobalBounds().width;
-			addPosition.x += width;
-			if (width > rectWidth) rectWidth = width;
+			addPosition.x += returnValue.back()->getGlobalBounds().width;
 		}
 	}
 	return returnValue;
@@ -46,13 +59,13 @@ std::vector<std::unique_ptr<sf::Text>> gui::ColoredString::interpret(const Color
 gui::ColoredString gui::bind(const std::string& string, const sf::Color& color)
 {
 	ColoredString returnValue;
-	returnValue.vec.push_back(std::unique_ptr<cString>(new cString(string, color)));
+	returnValue.vec.emplace_back(new cString(string, color));
 	return returnValue;
 }
 
 gui::ColoredString gui::operator+(ColoredString& lhs, ColoredString&& rhs)
 {
 	for (auto it = rhs.vec.begin(), end = rhs.vec.end(); it != end; ++it)
-		lhs.vec.push_back(std::unique_ptr<cString>(std::move(*it)));
+		lhs.vec.emplace_back(std::move(*it));
 	return lhs;
 }

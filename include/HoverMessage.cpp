@@ -6,26 +6,24 @@ gui::HoverMessage::HoverMessage(const ColoredString& string, const sf::Font& fon
 	: font(&font), characterSize(characterSize)
 {
 	setText(string);
-	const sf::FloatRect rectSize = getGlobalBounds();
-	textBox.setSize(sf::Vector2f(rectSize.width + TEXT_BOX_X_SPACING * 2, rectSize.height + TEXT_BOX_Y_SPACING * 2));
 }
 
 gui::HoverMessage::HoverMessage(const HoverMessage& _lVal)
 	: position(_lVal.position), textBox(_lVal.textBox)
 {
 	for (auto it = _lVal.text.begin(), end = _lVal.text.end(); it != end; ++it)
-		text.push_back(std::unique_ptr<sf::Text>(new sf::Text(*(*it))));
+		text.emplace_back(new sf::Text(*(*it)));
 }
 
 gui::HoverMessage::HoverMessage(HoverMessage&& _rVal)
 	: position(_rVal.position), textBox(_rVal.textBox), text(std::move(_rVal.text)) {}
 
-gui::HoverMessage & gui::HoverMessage::operator=(const HoverMessage& _lVal)
+gui::HoverMessage& gui::HoverMessage::operator=(const HoverMessage& _lVal)
 {
 	position = _lVal.position;
 	textBox = _lVal.textBox;
 	for (auto it = _lVal.text.begin(), end = _lVal.text.end(); it != end; ++it)
-		text.push_back(std::unique_ptr<sf::Text>(new sf::Text(*(*it))));
+		text.emplace_back(new sf::Text(*(*it)));
 	return *this;
 }
 
@@ -67,14 +65,26 @@ const char gui::HoverMessage::getBorderThickness()const
 	return textBox.getOutlineThickness();
 }
 
+void gui::HoverMessage::updateBox()
+{
+	sf::Vector2f rectSize(0, 0);
+	for (auto it = text.begin(), end = text.end(); it != end; ++it)
+	{
+		if (rectSize.x < (*it)->getPosition().x + (*it)->getGlobalBounds().width) rectSize.x = (*it)->getPosition().x + (*it)->getGlobalBounds().width;
+		if (rectSize.y < (*it)->getPosition().y + (*it)->getGlobalBounds().height) rectSize.y = (*it)->getPosition().y + (*it)->getGlobalBounds().height;
+	}
+	textBox.setSize(sf::Vector2f(rectSize.x + TEXT_BOX_X_SPACING * 2, rectSize.y + TEXT_BOX_Y_SPACING * 2));
+}
+
 const sf::Vector2f& gui::HoverMessage::getPosition()const
 {
-	return textBox.getPosition();
+	return position;
 }
 
 gui::HoverMessage& gui::HoverMessage::setText(const ColoredString& string)
 {
 	text = std::move(ColoredString::interpret(string, *font, characterSize));
+	updateBox();
 	return *this;
 }
 
@@ -91,6 +101,7 @@ gui::HoverMessage& gui::HoverMessage::setCharacterSize(const unsigned char _char
 	characterSize = _characterSize;
 	for (auto it = text.begin(), end = text.end(); it != end; ++it)
 		(*it)->setCharacterSize(_characterSize);
+	updateBox();
 	return *this;
 }
 
@@ -127,8 +138,8 @@ gui::HoverMessage& gui::HoverMessage::setPosition(const sf::Vector2f& pos)
 void gui::HoverMessage::draw(sf::RenderTarget& target, sf::RenderStates states)const
 {
 	sf::Vector2f pos = position;
-	if (textBox.getPosition().x + textBox.getGlobalBounds().width > target.getSize().x) pos.x = target.getSize().x - textBox.getGlobalBounds().width;
-	if (textBox.getPosition().y + textBox.getGlobalBounds().height > target.getSize().y) pos.y = target.getSize().y - textBox.getGlobalBounds().height;
+	if (position.x + textBox.getGlobalBounds().width > target.getSize().x) pos.x = target.getSize().x - textBox.getGlobalBounds().width;
+	if (position.y + textBox.getGlobalBounds().height > target.getSize().y) pos.y = target.getSize().y - textBox.getGlobalBounds().height;
 
 	states.transform.translate(pos);
 
@@ -136,7 +147,6 @@ void gui::HoverMessage::draw(sf::RenderTarget& target, sf::RenderStates states)c
 
 	states.transform.translate(TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING);
 
-	states.transform.translate(position);
 	for (auto it = text.begin(), end = text.end(); it != end; ++it)
 		target.draw(**it, states);
 }

@@ -2,11 +2,11 @@
 
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <functional>
 
 #include "Internals.h"
 #include "Interactive.h"
 #include "Hoverable.h"
-#include "ColoredString.h"
 
 namespace gui {
 	class TextArea final : public Hoverable
@@ -14,7 +14,7 @@ namespace gui {
 		template <typename first, typename second>
 		friend class Button;
 	public:
-		TextArea(const ColoredString& text, const sf::Font& font, const unsigned char characterSize = 13);
+		TextArea(const std::string& text, const sf::Font& font, const unsigned char characterSize = 13);
 		TextArea(const TextArea& copy);
 		TextArea(TextArea&& temp) = default;
 		TextArea() = default;
@@ -35,10 +35,15 @@ namespace gui {
 		TextArea& setText(const ColoredString& text);
 		TextArea& setFont(const sf::Font& font);
 		TextArea& setCharacterSize(const unsigned char characterSize);
+		TextArea& setColor(const sf::Color& color) { text.setColor(color); return *this; }
+		TextArea& setUpdateFunction(const std::function<std::string()>& func) { updateFunction.reset(new std::function<std::string()>(func)); return *this; };
+		TextArea& setUpdateFunction(std::function<std::string()>&& func) { updateFunction.reset(new std::function<std::string()>(std::move(func))); return *this; };
 		
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 
-		sf::Text text;
+		mutable sf::Text text;
+		std::unique_ptr<std::function<std::string()>> updateFunction = nullptr;
+		mutable float timeSinceUpdate = 0.0f;
 	};
 };
