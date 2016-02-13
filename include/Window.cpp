@@ -25,7 +25,7 @@ const bool gui::Window::input(const sf::Event& event)
 	for (auto it = elements.rbegin(), end = elements.rend(); it != end; ++it)
 		if (*it && (*it)->input(event))
 		{
-			elements.begin()->swap(*it);
+			elements.rbegin()->swap(*it);
 			return true;
 		}
 	return false;

@@ -131,6 +131,7 @@ gui::Button& gui::Button::setName(TextArea&& _rVal)
 {
 	name.reset(new TextArea(std::move(_rVal)));
 	name->message.reset();
+	name->updateFunction.reset();
 	name->setPosition(getPosition().x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2, getPosition().y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
 	return *this;
 }

@@ -5,6 +5,7 @@ const unsigned char gui::HoverMessage::TEXT_BOX_X_SPACING = 10, gui::HoverMessag
 gui::HoverMessage::HoverMessage(const ColoredString& string, const sf::Font& font, const unsigned char characterSize)
 	: font(&font), characterSize(characterSize)
 {
+	textBox.setFillColor(sf::Color(0, 0, 0, 0));
 	setText(string);
 }
 

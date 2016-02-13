@@ -53,7 +53,7 @@ namespace gui
 		/// <summary>
 		/// Sets the position of the object, as its most top-left pixel, in screen coordinates.
 		/// </summary>
-		Interactive& setPosition(const sf::Vector2f& position) { return setPosition(position.x, position.y); };
+		virtual Interactive& setPosition(const sf::Vector2f& position) { return setPosition(position.x, position.y); };
 
 	protected:
 		/// <summary>

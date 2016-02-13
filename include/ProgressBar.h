@@ -1,11 +1,16 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <memory>
+#include <functional>
 
-#include "HoverMessage.h"
 #include "Icon.h"
-#include "Interactive.h"
+#include "HoverMessage.h"
+
+namespace sf
+{
+	class Event;
+}
 
 namespace gui 
 {
@@ -29,7 +34,7 @@ namespace gui
 		/// <summary>
 		/// Constructs a progress bar by copying the given one.
 		/// </summary>
-		ProgressBar(const ProgressBar& copy) = default;
+		ProgressBar(const ProgressBar& copy);
 
 		/// <summary>
 		/// Constructs a progress bar by moving the given one.
@@ -64,7 +69,7 @@ namespace gui
 		/// <summary>
 		/// Returns the progress of the progress bar, as an integer between 0 and 100.
 		/// </summary>
-		const unsigned char getProgress()const;
+		const float getProgress()const;
 		
 		/// <summary>
 		/// Returns the texture used by the fill Icon.
@@ -82,9 +87,19 @@ namespace gui
 		const std::shared_ptr<const HoverMessage> getFillMessage()const;
 
 		/// <summary>
+		/// Sets the function, which the gui::ProgressBar should use to update its fill percentage.
+		/// </summary>
+		ProgressBar& setUpdateFunction(const std::function<const float()>& function);
+
+		/// <summary>
+		/// Sets the function, which the gui::ProgressBar should use to update its fill percentage.
+		/// </summary>
+		ProgressBar& setUpdateFunction(std::function<const float()>&& function);
+
+		/// <summary>
 		/// Sets the progress of the progress bar as an integer between 0 and 100.
 		/// </summary>
-		ProgressBar& setProgress(const unsigned char percent);
+		ProgressBar& setProgress(float percent)const;
 
 		/// <summary>
 		/// Sets the fill texture of the progress bar, with optional specification of whether or not transparency checks should be performed on it.
@@ -100,6 +115,11 @@ namespace gui
 		/// Sets the position of the progress bar, as the background's most top-left pixel, in screen coordinates.
 		/// </summary>
 		ProgressBar& setPosition(const float x, const float y)override;
+
+		/// <summary>
+		/// Sets the position of the progress bar, as the background's most top-left pixel, in screen coordinates.
+		/// </summary>
+		ProgressBar& setPosition(const sf::Vector2f& pos)override;
 
 		/// <summary>
 		/// Sets the hover message to draw when the mouse is hovering over the fill of the progress bar.
@@ -119,13 +139,28 @@ namespace gui
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 		/// <summary>
+		/// Pointer to progress update function.
+		/// </summary>
+		std::unique_ptr<std::function<const float()>> updateFunction;
+
+		/// <summary>
+		/// Time of last progress update, in seconds from program start.
+		/// </summary>
+		mutable float timeOfLastUpdate = 0.0f;
+
+		/// <summary>
 		/// Progress of the progress bar, as an integer between 0 and 100.
 		/// </summary>
-		unsigned char progress = 0;
+		mutable float progress = 0.0f;
 
 		/// <summary>
 		/// Icon for the fill of the progress bar.
 		/// </summary>
-		Icon fill;
+		mutable Icon fill;
+
+		/// <summary>
+		/// How many times the progress percentage should be updated per second.
+		/// </summary>
+		static const float PROGRESS_UPS;
 	};
 };
