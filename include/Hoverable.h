@@ -30,6 +30,11 @@ namespace gui
 		virtual const std::shared_ptr<const HoverMessage> getMessage()const;
 
 		/// <summary>
+		/// Resets the message to none.
+		/// </summary>
+		virtual Hoverable& clearMessage();
+
+		/// <summary>
 		/// Sets the Hover Message that the Icon should display when the mouse is hovering over it, by copying the given one.
 		/// </summary>
 		virtual Hoverable& setMessage(const HoverMessage& message);

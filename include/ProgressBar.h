@@ -80,12 +80,7 @@ namespace gui
 		/// Returns whether or not the fill Icon is performing transparency checks.
 		/// </summary>
 		const bool getFillTransparencyCheck()const;
-
-		/// <summary>
-		/// Returns the Hover Message that is drawn when the mouse is hovering over the fill of the progress bar.
-		/// </summary>
-		const std::shared_ptr<const HoverMessage> getFillMessage()const;
-
+		
 		/// <summary>
 		/// Sets the function, which the gui::ProgressBar should use to update its fill percentage.
 		/// </summary>
@@ -120,17 +115,7 @@ namespace gui
 		/// Sets the position of the progress bar, as the background's most top-left pixel, in screen coordinates.
 		/// </summary>
 		ProgressBar& setPosition(const sf::Vector2f& pos)override;
-
-		/// <summary>
-		/// Sets the hover message to draw when the mouse is hovering over the fill of the progress bar.
-		/// </summary>
-		ProgressBar& setFillMessage(const HoverMessage& message);
-
-		/// <summary>
-		/// Sets the hover message to draw when the mouse is hovering over the fill of the progress bar.
-		/// </summary>
-		ProgressBar& setFillMessage(HoverMessage&& messageTemp);
-
+		
 	private:
 
 		/// <summary>

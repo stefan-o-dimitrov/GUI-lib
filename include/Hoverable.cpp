@@ -26,6 +26,12 @@ const std::shared_ptr<const gui::HoverMessage> gui::Hoverable::getMessage() cons
 	return message;
 }
 
+gui::Hoverable& gui::Hoverable::clearMessage()
+{
+	message.reset();
+	return *this;
+}
+
 gui::Hoverable& gui::Hoverable::setMessage(const HoverMessage& _message)
 {
 	message.reset(new HoverMessage(_message));

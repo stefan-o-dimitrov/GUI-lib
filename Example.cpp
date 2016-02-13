@@ -89,7 +89,6 @@ void main()
 		.add(gui::ProgressBar(gui::Icon(barBackgroundTex, true), gui::Icon(barFillTex, true))
 			.setUpdateFunction(std::bind(getProgress, LIMIT))
 			.setPosition(100, 500)
-			.setFillMessage(gui::HoverMessage(gui::bind("This message is superfluous", sf::Color::Red), font).setBackgroundFill(sf::Color(20, 30, 40, 210)))
 			.setMessage(gui::HoverMessage(gui::bind("This progress bar represents the integer's progress toward 10", sf::Color::White), font).setBackgroundFill(sf::Color::Black)))
 
 		.add(gui::ProgressBar(gui::Icon(barBackgroundTex, true), gui::Icon(barFillTex, true))

@@ -7,6 +7,7 @@ const float gui::ProgressBar::PROGRESS_UPS = 10.0f;
 gui::ProgressBar::ProgressBar(const Icon& background, const Icon& _fill, 
 	const unsigned char _progress) : Icon(background), fill(_fill)
 {
+	fill.clearMessage();
 	setProgress(_progress);
 	setPosition(0, 0);
 }
@@ -26,9 +27,12 @@ gui::ProgressBar::ProgressBar(const ProgressBar& copy)
 
 const bool gui::ProgressBar::input(const sf::Event& event)
 {
-	if (!fill.input(event))
-		return Icon::input(event);
-	else { Icon::mouseLeft(); return true; }
+	if (fill.input(event))
+	{
+		Icon::input(event);
+		return true;
+	}
+	else return Icon::input(event);
 }
 
 const float gui::ProgressBar::getProgress()const
@@ -44,11 +48,6 @@ const sf::Texture& gui::ProgressBar::getFillTexture()const
 const bool gui::ProgressBar::getFillTransparencyCheck()const
 {
 	return fill.getTransparencyCheck();
-}
-
-const std::shared_ptr<const gui::HoverMessage> gui::ProgressBar::getFillMessage()const
-{
-	return fill.getMessage();
 }
 
 gui::ProgressBar& gui::ProgressBar::setUpdateFunction(const std::function<const float()>& function)
@@ -98,18 +97,6 @@ gui::ProgressBar& gui::ProgressBar::setPosition(const float x, const float y)
 gui::ProgressBar& gui::ProgressBar::setPosition(const sf::Vector2f& pos)
 {
 	return setPosition(pos.x, pos.y);
-}
-
-gui::ProgressBar& gui::ProgressBar::setFillMessage(const HoverMessage& _message)
-{
-	fill.setMessage(_message);
-	return *this;
-}
-
-gui::ProgressBar& gui::ProgressBar::setFillMessage(HoverMessage&& _message)
-{
-	fill.setMessage(std::move(_message));
-	return *this;
 }
 
 void gui::ProgressBar::draw(sf::RenderTarget& target, sf::RenderStates states) const
