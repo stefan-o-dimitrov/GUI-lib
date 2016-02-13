@@ -71,7 +71,7 @@ void main()
 		.setColor(sf::Color::Red)
 		.setUpdateFunction(getInt)
 		.setMessage(gui::HoverMessage(
-			gui::bind("This is the current value of the integer.", sf::Color::White) +
+			gui::bind("This is the ", sf::Color::White) + gui::bind("current value ", sf::Color::Yellow) + gui::bind("of the ", sf::Color::White) + gui::bind("integer.", sf::Color::Yellow) +
 			gui::bind("\nThis text gets updated automatically every 1 / 25 second.", sf::Color::Red), font, 15)
 			.setBackgroundFill(sf::Color::Black)
 			.setBorderFill(sf::Color::Yellow)

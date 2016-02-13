@@ -3,6 +3,8 @@
 #include "TextArea.h"
 #include "Internals.h"
 
+const unsigned char gui::TextArea::TEXT_UPS = 10;
+
 gui::TextArea::TextArea(const std::string& _text, const sf::Font& _font, const unsigned char _characterSize)
 	: text(_text, _font, _characterSize) {}
 
@@ -71,7 +73,7 @@ gui::TextArea& gui::TextArea::setCharacterSize(const unsigned char _characterSiz
 
 void gui::TextArea::draw(sf::RenderTarget& target, sf::RenderStates states)const
 {
-	if (updateFunction && clock.getElapsedTime().asSeconds() > timeSinceUpdate + (1.0f / 25.0f))
+	if (updateFunction && clock.getElapsedTime().asSeconds() > timeSinceUpdate + (1.0f / TEXT_UPS))
 	{
 		text.setString((*updateFunction)());
 		timeSinceUpdate = clock.getElapsedTime().asSeconds();

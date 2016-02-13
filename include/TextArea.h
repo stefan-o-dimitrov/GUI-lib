@@ -44,5 +44,7 @@ namespace gui {
 		mutable sf::Text text;
 		std::unique_ptr<std::function<std::string()>> updateFunction = nullptr;
 		mutable float timeSinceUpdate = 0.0f;
+
+		static const unsigned char TEXT_UPS;
 	};
 };

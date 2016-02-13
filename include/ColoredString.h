@@ -29,6 +29,7 @@ namespace gui
 		std::vector<std::unique_ptr<cString>> vec;
 
 		static std::vector<std::unique_ptr<sf::Text>> interpret(const ColoredString& string, const sf::Font& font, const unsigned char characterSize = 13);
+		static std::vector<std::unique_ptr<sf::Text>> reinterpret(const std::vector<std::unique_ptr<sf::Text>>& string, const sf::Font& font, const unsigned char characterSize = 13);
 
 		static const float LINE_SPACING;
 	};

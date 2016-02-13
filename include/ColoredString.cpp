@@ -56,6 +56,45 @@ std::vector<std::unique_ptr<sf::Text>> gui::ColoredString::interpret(const Color
 	return returnValue;
 }
 
+std::vector<std::unique_ptr<sf::Text>> gui::ColoredString::reinterpret(const std::vector<std::unique_ptr<sf::Text>>& string, const sf::Font & font, const unsigned char characterSize)
+{
+	std::vector<std::unique_ptr<sf::Text>> returnValue;
+	if (string.empty()) return returnValue;
+
+	const float TEXT_HEIGHT = sf::Text("I", font, characterSize).getGlobalBounds().height + LINE_SPACING;
+	sf::Vector2f addPosition(0, 0);
+
+	for (auto it = string.begin(), end = string.end(); it != end; ++it)
+	{
+		std::string lines((*it)->getString());
+
+		while (lines.size() > 0)
+		{
+			std::string line;
+
+			const size_t pos = lines.find_first_of('\n');
+			if (pos != std::string::npos)
+			{
+				line = lines.substr(0, pos);
+				lines = lines.substr(pos + 1);
+				addPosition.x = 0;
+				addPosition.y += TEXT_HEIGHT;
+			}
+			else
+			{
+				line = lines;
+				lines.clear();
+			}
+			returnValue.emplace_back(new sf::Text(line, font, characterSize));
+			returnValue.back()->setPosition(addPosition);
+			returnValue.back()->setColor((*it)->getColor());
+
+			addPosition.x += returnValue.back()->getGlobalBounds().width;
+		}
+	}
+	return returnValue;
+}
+
 gui::ColoredString gui::bind(const std::string& string, const sf::Color& color)
 {
 	ColoredString returnValue;

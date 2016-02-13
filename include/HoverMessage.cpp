@@ -70,8 +70,10 @@ void gui::HoverMessage::updateBox()
 	sf::Vector2f rectSize(0, 0);
 	for (auto it = text.begin(), end = text.end(); it != end; ++it)
 	{
-		if (rectSize.x < (*it)->getPosition().x + (*it)->getGlobalBounds().width) rectSize.x = (*it)->getPosition().x + (*it)->getGlobalBounds().width;
-		if (rectSize.y < (*it)->getPosition().y + (*it)->getGlobalBounds().height) rectSize.y = (*it)->getPosition().y + (*it)->getGlobalBounds().height;
+		if (rectSize.x < (*it)->getPosition().x + (*it)->getGlobalBounds().width)
+			rectSize.x = (*it)->getPosition().x + (*it)->getGlobalBounds().width;
+		if (rectSize.y < (*it)->getPosition().y + (*it)->getGlobalBounds().height)
+			rectSize.y = (*it)->getPosition().y + (*it)->getGlobalBounds().height;	
 	}
 	textBox.setSize(sf::Vector2f(rectSize.x + TEXT_BOX_X_SPACING * 2, rectSize.y + TEXT_BOX_Y_SPACING * 2));
 }
@@ -84,7 +86,7 @@ const sf::Vector2f& gui::HoverMessage::getPosition()const
 gui::HoverMessage& gui::HoverMessage::setText(const ColoredString& string)
 {
 	text = std::move(ColoredString::interpret(string, *font, characterSize));
-	updateBox();
+	updateBox();	
 	return *this;
 }
 
@@ -99,8 +101,7 @@ gui::HoverMessage& gui::HoverMessage::setFont(const sf::Font& _font)
 gui::HoverMessage& gui::HoverMessage::setCharacterSize(const unsigned char _characterSize)
 {
 	characterSize = _characterSize;
-	for (auto it = text.begin(), end = text.end(); it != end; ++it)
-		(*it)->setCharacterSize(_characterSize);
+	text = std::move(ColoredString::reinterpret(text, *font, _characterSize));
 	updateBox();
 	return *this;
 }
@@ -142,11 +143,8 @@ void gui::HoverMessage::draw(sf::RenderTarget& target, sf::RenderStates states)c
 	if (position.y + textBox.getGlobalBounds().height > target.getSize().y) pos.y = target.getSize().y - textBox.getGlobalBounds().height;
 
 	states.transform.translate(pos);
-
 	target.draw(textBox, states);
-
-	states.transform.translate(TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING - 5.0f);
-
+	states.transform.translate(TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING);
 	for (auto it = text.begin(), end = text.end(); it != end; ++it)
 		target.draw(**it, states);
 }
