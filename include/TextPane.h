@@ -19,6 +19,7 @@ namespace gui
 		TextPane() = default;
 		~TextPane() = default;
 
+		TextPane* copy()const override { return new TextPane(*this); }
 		TextPane* move()override { return new TextPane(std::move(*this)); }
 
 		using Hoverable::input;

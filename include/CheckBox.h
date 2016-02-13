@@ -16,6 +16,7 @@ namespace gui
 		CheckBox() = default;
 		~CheckBox() = default;
 
+		CheckBox* copy()const override { return new CheckBox(*this); }
 		CheckBox* move()override { return new CheckBox(std::move(*this)); }
 
 		const bool input(const sf::Event& event)override;

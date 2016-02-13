@@ -47,7 +47,12 @@ namespace gui
 		~ProgressBar() = default;
 
 		/// <summary>
-		/// Constructs a new ProgressBar, moves this one into it and returns a pointer to the new one, invalidating the original.
+		///  Constructs a copy of this gui::ProgressBar from this one and returns a pointer to the new one.
+		/// </summary>
+		ProgressBar* copy()const override { return new ProgressBar(*this); }
+
+		/// <summary>
+		/// Constructs a new gui::ProgressBar, moves this one into it and returns a pointer to the new one, invalidating the original.
 		/// </summary>
 		ProgressBar* move()override { return new ProgressBar(std::move(*this)); }
 

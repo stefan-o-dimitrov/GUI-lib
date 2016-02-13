@@ -42,7 +42,12 @@ namespace gui
 		~Icon() = default;
 
 		/// <summary>
-		/// Constructs a new Icon, moves this one into it and returns a pointer to the new one, invalidating the original.
+		/// Constructs a copy of this gui::Icon from this one and returns a pointer to the new one.
+		/// </summary>
+		virtual Icon* copy()const override { return new Icon(*this); };
+
+		/// <summary>
+		/// Constructs a new gui::Icon, moves this one into it and returns a pointer to the new one, invalidating this instance.
 		/// </summary>
 		virtual Icon* move()override { return new Icon(std::move(*this)); };
 

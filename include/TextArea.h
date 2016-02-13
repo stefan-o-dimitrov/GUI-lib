@@ -19,6 +19,7 @@ namespace gui {
 		TextArea() = default;
 		~TextArea() = default;
 
+		TextArea* copy()const override { return new TextArea(*this); }
 		TextArea* move()override { return new TextArea(std::move(*this)); }
 
 		using Hoverable::input;

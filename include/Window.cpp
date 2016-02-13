@@ -3,9 +3,20 @@
 
 #include "Window.h"
 
+void gui::Window::clear()
+{
+	elements.clear();
+}
+
 gui::Window& gui::Window::add(Interactive&& element)
 {
 	elements.emplace_back(element.move());
+	return *this;
+}
+
+gui::Window& gui::Window::add(const Interactive & element)
+{
+	elements.emplace_back(element.copy());
 	return *this;
 }
 

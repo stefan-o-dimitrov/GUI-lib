@@ -124,6 +124,7 @@ gui::Button& gui::Button::setName(const TextArea& _lVal)
 	name.reset(new TextArea(_lVal));
 	name->message.reset();
 	name->setPosition(getPosition().x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2, getPosition().y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
+	return *this;
 }
 
 gui::Button& gui::Button::setName(TextArea&& _rVal)
@@ -131,6 +132,7 @@ gui::Button& gui::Button::setName(TextArea&& _rVal)
 	name.reset(new TextArea(std::move(_rVal)));
 	name->message.reset();
 	name->setPosition(getPosition().x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2, getPosition().y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
+	return *this;
 }
 
 gui::Button& gui::Button::setClickSound(const unsigned short _soundKey)

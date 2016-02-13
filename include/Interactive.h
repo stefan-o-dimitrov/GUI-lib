@@ -16,7 +16,12 @@ namespace gui
 	public:
 		
 		/// <summary>
-		/// Virtual Move-Constructor.
+		/// Virtual Copy-Constructor.
+		/// </summary>
+		virtual Interactive* copy()const = 0;
+
+		/// <summary>
+		/// Virtual Move-Constructor; Caution: invalidates this instance of gui::Icon.
 		/// </summary>
 		virtual Interactive* move() = 0;
 

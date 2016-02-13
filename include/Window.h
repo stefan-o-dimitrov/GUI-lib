@@ -22,8 +22,9 @@ namespace gui
 		Window() = default;
 		~Window() = default;
 
-		void clear() { elements.clear(); };
+		void clear();
 		Window& add(Interactive&& element);
+		Window& add(const Interactive& element);
 		const bool input(const sf::Event& event);
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;

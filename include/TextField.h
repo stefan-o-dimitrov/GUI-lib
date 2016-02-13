@@ -17,6 +17,7 @@ namespace gui
 		TextField() = default;
 		~TextField() = default;
 
+		TextField* copy()const override { return new TextField(*this); }
 		TextField* move()override { return new TextField(std::move(*this)); }
 
 		const bool input(const sf::Event& event)override;
