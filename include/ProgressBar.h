@@ -47,14 +47,9 @@ namespace gui
 		~ProgressBar() = default;
 
 		/// <summary>
-		/// Assigns the progress bar by making a copy of the given one.
+		/// Constructs a new ProgressBar, moves this one into it and returns a pointer to the new one, invalidating the original.
 		/// </summary>
-		ProgressBar& operator=(const ProgressBar& copy) = default;
-
-		/// <summary>
-		/// Assigns the progress bar by moving the given one.
-		/// </summary>
-		ProgressBar& operator=(ProgressBar&& temp) = default;
+		ProgressBar* move()override { return new ProgressBar(std::move(*this)); }
 
 		/// <summary>
 		/// Allows the progress bar to react to mouse events accordingly.

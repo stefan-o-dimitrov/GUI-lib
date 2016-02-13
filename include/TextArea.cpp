@@ -14,13 +14,6 @@ gui::TextArea::TextArea(const TextArea& _lVal)
 	Hoverable::operator=(_lVal);
 }
 
-gui::TextArea& gui::TextArea::operator=(const TextArea& _lVal)
-{
-	Hoverable::operator=(_lVal);
-	text = _lVal.text;
-	return *this;
-}
-
 const bool gui::TextArea::contains(const sf::Vector2f& pos) const
 {
 	return text.getGlobalBounds().contains(pos);

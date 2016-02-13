@@ -14,22 +14,6 @@ gui::Icon::Icon(const Icon& _lVal)
 gui::Icon::Icon(Icon&& _rVal)
 	: Hoverable(std::move(_rVal)), transparency(std::move(_rVal.transparency)), spr(_rVal.spr) {}
 
-gui::Icon& gui::Icon::operator=(const Icon& _lVal)
-{
-	Hoverable::operator=(_lVal);
-	if (_lVal.transparency) transparency.reset(new TransparencyMap(*_lVal.transparency));
-	spr = _lVal.spr;
-	return *this;
-}
-
-gui::Icon& gui::Icon::operator=(Icon&& _rVal)
-{
-	Hoverable::operator=(std::move(_rVal));
-	transparency = std::move(_rVal.transparency);
-	spr = _rVal.spr;
-	return *this;
-}
-
 const bool gui::Icon::contains(const sf::Vector2f& pos)const
 {
 	if (spr.getGlobalBounds().contains(pos))

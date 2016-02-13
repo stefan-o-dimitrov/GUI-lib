@@ -1,4 +1,5 @@
 #include "include/GUI.h"
+
 #include <windows.h>
 #include <sstream>
 #include <iostream>
@@ -32,9 +33,9 @@ void main()
 	buttonTex.loadFromFile("button.png");
 	font.loadFromFile("font.ttf");
 	
-	std::vector<std::unique_ptr<gui::Interactive>> elements;
+	gui::Window main;
 	
-	elements.emplace_back(new gui::Button(dynamic_cast<gui::Button&&>(gui::Button(
+	main.add(std::move(gui::Button(
 		gui::Icon(buttonTex, true),
 		std::bind(increment, -AMOUNT))
 		.setPredicates(gui::Button::predicateArray { std::make_pair(std::bind(canChange, -LIMIT, true), "Integer less than 10.") },
@@ -47,10 +48,9 @@ void main()
 			.setBorderFill(sf::Color::Blue)
 			.setBorderThickness(2.0f)
 			.setCharacterSize(15))
-		.setPosition(110, 200)
-		)));
-	
-	elements.emplace_back(new gui::Button(dynamic_cast<gui::Button&&>(gui::Button(
+		.setPosition(110, 200)))
+
+	.add(std::move(gui::Button(
 		gui::Icon(buttonTex, true),
 		std::bind(increment, AMOUNT))
 		.setPredicates(gui::Button::predicateArray{ std::make_pair(std::bind(canChange, LIMIT, false), "Integer greater than 10.") },
@@ -63,11 +63,9 @@ void main()
 			.setBorderFill(sf::Color::Blue)
 			.setBorderThickness(2.0f)
 			.setCharacterSize(15))
-		.setPosition(700, 200)
-		)));
+		.setPosition(700, 200)))
 
-	elements.emplace_back(new gui::TextArea(dynamic_cast<gui::TextArea&&>(
-		gui::TextArea("", font, 40)
+	.add(std::move(gui::TextArea("", font, 40)
 		.setColor(sf::Color::Red)
 		.setUpdateFunction(getInt)
 		.setMessage(gui::HoverMessage(
@@ -76,8 +74,7 @@ void main()
 			.setBackgroundFill(sf::Color::Black)
 			.setBorderFill(sf::Color::Yellow)
 			.setBorderThickness(2.0f))
-		.setPosition(100, 100))
-		));
+		.setPosition(100, 100)));
 
 	sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Example", sf::Style::Fullscreen);
 
@@ -92,13 +89,10 @@ void main()
 				return;
 			}
 
-			for (auto it = elements.rbegin(), end = elements.rend(); it != end; ++it)
-				if ((*it)->input(event))
-					break;
+			main.input(event);
 		}
 
-		for (auto it = elements.begin(), end = elements.end(); it != end; ++it)
-			window.draw(**it);
+		window.draw(main);
 
 		window.display();
 		window.clear(sf::Color(190, 190, 190, 255));

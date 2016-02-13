@@ -31,8 +31,7 @@ namespace gui
 		Button() = default;
 		~Button() = default;
 
-		Button& operator=(const Button& copy);
-		Button& operator=(Button&& temp) = default;
+		virtual Button* move()override { return new Button(std::move(*this)); };
 
 		virtual const bool input(const sf::Event& event)override;
 
@@ -54,6 +53,7 @@ namespace gui
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 
 	private:
+
 		void checkPredicates()const;
 		const bool arePredicatesFulfilled()const;
 

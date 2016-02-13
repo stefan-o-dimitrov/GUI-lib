@@ -16,8 +16,7 @@ namespace gui
 		CheckBox() = default;
 		~CheckBox() = default;
 
-		CheckBox& operator=(const CheckBox& copy) = default;
-		CheckBox& operator=(CheckBox&& temp) = default;
+		CheckBox* move()override { return new CheckBox(std::move(*this)); }
 
 		const bool input(const sf::Event& event)override;
 		const bool contains(const sf::Vector2f& point)const;

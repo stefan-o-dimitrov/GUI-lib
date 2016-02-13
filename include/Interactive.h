@@ -1,4 +1,6 @@
-#pragma once
+#ifndef INTERACTIVE
+#define INTERACTIVE
+
 #include <SFML/Graphics.hpp>
 #include <memory>
 
@@ -12,6 +14,12 @@ namespace gui
 	class Interactive : public sf::Drawable
 	{
 	public:
+		
+		/// <summary>
+		/// Virtual Move-Constructor.
+		/// </summary>
+		virtual Interactive* move() = 0;
+
 		/// <summary>
 		/// Virtual destructor.
 		/// </summary>
@@ -35,12 +43,12 @@ namespace gui
 		/// <summary>
 		/// Sets the position of the object, as its most top-left pixel, in screen coordinates.
 		/// </summary>
-		virtual Drawable& setPosition(const float x, const float y) = 0;
+		virtual Interactive& setPosition(const float x, const float y) = 0;
 
 		/// <summary>
 		/// Sets the position of the object, as its most top-left pixel, in screen coordinates.
 		/// </summary>
-		Drawable& setPosition(const sf::Vector2f& position) { return setPosition(position.x, position.y); };
+		Interactive& setPosition(const sf::Vector2f& position) { return setPosition(position.x, position.y); };
 
 	protected:
 		/// <summary>
@@ -49,3 +57,5 @@ namespace gui
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const = 0;
 	};
 };
+
+#endif

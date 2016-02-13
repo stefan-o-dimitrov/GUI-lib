@@ -19,14 +19,6 @@ gui::TextPane::TextPane(const TextPane& _lVal)
 		text.push_back(std::unique_ptr<sf::Text>(new sf::Text(*(*it))));
 }
 
-gui::TextPane& gui::TextPane::operator= (const TextPane& _lVal)
-{
-	for (auto it = _lVal.text.begin(), end = _lVal.text.end(); it != end; ++it)
-		text.push_back(std::unique_ptr<sf::Text>(new sf::Text(*(*it))));
-	position = _lVal.position;
-	return *this;
-}
-
 const bool gui::TextPane::contains(const sf::Vector2f& pos) const
 {
 	for (auto it = text.begin(), end = text.end(); it != end; ++it)

@@ -19,12 +19,11 @@ namespace gui
 		TextPane() = default;
 		~TextPane() = default;
 
+		TextPane* move()override { return new TextPane(std::move(*this)); }
+
 		using Hoverable::input;
 		const bool contains(const sf::Vector2f& point)const override;
-
-		TextPane& operator=(const TextPane& copy);
-		TextPane& operator=(TextPane&& temp) = default;
-
+		
 		const sf::FloatRect getGlobalBounds()const override;
 		const sf::Vector2f& getPosition()const override;
 		const sf::Font& getFont()const;

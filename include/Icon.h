@@ -42,14 +42,9 @@ namespace gui
 		~Icon() = default;
 
 		/// <summary>
-		/// Assigns the Icon by making a deep copy of the given one.
+		/// Constructs a new Icon, moves this one into it and returns a pointer to the new one, invalidating the original.
 		/// </summary>
-		Icon& operator=(const Icon& copy);
-
-		/// <summary>
-		/// Assigns the Icon by moving the temp Icon given.
-		/// </summary>
-		Icon& operator=(Icon&& temp);
+		virtual Icon* move()override { return new Icon(std::move(*this)); };
 
 		/// <summary>
 		/// Allows the Icon to react to mouse events accordingly.

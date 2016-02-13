@@ -19,8 +19,7 @@ namespace gui {
 		TextArea() = default;
 		~TextArea() = default;
 
-		TextArea& operator=(const TextArea& copy);
-		TextArea& operator=(TextArea&& temp) = default;
+		TextArea* move()override { return new TextArea(std::move(*this)); }
 
 		using Hoverable::input;
 		const bool contains(const sf::Vector2f& point)const override;

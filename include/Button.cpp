@@ -41,19 +41,6 @@ gui::Button::Button(const Button& _lVal)
 	if (_lVal.predicates) predicates.reset(new predicateArray(*_lVal.predicates));
 }
 
-gui::Button& gui::Button::operator=(const Button& _lVal)
-{
-	Icon::operator=(_lVal);
-
-	onClickAction = _lVal.onClickAction;
-
-	if (_lVal.messageBuffer) messageBuffer.reset(new HoverMessage(*_lVal.messageBuffer));
-	if (_lVal.stringBuffer) stringBuffer.reset(new ColoredString(*_lVal.stringBuffer));
-	if (_lVal.name) name.reset(new TextArea(*_lVal.name));
-	if (_lVal.sound) sound.reset(new unsigned short(*_lVal.sound));
-	if (_lVal.predicates) predicates.reset(new predicateArray(*_lVal.predicates));
-}
-
 const bool gui::Button::input(const sf::Event& event)
 {
 	switch (event.type)
