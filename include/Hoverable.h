@@ -25,7 +25,7 @@ namespace gui
 		virtual const bool contains(const sf::Vector2f& point)const = 0;
 
 		/// <summary>
-		/// Returns a read-only unique pointer to the Hover Message that the Icon uses.
+		/// Returns a read-only pointer to the Hover Message that the Icon is using.
 		/// </summary>
 		virtual const std::shared_ptr<const HoverMessage> getMessage()const;
 

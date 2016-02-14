@@ -116,6 +116,31 @@ namespace gui
 		/// </summary>
 		ProgressBar& setPosition(const sf::Vector2f& pos)override;
 		
+		/// <summary>
+		/// Returns a read-only pointer to the HoverMessage that the fill of the ProgressBar is using.
+		/// </summary>
+		const std::shared_ptr<const HoverMessage> getFillMessage()const;
+
+		/// <summary>
+		/// Resets the message that the fill of the ProgressBar is using to none.
+		/// </summary>
+		ProgressBar& clearFillMessage();
+
+		/// <summary>
+		/// Sets the HoverMessage that the fill of the ProgressBar should display when the mouse is hovering over it, by copying the given one.
+		/// </summary>
+		ProgressBar& setFillMessage(const HoverMessage& message);
+
+		/// <summary>
+		/// Sets the HoverMessage that the fill of the ProgressBar should display when the mouse is hovering over it, by moving the given one.
+		/// </summary>
+		ProgressBar& setFillMessage(HoverMessage&& messageTemp);
+
+		/// <summary>
+		/// Sets the time to wait, in seconds, before drawing the fill's HoverMessage after the mouse has entered.
+		/// </summary>
+		ProgressBar& setFillDelay(const float delaySeconds);
+		
 	private:
 
 		/// <summary>

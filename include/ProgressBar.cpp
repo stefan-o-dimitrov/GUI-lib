@@ -29,7 +29,8 @@ const bool gui::ProgressBar::input(const sf::Event& event)
 {
 	if (fill.input(event))
 	{
-		Icon::input(event);
+		if (!fill.getMessage()) Icon::input(event);
+		else mouseLeft();
 		return true;
 	}
 	else return Icon::input(event);
@@ -97,6 +98,33 @@ gui::ProgressBar& gui::ProgressBar::setPosition(const float x, const float y)
 gui::ProgressBar& gui::ProgressBar::setPosition(const sf::Vector2f& pos)
 {
 	return setPosition(pos.x, pos.y);
+}
+
+const std::shared_ptr<const gui::HoverMessage> gui::ProgressBar::getFillMessage() const
+{
+	return fill.getMessage();
+}
+
+gui::ProgressBar& gui::ProgressBar::clearFillMessage()
+{
+	fill.clearMessage();
+}
+
+gui::ProgressBar& gui::ProgressBar::setFillMessage(const HoverMessage& message)
+{
+	fill.setMessage(message);
+	return *this;
+}
+
+gui::ProgressBar& gui::ProgressBar::setFillMessage(HoverMessage&& messageTemp)
+{
+	fill.setMessage(std::move(messageTemp));
+	return *this;
+}
+
+gui::ProgressBar& gui::ProgressBar::setFillDelay(const float delaySeconds)
+{
+	fill.setDelay(delaySeconds);
 }
 
 void gui::ProgressBar::draw(sf::RenderTarget& target, sf::RenderStates states) const
