@@ -16,10 +16,7 @@ namespace gui
 		HoverMessage(const ColoredString& text, const sf::Font& font, const unsigned char characterSize = 13);
 		HoverMessage(const HoverMessage& copy);
 		HoverMessage(HoverMessage&& temp);
-
-		HoverMessage& operator=(const HoverMessage& copy);
-		HoverMessage& operator=(HoverMessage&& temp);
-
+		
 		const sf::FloatRect getGlobalBounds()const;
 		const sf::Font& getFont()const;
 		const unsigned char getCharacterSize()const;

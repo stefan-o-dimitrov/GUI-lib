@@ -35,14 +35,14 @@ namespace gui {
 		TextArea& setFont(const sf::Font& font);
 		TextArea& setCharacterSize(const unsigned char characterSize);
 		TextArea& setColor(const sf::Color& color) { text.setColor(color); return *this; }
-		TextArea& setUpdateFunction(const std::function<std::string()>& func) { updateFunction.reset(new std::function<std::string()>(func)); return *this; };
-		TextArea& setUpdateFunction(std::function<std::string()>&& func) { updateFunction.reset(new std::function<std::string()>(std::move(func))); return *this; };
+		TextArea& setUpdateFunction(const std::function<ColoredString()>& func) { updateFunction.reset(new std::function<ColoredString()>(func)); return *this; };
+		TextArea& setUpdateFunction(std::function<ColoredString()>&& func) { updateFunction.reset(new std::function<ColoredString()>(std::move(func))); return *this; };
 		
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 
 		mutable sf::Text text;
-		std::unique_ptr<std::function<std::string()>> updateFunction = nullptr;
+		std::unique_ptr<std::function<ColoredString()>> updateFunction = nullptr;
 		mutable float timeSinceUpdate = 0.0f;
 
 		static const unsigned char TEXT_UPS;

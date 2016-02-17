@@ -48,7 +48,7 @@ void main()
 		std::bind(increment, -AMOUNT))
 		.setPredicates(gui::Button::predicateArray{ std::make_pair(std::bind(canChange, -LIMIT, true), "Integer less than 10.") },
 			font)
-		.setName(std::move(gui::TextArea("Int-=" + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Green)))
+		.setName(std::move(gui::TextArea("Decrease Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Green)))
 		.setDelay(0.5f)
 		.setMessage(std::move(gui::HoverMessage(
 			gui::bind("This button ", sf::Color::White) + gui::bind("reduces ", sf::Color::Red) + gui::bind("the integer.", sf::Color::White),
@@ -64,7 +64,7 @@ void main()
 			std::bind(increment, AMOUNT))
 			.setPredicates(gui::Button::predicateArray{ std::make_pair(std::bind(canChange, LIMIT, false), "Integer greater than 10.") },
 				font)
-			.setName(gui::TextArea("Int+=" + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Yellow))
+			.setName(gui::TextArea("Increase Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Yellow))
 			.setDelay(0.5f)
 			.setMessage(gui::HoverMessage(
 				gui::bind("This button ", sf::Color::White) + gui::bind("increases ", sf::Color::Green) + gui::bind("the integer.", sf::Color::White),
@@ -77,16 +77,19 @@ void main()
 
 		.add(std::move(gui::TextArea("", font, 40)
 			.setColor(sf::Color::Red)
-			.setUpdateFunction(getInt)
+			.setUpdateFunction([]()
+				{
+					return gui::bind(std::to_string(integer), integer > 0.0f ? sf::Color::Green : integer == 0.0f ? sf::Color::Yellow : sf::Color::Red);
+				})
 			.setMessage(std::move(gui::HoverMessage(
 				gui::bind("This is the ", sf::Color::White) + gui::bind("current value ", sf::Color::Yellow) + gui::bind("of the ", sf::Color::White) + gui::bind("integer.", sf::Color::Yellow) +
-				gui::bind("\nThis text gets updated automatically every 1 / 25 second.", sf::Color::Red), font, 15)
+				gui::bind("\nThis text gets updated automatically every 1 / 10 second.", sf::Color::Red), font, 15)
 				.setBackgroundFill(sf::Color::Black)
 				.setBorderFill(sf::Color::Yellow)
 				.setBorderThickness(2.0f)))
 			.setPosition(100, 100)))
 
-		.add(gui::ProgressBar(gui::Icon(barFillTex, true), gui::Icon(barBackgroundTex, true))
+		.add(gui::ProgressBar(gui::Icon(barBackgroundTex, true), gui::Icon(barFillTex, true))
 			.setUpdateFunction(std::bind(getProgress, LIMIT))
 			.setPosition(100, 500)
 			.setFillMessage(gui::HoverMessage(gui::bind("This message is superfluous", sf::Color::Yellow), font).setBackgroundFill(sf::Color::Black))

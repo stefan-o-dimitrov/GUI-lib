@@ -62,13 +62,6 @@ gui::Hoverable::Hoverable(const Hoverable& _lVal)
 	if (_lVal.message) message.reset(new HoverMessage(*_lVal.message));
 }
 
-gui::Hoverable& gui::Hoverable::operator=(const Hoverable& _lVal)
-{
-	setDelay(_lVal.delay);
-	if (_lVal.message) message.reset(new HoverMessage(*_lVal.message));
-	return *this;
-}
-
 void gui::Hoverable::mouseEntered(const sf::Vector2f& mousePos)
 {
 	if(!timeMouseEntered) timeMouseEntered.reset(new float(clock.getElapsedTime().asSeconds()));

@@ -109,24 +109,6 @@ const bool gui::Icon::TransparencyMap::operator[](const sf::Vector2i& _rVal)cons
 	return true;
 }
 
-gui::Icon::TransparencyMap& gui::Icon::TransparencyMap::operator=(const TransparencyMap& _rVal)
-{
-	mapSize = _rVal.mapSize;
-	if (_rVal.transparency)
-	{
-		transparency.reset(new std::unique_ptr<bool[]>[mapSize.x]);
-		for (unsigned short i = 0, end = mapSize.x; i != end; i++)
-		{
-			transparency[i].reset(new bool[mapSize.y]);
-			for (unsigned short j = 0, end1 = mapSize.y; j != end1; j++)
-			{
-				transparency[i][j] = _rVal.transparency[i][j];
-			}
-		}
-	}
-	return *this;
-}
-
 void gui::Icon::TransparencyMap::generateTransparencyMap(const sf::Texture& tex)
 {
 	const sf::Image transpCheck(tex.copyToImage());

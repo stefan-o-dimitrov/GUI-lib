@@ -143,17 +143,7 @@ namespace gui
 			/// Constructs a transparency map by moving the given one.
 			/// </summary>
 			TransparencyMap(TransparencyMap&& temp) = default;
-
-			/// <summary>
-			/// Assigns the transparency map by making a deep copy of the given one.
-			/// </summary>
-			TransparencyMap& operator=(const TransparencyMap& copy);
-
-			/// <summary>
-			/// Assigns the transparency map by moving the given one.
-			/// </summary>
-			TransparencyMap& operator=(TransparencyMap&& temp) = default;
-
+			
 			/// <summary>
 			/// Returns whether or not the pixel at the given texture coordinates is transparent.
 			/// </summary>

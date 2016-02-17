@@ -70,17 +70,7 @@ namespace gui
 		/// Constructs the object without setting a HoverMessage.
 		/// </summary>
 		Hoverable() = default;
-
-		/// <summary>
-		/// Assigns the object by copying the given one.
-		/// </summary>
-		Hoverable& operator=(const Hoverable& copy);
-
-		/// <summary>
-		/// Assigns the object by moving the given one.
-		/// </summary>
-		Hoverable& operator=(Hoverable&& temp) = default;
-
+		
 		/// <summary>
 		/// Sets the mouse as having entered the object.
 		/// </summary>

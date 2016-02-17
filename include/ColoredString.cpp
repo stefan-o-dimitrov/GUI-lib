@@ -6,26 +6,19 @@ const float gui::ColoredString::LINE_SPACING = 5.0f;
 
 gui::ColoredString::ColoredString(const ColoredString& _lVal)
 {
-	for (auto it = _lVal.vec.begin(), end = _lVal.vec.end(); it != end; ++it)
-		vec.emplace_back(new cString(*(*it)));
-}
-
-gui::ColoredString& gui::ColoredString::operator=(const ColoredString& _lVal)
-{
-	for (auto it = _lVal.vec.begin(), end = _lVal.vec.end(); it != end; ++it)
-		vec.emplace_back(new cString(*(*it)));
-	return *this;
+	for (auto it = _lVal.text.begin(), end = _lVal.text.end(); it != end; ++it)
+		text.emplace_back(new cString(*(*it)));
 }
 
 std::vector<std::unique_ptr<sf::Text>> gui::ColoredString::interpret(const ColoredString& string, const sf::Font& font, const unsigned char characterSize)
 {
 	std::vector<std::unique_ptr<sf::Text>> returnValue;
-	if (string.vec.empty()) return returnValue;
+	if (string.text.empty()) return returnValue;
 	
 	const float TEXT_HEIGHT = sf::Text("I", font, characterSize).getGlobalBounds().height + LINE_SPACING;
 	sf::Vector2f addPosition(0, 0);
 
-	for (auto it = string.vec.begin(), end = string.vec.end(); it != end; ++it)
+	for (auto it = string.text.begin(), end = string.text.end(); it != end; ++it)
 	{
 		std::string lines((*it)->first);
 
@@ -98,13 +91,25 @@ std::vector<std::unique_ptr<sf::Text>> gui::ColoredString::reinterpret(const std
 gui::ColoredString gui::bind(const std::string& string, const sf::Color& color)
 {
 	ColoredString returnValue;
-	returnValue.vec.emplace_back(new cString(string, color));
+	returnValue.text.emplace_back(new cString(string, color));
 	return returnValue;
 }
 
-gui::ColoredString gui::operator+(ColoredString& lhs, ColoredString&& rhs)
+gui::ColoredString& gui::operator+(ColoredString& lhs, ColoredString&& rhs)
 {
-	for (auto it = rhs.vec.begin(), end = rhs.vec.end(); it != end; ++it)
-		lhs.vec.emplace_back(std::move(*it));
+	for (auto it = rhs.text.begin(), end = rhs.text.end(); it != end; ++it)
+		lhs.text.emplace_back(std::move(*it));
+	return lhs;
+}
+
+gui::ColoredString& gui::operator+(ColoredString& lhs, const std::function<ColoredString()>& rhs)
+{
+	lhs.volatileText.push_back(std::make_pair(rhs, lhs.text.size()));
+	return lhs;
+}
+
+gui::ColoredString& gui::operator+(ColoredString& lhs, std::function<ColoredString()>&& rhs)
+{
+	lhs.volatileText.push_back(std::move(std::make_pair(std::move(rhs), lhs.text.size())));
 	return lhs;
 }

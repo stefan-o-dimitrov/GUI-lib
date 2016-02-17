@@ -9,10 +9,7 @@ gui::TextArea::TextArea(const std::string& _text, const sf::Font& _font, const u
 	: text(_text, _font, _characterSize) {}
 
 gui::TextArea::TextArea(const TextArea& _lVal)
-	: text(_lVal.text)
-{
-	Hoverable::operator=(_lVal);
-}
+	: Hoverable(_lVal), text(_lVal.text) {}
 
 const bool gui::TextArea::contains(const sf::Vector2f& pos) const
 {
@@ -47,8 +44,8 @@ gui::TextArea& gui::TextArea::setPosition(const float x, const float y)
 
 gui::TextArea& gui::TextArea::setText(const ColoredString& _text)
 {
-	text.setString((*(*_text.vec.begin())).first);
-	text.setColor((*(*_text.vec.begin())).second);
+	text.setString((*(*_text.text.begin())).first);
+	text.setColor((*(*_text.text.begin())).second);
 	return *this;
 }
 
@@ -68,7 +65,9 @@ void gui::TextArea::draw(sf::RenderTarget& target, sf::RenderStates states)const
 {
 	if (updateFunction && clock.getElapsedTime().asSeconds() > timeSinceUpdate + (1.0f / TEXT_UPS))
 	{
-		text.setString((*updateFunction)());
+		const ColoredString buffer = (*updateFunction)();
+		buffer.text.size() ? text.setString(buffer.text.front()->first) : 0;
+		buffer.text.size() ? text.setColor(buffer.text.front()->second) : 0;
 		timeSinceUpdate = clock.getElapsedTime().asSeconds();
 	}
 	target.draw(text, states);

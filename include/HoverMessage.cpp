@@ -10,31 +10,14 @@ gui::HoverMessage::HoverMessage(const ColoredString& string, const sf::Font& fon
 }
 
 gui::HoverMessage::HoverMessage(const HoverMessage& _lVal)
-	: position(_lVal.position), textBox(_lVal.textBox)
+	: position(_lVal.position), textBox(_lVal.textBox), font(_lVal.font)
 {
 	for (auto it = _lVal.text.begin(), end = _lVal.text.end(); it != end; ++it)
 		text.emplace_back(new sf::Text(*(*it)));
 }
 
 gui::HoverMessage::HoverMessage(HoverMessage&& _rVal)
-	: position(_rVal.position), textBox(_rVal.textBox), text(std::move(_rVal.text)) {}
-
-gui::HoverMessage& gui::HoverMessage::operator=(const HoverMessage& _lVal)
-{
-	position = _lVal.position;
-	textBox = _lVal.textBox;
-	for (auto it = _lVal.text.begin(), end = _lVal.text.end(); it != end; ++it)
-		text.emplace_back(new sf::Text(*(*it)));
-	return *this;
-}
-
-gui::HoverMessage& gui::HoverMessage::operator=(HoverMessage&& _rVal)
-{
-	position = _rVal.position;
-	textBox = _rVal.textBox;
-	text = std::move(_rVal.text);
-	return *this;
-}
+	: position(_rVal.position), textBox(_rVal.textBox), text(std::move(_rVal.text)), font(_rVal.font) {}
 
 const sf::FloatRect gui::HoverMessage::getGlobalBounds()const
 {
