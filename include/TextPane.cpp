@@ -79,7 +79,7 @@ gui::TextPane& gui::TextPane::setFont(const sf::Font& _font)
 gui::TextPane& gui::TextPane::setCharacterSize(const unsigned char _characterSize)
 {
 	characterSize = _characterSize;
-	text = std::move(ColoredString::reinterpret(text, *font, characterSize));
+	text = std::move(ColoredString::rearrangeText(text, *font, characterSize));
 	return *this;
 }
 

@@ -2,11 +2,14 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <unordered_map>
 #include <memory>
 #include <functional>
 
 namespace gui
 {
+	template <typename T>
+	using ptr_vector = std::vector<std::unique_ptr<T>>;
 	typedef std::pair<std::string, sf::Color>(cString);
 	class ColoredString final
 	{
@@ -15,6 +18,9 @@ namespace gui
 		ColoredString(const ColoredString&);
 		ColoredString(ColoredString&&) = default;
 		~ColoredString() = default;
+
+		ColoredString& operator=(const ColoredString&);
+		ColoredString& operator=(ColoredString&&) = default;
 		
 	private:
 
@@ -24,12 +30,12 @@ namespace gui
 		friend class HoverMessage;
 
 		ColoredString() = default;
-		
-		std::vector<std::unique_ptr<cString>> text;
-		std::vector<std::pair<std::function<ColoredString()>, size_t>> volatileText;
 
-		static std::vector<std::unique_ptr<sf::Text>> interpret(const ColoredString& string, const sf::Font& font, const unsigned char characterSize = 13);
-		static std::vector<std::unique_ptr<sf::Text>> reinterpret(const std::vector<std::unique_ptr<sf::Text>>& string, const sf::Font& font, const unsigned char characterSize = 13);
+		ptr_vector<cString> text;
+		std::unordered_multimap<size_t, std::function<ColoredString()>> volatileText;
+
+		static ptr_vector<sf::Text> interpret(const ColoredString& string, const sf::Font& font, const unsigned char characterSize = 13);
+		static ptr_vector<sf::Text> rearrangeText(const ptr_vector<sf::Text>& string, const sf::Font& font, const unsigned char characterSize = 13);
 
 		static const float LINE_SPACING;
 

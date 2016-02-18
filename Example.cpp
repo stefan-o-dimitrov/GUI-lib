@@ -51,7 +51,11 @@ void main()
 		.setName(std::move(gui::TextArea("Decrease Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Green)))
 		.setDelay(0.5f)
 		.setMessage(std::move(gui::HoverMessage(
-			gui::bind("This button ", sf::Color::White) + gui::bind("reduces ", sf::Color::Red) + gui::bind("the integer.", sf::Color::White),
+			gui::bind("This button ", sf::Color::White) + gui::bind("reduces ", sf::Color::Red) + gui::bind("the integer. It is ", sf::Color::White)
+			+ gui::bind("\ncurrently at ", sf::Color::White) + []()
+				{
+					return gui::bind(std::to_string(integer), integer > 0.0f ? sf::Color::Green : integer == 0.0f ? sf::Color::Yellow : sf::Color::Red);
+				} + gui::bind(".", sf::Color::White),
 			font)
 			.setBackgroundFill(sf::Color::Black)
 			.setBorderFill(sf::Color::Blue)
