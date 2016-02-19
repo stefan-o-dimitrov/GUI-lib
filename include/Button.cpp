@@ -166,8 +166,8 @@ gui::Button& gui::Button::setPosition(const float x, const float y)
 gui::Button& gui::Button::setPredicates(const predicateArray& _predArray, const sf::Font& font, const unsigned char charSize)
 {
 	predicates.reset(new predicateArray(_predArray));
-	if (predicatesFulfilled) messageBuffer.reset(new HoverMessage(ColoredString(), font, charSize));
-	else message.reset(new HoverMessage(ColoredString(), font, charSize));
+	if (predicatesFulfilled) messageBuffer.reset(new HoverMessage(bind("", sf::Color()), font, charSize));
+	else message.reset(new HoverMessage(bind("", sf::Color()), font, charSize));
 	checkPredicates();
 	return *this;
 }

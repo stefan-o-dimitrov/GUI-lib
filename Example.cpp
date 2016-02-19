@@ -51,10 +51,10 @@ void main()
 		.setName(std::move(gui::TextArea("Decrease Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Green)))
 		.setDelay(0.5f)
 		.setMessage(std::move(gui::HoverMessage(
-			gui::bind("This button ", sf::Color::White) + gui::bind("reduces ", sf::Color::Red) + gui::bind("the integer. It is ", sf::Color::White)
-			+ gui::bind("\ncurrently at ", sf::Color::White) + []()
+			gui::bind("This button ", sf::Color::White) + gui::bind("reduces ", sf::Color::Red) + gui::bind("the integer", sf::Color::White) + []()
 				{
-					return gui::bind(std::to_string(integer), integer > 0.0f ? sf::Color::Green : integer == 0.0f ? sf::Color::Yellow : sf::Color::Red);
+					return integer == 0 ? gui::bind("", sf::Color()) : gui::bind(". It is ", sf::Color::White)
+						+ gui::bind("\ncurrently at ", sf::Color::White) + gui::bind(std::to_string(integer), integer > 0.0f ? sf::Color::Green : sf::Color::Red);
 				} + gui::bind(".", sf::Color::White),
 			font)
 			.setBackgroundFill(sf::Color::Black)
@@ -83,7 +83,7 @@ void main()
 			.setColor(sf::Color::Red)
 			.setUpdateFunction([]()
 				{
-					return gui::bind(std::to_string(integer), integer > 0.0f ? sf::Color::Green : integer == 0.0f ? sf::Color::Yellow : sf::Color::Red);
+					return gui::cString(std::to_string(integer), integer > 0.0f ? sf::Color::Green : integer == 0.0f ? sf::Color::Yellow : sf::Color::Red);
 				})
 			.setMessage(std::move(gui::HoverMessage(
 				gui::bind("This is the ", sf::Color::White) + gui::bind("current value ", sf::Color::Yellow) + gui::bind("of the ", sf::Color::White) + gui::bind("integer.", sf::Color::Yellow) +
@@ -107,19 +107,14 @@ void main()
 
 	sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Example", sf::Style::Fullscreen);
 
+	window.setFramerateLimit(30);
+
 	while (true)
 	{
 		sf::Event event;
 		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-			{
-				window.close();
-				return;
-			}
-
-			main.input(event);
-		}
+			if (event.type == sf::Event::Closed) window.close();
+			else main.input(event);
 
 		window.draw(main);
 

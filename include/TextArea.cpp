@@ -42,11 +42,11 @@ gui::TextArea& gui::TextArea::setPosition(const float x, const float y)
 	return *this;
 }
 
-gui::TextArea& gui::TextArea::setText(const ColoredString& _text)
+gui::TextArea& gui::TextArea::setText(const cString& _text)const
 {
-	text.setString((*(*_text.text.begin())).first);
-	text.setColor((*(*_text.text.begin())).second);
-	return *this;
+	text.setString(_text.first);
+	text.setColor(_text.second);
+	return (TextArea&)*this;
 }
 
 gui::TextArea& gui::TextArea::setFont(const sf::Font& _font)
@@ -65,9 +65,7 @@ void gui::TextArea::draw(sf::RenderTarget& target, sf::RenderStates states)const
 {
 	if (updateFunction && clock.getElapsedTime().asSeconds() > timeSinceUpdate + (1.0f / TEXT_UPS))
 	{
-		const ColoredString buffer = (*updateFunction)();
-		buffer.text.size() ? text.setString(buffer.text.front()->first) : 0;
-		buffer.text.size() ? text.setColor(buffer.text.front()->second) : 0;
+		setText((*updateFunction)());
 		timeSinceUpdate = clock.getElapsedTime().asSeconds();
 	}
 	target.draw(text, states);

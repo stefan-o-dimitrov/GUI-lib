@@ -25,9 +25,9 @@ gui::ColoredString& gui::ColoredString::operator=(const ColoredString& copy)
 	return *this;
 }
 
-void addText(const std::string& str, sf::Vector2f& addPosition, const float TEXT_HEIGHT, gui::ptr_vector<sf::Text>& returnValue, const sf::Font& font, const unsigned char characterSize, const sf::Color& color)
+void stringToArrangedText(gui::ptr_vector<sf::Text>& target, const gui::cString& str, const sf::Font& font, const unsigned char characterSize, sf::Vector2f& addPosition, const float TEXT_HEIGHT)
 {
-	std::string lines(str);
+	std::string lines(str.first);
 
 	while (lines.size() > 0)
 	{
@@ -46,84 +46,53 @@ void addText(const std::string& str, sf::Vector2f& addPosition, const float TEXT
 			line = lines;
 			lines.clear();
 		}
-		returnValue.emplace_back(new sf::Text(line, font, characterSize));
-		returnValue.back()->setPosition(addPosition);
-		returnValue.back()->setColor(color);
+		target.emplace_back(new sf::Text(line, font, characterSize));
+		target.back()->setPosition(addPosition);
+		target.back()->setColor(str.second);
 
-		addPosition.x += returnValue.back()->getGlobalBounds().width;
+		addPosition.x += target.back()->getGlobalBounds().width;
 	}
 }
 
-gui::ptr_vector<sf::Text> gui::ColoredString::interpret(const ColoredString& string, const sf::Font& font, const unsigned char characterSize)
+const bool gui::ColoredString::isVolatile() const
 {
-	ptr_vector<sf::Text> returnValue;
-	if (string.text.empty() && string.volatileText.empty()) return returnValue;
-	
-	const float TEXT_HEIGHT = sf::Text("I", font, characterSize).getGlobalBounds().height + LINE_SPACING;
-	sf::Vector2f addPosition(0, 0);
-
-	if(!string.text.empty())
-		for (unsigned short it = 0, end = string.text.size(); it < end; it++)
-		{
-			for (auto it1 = string.volatileText.equal_range(it); it1.first != it1.second; ++it1.first)
-			{
-				const ColoredString buffer(std::move(it1.first->second()));
-				for (auto it2 = buffer.text.begin(), end2 = buffer.text.end(); it2 != end2; ++it2)
-					addText((*it2)->first, addPosition, TEXT_HEIGHT, returnValue, font, characterSize, (*it2)->second);
-			}
-
-			const auto buffer = *string.text.at(it);
-
-			addText(buffer.first, addPosition, TEXT_HEIGHT, returnValue, font, characterSize, buffer.second);
-		
-		}
-	else
-		for (auto it = string.volatileText.begin(), end = string.volatileText.end(); it != end; ++it)
-		{
-			const ColoredString buffer(std::move(it->second()));
-			for (auto it2 = buffer.text.begin(), end2 = buffer.text.end(); it2 != end2; ++it2)
-				addText((*it2)->first, addPosition, TEXT_HEIGHT, returnValue, font, characterSize, (*it2)->second);
-		}
-	return returnValue;
+	return volatileText.size();
 }
 
-gui::ptr_vector<sf::Text> gui::ColoredString::rearrangeText(const ptr_vector<sf::Text>& string, const sf::Font& font, const unsigned char characterSize)
+void gui::ColoredString::getText(ptr_vector<sf::Text>& target, const sf::Font& font, const unsigned char characterSize)const
 {
-	ptr_vector<sf::Text> returnValue;
-	if (string.empty()) return returnValue;
-
 	const float TEXT_HEIGHT = sf::Text("I", font, characterSize).getGlobalBounds().height + LINE_SPACING;
 	sf::Vector2f addPosition(0, 0);
+	target.clear();
 
-	for (auto it = string.begin(), end = string.end(); it != end; ++it)
+	getText(target, font, characterSize, TEXT_HEIGHT, addPosition);
+}
+
+void gui::ColoredString::getText(ptr_vector<sf::Text>& target, const sf::Font& font, const unsigned char characterSize, const float TEXT_HEIGHT, sf::Vector2f& addPosition)const
+{
+	if(!text.empty())
+		for (unsigned short it = 0, end = text.size(); it < end; it++)
+		{
+			for (auto it1 = volatileText.equal_range(it); it1.first != it1.second; ++it1.first)
+				it1.first->second().getText(target, font, characterSize, TEXT_HEIGHT, addPosition);
+
+			stringToArrangedText(target, *text.at(it), font, characterSize, addPosition, TEXT_HEIGHT);
+		}
+	else if (!volatileText.empty())
+		for (auto it = volatileText.begin(), end = volatileText.end(); it != end; ++it)
+			it->second().getText(target, font, characterSize, TEXT_HEIGHT, addPosition);
+}
+
+void gui::ColoredString::arrangeText(ptr_vector<sf::Text>& target)
+{
+	if (!target.empty())
 	{
-		std::string lines((*it)->getString());
-
-		while (lines.size() > 0)
-		{
-			std::string line;
-
-			const size_t pos = lines.find_first_of('\n');
-			if (pos != std::string::npos)
-			{
-				line = lines.substr(0, pos);
-				lines = lines.substr(pos + 1);
-				addPosition.x = 0;
-				addPosition.y += TEXT_HEIGHT;
-			}
-			else
-			{
-				line = lines;
-				lines.clear();
-			}
-			returnValue.emplace_back(new sf::Text(line, font, characterSize));
-			returnValue.back()->setPosition(addPosition);
-			returnValue.back()->setColor((*it)->getColor());
-
-			addPosition.x += returnValue.back()->getGlobalBounds().width;
-		}
+		target.front()->setPosition(0, 0);
+		for (auto it = target.begin() + 1, end = target.end(); it != end; ++it)
+			(*it)->setPosition( (*it)->getPosition().y > (*(it - 1))->getPosition().y ? 0 : (*(it - 1))->getPosition().x + (*(it - 1))->getGlobalBounds().width ,
+				(*it)->getPosition().y > (*(it - 1))->getPosition().y ?
+				(*(it - 1))->getPosition().y + (*(it - 1))->getGlobalBounds().height + LINE_SPACING : (*(it - 1))->getPosition().y);
 	}
-	return returnValue;
 }
 
 gui::ColoredString gui::bind(const std::string& string, const sf::Color& color)

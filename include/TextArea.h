@@ -31,18 +31,18 @@ namespace gui {
 		const unsigned char getCharacterSize()const;
 
 		TextArea& setPosition(const float x, const float y)override;
-		TextArea& setText(const ColoredString& text);
+		TextArea& setText(const cString& text)const;
 		TextArea& setFont(const sf::Font& font);
 		TextArea& setCharacterSize(const unsigned char characterSize);
 		TextArea& setColor(const sf::Color& color) { text.setColor(color); return *this; }
-		TextArea& setUpdateFunction(const std::function<ColoredString()>& func) { updateFunction.reset(new std::function<ColoredString()>(func)); return *this; };
-		TextArea& setUpdateFunction(std::function<ColoredString()>&& func) { updateFunction.reset(new std::function<ColoredString()>(std::move(func))); return *this; };
+		TextArea& setUpdateFunction(const std::function<cString()>& func) { updateFunction.reset(new std::function<cString()>(func)); return *this; };
+		TextArea& setUpdateFunction(std::function<cString()>&& func) { updateFunction.reset(new std::function<cString()>(std::move(func))); return *this; };
 		
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 
 		mutable sf::Text text;
-		std::unique_ptr<std::function<ColoredString()>> updateFunction = nullptr;
+		std::unique_ptr<std::function<cString()>> updateFunction = nullptr;
 		mutable float timeSinceUpdate = 0.0f;
 
 		static const unsigned char TEXT_UPS;

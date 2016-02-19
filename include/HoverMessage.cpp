@@ -3,29 +3,31 @@
 
 const unsigned char gui::HoverMessage::TEXT_UPS = 10, gui::HoverMessage::TEXT_BOX_X_SPACING = 10, gui::HoverMessage::TEXT_BOX_Y_SPACING = 10;
 
-gui::HoverMessage::HoverMessage(const ColoredString& string, const sf::Font& font, const unsigned char characterSize)
-	: font(&font), characterSize(characterSize)
+gui::HoverMessage::HoverMessage(const ColoredString& str, const sf::Font& font, const unsigned char characterSize)
+	: font(&font), characterSize(characterSize), string(str)
 {
 	textBox.setFillColor(sf::Color(0, 0, 0, 0));
-	setText(string);
+	string.getText(text, font, characterSize);
+	updateBox();
 }
 
-gui::HoverMessage::HoverMessage(ColoredString&& string, const sf::Font& font, const unsigned char characterSize)
-	: font(&font), characterSize(characterSize)
+gui::HoverMessage::HoverMessage(ColoredString&& str, const sf::Font& font, const unsigned char characterSize)
+	: font(&font), characterSize(characterSize), string(std::move(str))
 {
 	textBox.setFillColor(sf::Color(0, 0, 0, 0));
-	setText(std::move(string));
+	string.getText(text, font, characterSize);
+	updateBox();
 }
 
 gui::HoverMessage::HoverMessage(const HoverMessage& _lVal)
-	: position(_lVal.position), textBox(_lVal.textBox), font(_lVal.font)
+	: position(_lVal.position), textBox(_lVal.textBox), font(_lVal.font), string(_lVal.string)
 {
 	for (auto it = _lVal.text.begin(), end = _lVal.text.end(); it != end; ++it)
 		text.emplace_back(new sf::Text(*(*it)));
 }
 
 gui::HoverMessage::HoverMessage(HoverMessage&& _rVal)
-	: position(_rVal.position), textBox(_rVal.textBox), text(std::move(_rVal.text)), font(_rVal.font) {}
+	: position(_rVal.position), textBox(_rVal.textBox), text(std::move(_rVal.text)), font(_rVal.font), string(std::move(_rVal.string)) {}
 
 const sf::FloatRect gui::HoverMessage::getGlobalBounds()const
 {
@@ -78,7 +80,7 @@ const sf::Vector2f& gui::HoverMessage::getPosition()const
 gui::HoverMessage& gui::HoverMessage::setText(const ColoredString& val)
 {
 	string = val;
-	text = std::move(ColoredString::interpret(string, *font, characterSize));
+	string.getText(text, *font, characterSize);
 	updateBox();
 	return *this;
 }
@@ -86,7 +88,7 @@ gui::HoverMessage& gui::HoverMessage::setText(const ColoredString& val)
 gui::HoverMessage& gui::HoverMessage::setText(ColoredString&& val)
 {
 	string = std::move(val);
-	text = std::move(ColoredString::interpret(string, *font, characterSize));
+	string.getText(text, *font, characterSize);
 	updateBox();
 	return *this;
 }
@@ -102,7 +104,7 @@ gui::HoverMessage& gui::HoverMessage::setFont(const sf::Font& _font)
 gui::HoverMessage& gui::HoverMessage::setCharacterSize(const unsigned char _characterSize)
 {
 	characterSize = _characterSize;
-	text = std::move(ColoredString::rearrangeText(text, *font, _characterSize));
+	ColoredString::arrangeText(text);
 	updateBox();
 	return *this;
 }
@@ -139,9 +141,9 @@ gui::HoverMessage& gui::HoverMessage::setPosition(const sf::Vector2f& pos)
 
 void gui::HoverMessage::draw(sf::RenderTarget& target, sf::RenderStates states)const
 {
-	if (!string.volatileText.empty() && Internals::getClock().getElapsedTime().asSeconds() - timeOfLastUpdate > 1.0f / TEXT_UPS)
+	if (string.isVolatile() && Internals::getClock().getElapsedTime().asSeconds() - timeOfLastUpdate > 1.0f / TEXT_UPS)
 	{
-		text = std::move(ColoredString::interpret(string, *font, characterSize));
+		string.getText(text, *font, characterSize);
 		updateBox();
 		timeOfLastUpdate = Internals::getClock().getElapsedTime().asSeconds();
 	}

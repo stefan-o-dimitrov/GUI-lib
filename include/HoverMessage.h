@@ -14,8 +14,8 @@ namespace gui
 	{
 		friend class Hoverable;
 	public:
-		HoverMessage(const ColoredString& text, const sf::Font& font, const unsigned char characterSize = 13);
-		HoverMessage(ColoredString&& text, const sf::Font& font, const unsigned char characterSize = 13);
+		HoverMessage(const ColoredString& string, const sf::Font& font, const unsigned char characterSize = 13);
+		HoverMessage(ColoredString&& string, const sf::Font& font, const unsigned char characterSize = 13);
 		HoverMessage(const HoverMessage& copy);
 		HoverMessage(HoverMessage&& temp);
 		

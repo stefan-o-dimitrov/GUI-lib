@@ -64,7 +64,7 @@ gui::TextPane& gui::TextPane::setPosition(const float x, const float y)
 
 gui::TextPane& gui::TextPane::setText(const ColoredString& string)
 {
-	text = std::move(ColoredString::interpret(string, *font, characterSize));
+	string.getText(text, *font, characterSize);
 	return *this;
 }
 
@@ -79,7 +79,7 @@ gui::TextPane& gui::TextPane::setFont(const sf::Font& _font)
 gui::TextPane& gui::TextPane::setCharacterSize(const unsigned char _characterSize)
 {
 	characterSize = _characterSize;
-	text = std::move(ColoredString::rearrangeText(text, *font, characterSize));
+	ColoredString::arrangeText(text);
 	return *this;
 }
 
