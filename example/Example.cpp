@@ -1,8 +1,7 @@
-#include "include/GUI.h"
+#include "../include/GUI.h"
 
 #include <windows.h>
 #include <sstream>
-#include <iostream>
 
 #define LIMIT 10
 #define AMOUNT 1
