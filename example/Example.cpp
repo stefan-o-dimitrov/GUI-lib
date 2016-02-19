@@ -45,7 +45,7 @@ void main()
 	main.add(std::move(gui::Button(
 		gui::Icon(buttonTex, true),
 		std::bind(increment, -AMOUNT))
-		.setPredicates(gui::Button::predicateArray{ std::make_pair(std::bind(canChange, -LIMIT, true), "Integer less than 10.") },
+		.setPredicates(gui::Button::predicateArray{ std::make_pair(std::bind(canChange, -LIMIT, true), gui::bind("Integer less than 10.", sf::Color::White)) },
 			font)
 		.setName(std::move(gui::TextArea("Decrease Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Green)))
 		.setDelay(0.5f)
@@ -65,7 +65,7 @@ void main()
 		.add(gui::Button(
 			gui::Icon(buttonTex, false),
 			std::bind(increment, AMOUNT))
-			.setPredicates(gui::Button::predicateArray{ std::make_pair(std::bind(canChange, LIMIT, false), "Integer greater than 10.") },
+			.setPredicates(gui::Button::predicateArray{ std::make_pair(std::bind(canChange, LIMIT, false), gui::bind("Integer greater than 10.", sf::Color::White)) },
 				font)
 			.setName(gui::TextArea("Increase Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Yellow))
 			.setDelay(0.5f)
@@ -106,9 +106,9 @@ void main()
 
 	sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Example", sf::Style::Fullscreen);
 
-	window.setFramerateLimit(30);
+	window.setFramerateLimit(40);
 
-	while (true)
+	while (window.isOpen())
 	{
 		sf::Event event;
 		while (window.pollEvent(event))

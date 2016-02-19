@@ -22,7 +22,7 @@ namespace gui
 	{
 		friend class CheckBox;
 	public:
-		typedef std::vector<std::pair<std::function<const bool()>, std::string>>(predicateArray);
+		typedef std::vector<std::pair<std::function<const bool()>, ColoredString>>(predicateArray);
 
 		Button(const Icon& visual, const std::function<void()>& onClick);
 		Button(Icon&& visual, std::function<void()>&& onClick);
@@ -71,5 +71,6 @@ namespace gui
 		mutable bool                           predicatesFulfilled = true;
 		
 		static const std::string STATE_SHADER;
+		static const unsigned char PREDICATE_CHECKS_PER_SECOND;
 	};
 };

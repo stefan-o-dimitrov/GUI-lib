@@ -5,12 +5,12 @@
 
 const float gui::ColoredString::LINE_SPACING = 5.0f;
 
-gui::ColoredString::ColoredString(const ColoredString& _lVal)
+gui::ColoredString::ColoredString(const ColoredString& copy)
 {
-	for (auto it = _lVal.text.begin(), end = _lVal.text.end(); it != end; ++it)
+	for (auto it = copy.text.begin(), end = copy.text.end(); it != end; ++it)
 		text.emplace_back(new cString(*(*it)));
 
-	for (auto it = _lVal.volatileText.begin(), end = _lVal.volatileText.end(); it != end; ++it)
+	for (auto it = copy.volatileText.begin(), end = copy.volatileText.end(); it != end; ++it)
 		volatileText.emplace(*it);
 }
 
@@ -50,7 +50,7 @@ void stringToArrangedText(gui::ptr_vector<sf::Text>& target, const gui::cString&
 		target.back()->setPosition(addPosition);
 		target.back()->setColor(str.second);
 
-		addPosition.x += target.back()->getGlobalBounds().width;
+		addPosition.x += target.back()->getGlobalBounds().width + 1.0f;
 	}
 }
 
@@ -104,10 +104,10 @@ gui::ColoredString gui::bind(const std::string& string, const sf::Color& color)
 
 gui::ColoredString& gui::operator+(ColoredString& lhs, ColoredString&& rhs)
 {
+	for (auto it = rhs.volatileText.begin(), end = rhs.volatileText.end(); it != end; ++it)
+		lhs.volatileText.emplace(std::move(std::make_pair(it->first + lhs.text.size(), std::move(it->second))));
 	for (auto it = rhs.text.begin(), end = rhs.text.end(); it != end; ++it)
 		lhs.text.emplace_back(std::move(*it));
-	for (auto it = rhs.volatileText.begin(), end = rhs.volatileText.end(); it != end; ++it)
-		lhs.volatileText.emplace(std::move(*it));
 	return lhs;
 }
 

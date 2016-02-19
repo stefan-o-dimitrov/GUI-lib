@@ -12,6 +12,7 @@ void main()\
 	float greyValue = color.r * 0.29 + color.g * 0.58 + color.b * 0.13;\
 	gl_FragColor = vec4(greyValue, greyValue, greyValue, color.a);\
 }";
+const unsigned char gui::Button::PREDICATE_CHECKS_PER_SECOND = 10;
 
 gui::Button::Button(const Icon& visual, const std::function<void()>& onClick)
 	: Icon(visual), onClickAction(onClick)
@@ -174,9 +175,12 @@ gui::Button& gui::Button::setPredicates(const predicateArray& _predArray, const 
 
 void gui::Button::draw(sf::RenderTarget& target, sf::RenderStates states)const
 {
-	if (hasMessageDelayPassed())
-		checkPredicates();
-	else arePredicatesFulfilled();
+	if (predicates && Internals::getClock().getElapsedTime().asSeconds() - timeOfLastPredicateCheck > 1.0f / PREDICATE_CHECKS_PER_SECOND)
+	{
+		if (hasMessageDelayPassed())
+			checkPredicates();
+		else arePredicatesFulfilled();
+	}
 	predicatesFulfilled ? 0 : states.shader = &stateShader;
 	Icon::draw(target, states);
 	if (name) target.draw(*name, states);
@@ -184,40 +188,20 @@ void gui::Button::draw(sf::RenderTarget& target, sf::RenderStates states)const
 
 void gui::Button::checkPredicates()const
 {
-	/*if (predicates && clock.getElapsedTime().asSeconds() > timeOfLastPredicateCheck + 0.04 && messageBuffer)
-	{
-	if (!stringBuffer) { stringBuffer.reset(new ColoredString()); stringBuffer->vec.reserve(predicates->size() * 3 + 1); }
-	stringBuffer->vec.clear();
-	bool overallValidity = true;
-	for (auto it = predicates->begin(), end = predicates->end(); it != end; ++it)
-	{
-	const bool value = it->first();
-	stringBuffer->vec.push_back(std::unique_ptr<cString>(new cString("(", sf::Color::White)));
-	stringBuffer->vec.push_back(std::unique_ptr<cString>(new cString("*", value ? sf::Color::Green : sf::Color::Red)));
-	stringBuffer->vec.push_back(std::unique_ptr<cString>(new cString(") " + it->second, sf::Color::White)));
-	if (!value) overallValidity = false;
-	}
-
-	if (predicatesFulfilled)
-	messageBuffer->setText(*stringBuffer);
-	else
-	message->setText(*stringBuffer);
-	if (predicatesFulfilled != overallValidity) message.swap(messageBuffer);
-	if (!overallValidity) predicatesFulfilled = false;;
-	}*/
 	arePredicatesFulfilled();
 }
 
 const bool gui::Button::arePredicatesFulfilled()const
 {
-	if (predicates)
-		for (auto it = predicates->begin(), end = predicates->end(); it != end; ++it)
-			if (!it->first())
-			{
-				if (predicatesFulfilled)
-					spr.setColor(sf::Color(255, 255, 255, 255));
-				return predicatesFulfilled = false;
-			}
+	if(predicates)
+	for (auto it = predicates->begin(), end = predicates->end(); it != end; ++it)
+		if (!it->first())
+		{
+			if (predicatesFulfilled)
+				spr.setColor(sf::Color(255, 255, 255, 255));
+			return predicatesFulfilled = false;
+		}
+
 	if (!predicatesFulfilled)
 		spr.setColor(sf::Color((1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, 255));
 	return predicatesFulfilled = true;
