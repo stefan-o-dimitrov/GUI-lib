@@ -156,7 +156,7 @@ namespace gui
 		/// <summary>
 		/// Time of last progress update, in seconds from program start.
 		/// </summary>
-		mutable float timeOfLastUpdate = 0.0f;
+		mutable TimePoint timeOfLastUpdate;
 
 		/// <summary>
 		/// Progress of the progress bar, as an integer between 0 and 100.

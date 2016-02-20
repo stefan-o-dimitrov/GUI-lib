@@ -4,7 +4,7 @@
 #include "AudioSystem.h"   //
 #include "Button.h"      /// + s
 #include "CheckBox.h"    ///
-#include "ColoredString.h" ///
+#include "ColoredText.h" ///
 #include "HoverMessage.h"  ///
 #include "Icon.h"          /// + s
 #include "Interactive.h"   ///

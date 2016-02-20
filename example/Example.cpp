@@ -45,8 +45,10 @@ void main()
 	main.add(std::move(gui::Button(
 		gui::Icon(buttonTex, true),
 		std::bind(increment, -AMOUNT))
-		.setPredicates(gui::Button::predicateArray{ std::bind(canChange, -LIMIT, true) })
-		.setName(std::move(gui::TextArea("Decrease Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Green)))
+		.setPredicates(gui::PredicateArray{ std::bind(canChange, -LIMIT, true) })
+		.setPredicateMessage(gui::HoverMessage(gui::bind("Integer is less than ", sf::Color::White) + gui::bind(std::to_string(LIMIT), sf::Color::Yellow),
+			font, 15))
+		.setName(std::move(gui::TextArea("Decrease Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Red)))
 		.setDelay(0.5f)
 		.setMessage(std::move(gui::HoverMessage(
 			gui::bind("This button ", sf::Color::White) + gui::bind("reduces ", sf::Color::Red) + gui::bind("the integer", sf::Color::White) + []()
@@ -64,8 +66,8 @@ void main()
 		.add(gui::Button(
 			gui::Icon(buttonTex, false),
 			std::bind(increment, AMOUNT))
-			.setPredicates(gui::Button::predicateArray{ std::bind(canChange, LIMIT, false) })
-			.setName(gui::TextArea("Increase Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Yellow))
+			.setPredicates(gui::PredicateArray{ std::bind(canChange, LIMIT, false) })
+			.setName(gui::TextArea("Increase Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Green))
 			.setDelay(0.5f)
 			.setMessage(gui::HoverMessage(
 				gui::bind("This button ", sf::Color::White) + gui::bind("increases ", sf::Color::Green) + gui::bind("the integer.", sf::Color::White),
@@ -80,7 +82,7 @@ void main()
 			.setColor(sf::Color::Red)
 			.setUpdateFunction([]()
 				{
-					return gui::cString(std::to_string(integer), integer > 0.0f ? sf::Color::Green : integer == 0.0f ? sf::Color::Yellow : sf::Color::Red);
+					return gui::ColoredString(std::to_string(integer), integer > 0.0f ? sf::Color::Green : integer == 0.0f ? sf::Color::Yellow : sf::Color::Red);
 				})
 			.setMessage(std::move(gui::HoverMessage(
 				gui::bind("This is the ", sf::Color::White) + gui::bind("current value ", sf::Color::Yellow) + gui::bind("of the ", sf::Color::White) + gui::bind("integer.", sf::Color::Yellow) +

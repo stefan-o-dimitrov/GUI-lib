@@ -1,37 +1,41 @@
 #pragma once
+
 #include <SFML/Audio.hpp>
 #include <unordered_map>
+#include <memory>
 
 namespace gui
 {
+	typedef unsigned char(Volume);
+
 	class AudioSystem
 	{
 	public:
-		typedef unsigned char(volume);
 
-		static void loadResources(const std::string& musicDefinitionsDir, const std::string& interfaceSoundDefinitionsDir, const std::string& gameSoundDefinitionsDir);
-		static void playInterfaceSound(const unsigned short);
-		static void playGameSound(const unsigned short);
-		static void playSong(const unsigned short);
+		const bool loadMusicFile(const unsigned short key, const std::string& path);
+		const bool loadSoundFile(const unsigned short key, const std::string& path);
+
+		static void playSound(const unsigned short key);
+		static void playSong(const unsigned short key);
 		static void playRandomSong();
-		static void setMusicVolume(const volume);
-		static void setInterfaceVolume(const volume);
-		static void setSoundVolume(const volume);
-		static void setMasterVolume(const volume);
-		static const volume getMusicVolume();
-		static const volume getInterfaceVolume();
-		static const volume getGameVolume();
-		static const volume getMasterVolume();
-		static const sf::Sound& getInterfaceSound(const unsigned short);
-		static const sf::Sound& getGameSound(const unsigned short);
-	private:
-		static void loadMusic(const std::string&);
-		static void loadInterfaceSound(const std::string&);
-		static void loadGameSound(const std::string&);
 
-		static volume                                                                    musicVolume, interfaceVolume, gameVolume, masterVolume;
+		static void setMusicVolume(const Volume volume);
+		static void setSoundVolume(const Volume volume);
+		static void setMasterVolume(const Volume volume);
+		static void mute(const bool muted);
+
+		static const Volume getMusicVolume();
+		static const Volume getSoundVolume();
+		static const Volume getMasterVolume();
+		static const bool isSongPlaying();
+		static const bool isMuted();
+
+	private:
+
+		static Volume                                                                    musicVolume, soundVolume, masterVolume;
+		static bool                                                                      muted;
 		static unsigned short                                                            currentSong;
-		static std::unordered_map<unsigned short, sf::Music*>                            music;
-		static std::unordered_map<unsigned short, std::pair<sf::Sound, sf::SoundBuffer>> interfaceSound, gameSound;
+		static std::unordered_map<unsigned short, std::unique_ptr<sf::Music>>            music;
+		static std::unordered_map<unsigned short, std::pair<sf::Sound, sf::SoundBuffer>> sound;
 	};
 };

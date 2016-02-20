@@ -1,17 +1,17 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include "HoverMessage.h"
+
+#include <chrono>
 
 namespace gui
 {
+	typedef std::chrono::time_point<std::chrono::high_resolution_clock>(TimePoint);
+	typedef std::chrono::duration<float>(Duration);
+
 	class Internals 
 	{
 	public:
-		static void loadResources(const std::string& musiceFilesTxtDir,
-			const std::string& UISoundFilesTxtDir,
-			const std::string& gameSoundFilesTxtDir);
-		static const sf::Clock& getClock();
+		static const TimePoint timeSinceStart();
 	private:
-		static sf::Clock clock;
+		static std::chrono::high_resolution_clock clock;
 	};
 };

@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-#include "ColoredString.h"
+#include "ColoredText.h"
 #include "Internals.h"
 
 namespace gui 
@@ -14,8 +14,8 @@ namespace gui
 	{
 		friend class Hoverable;
 	public:
-		HoverMessage(const ColoredString& string, const sf::Font& font, const unsigned char characterSize = 13);
-		HoverMessage(ColoredString&& string, const sf::Font& font, const unsigned char characterSize = 13);
+		HoverMessage(const ColoredText& string, const sf::Font& font, const unsigned char characterSize = 13);
+		HoverMessage(ColoredText&& string, const sf::Font& font, const unsigned char characterSize = 13);
 		HoverMessage(const HoverMessage& copy);
 		HoverMessage(HoverMessage&& temp);
 
@@ -29,8 +29,8 @@ namespace gui
 		const sf::Color& getBorderFill()const;
 		const char getBorderThickness()const;
 
-		HoverMessage& setText(const ColoredString& text);
-		HoverMessage& setText(ColoredString&& text);
+		HoverMessage& setText(const ColoredText& text);
+		HoverMessage& setText(ColoredText&& text);
 		HoverMessage& setFont(const sf::Font& font);
 		HoverMessage& setCharacterSize(const unsigned char characterSize);
 		HoverMessage& setBackgroundFill(const sf::Color& color);
@@ -49,10 +49,10 @@ namespace gui
 		sf::Vector2f                        position = sf::Vector2f(0, 0);
 		const sf::Font*                     font = nullptr;
 		unsigned char                       characterSize = 13;
-		ColoredString                       string;
+		ColoredText                         string;
 		mutable unique_ptr_vector<sf::Text> text;
 		mutable sf::RectangleShape          textBox;
-		mutable float                       timeOfLastUpdate = 0.0f;
+		mutable TimePoint                   timeOfLastUpdate;
 
 		static const unsigned char TEXT_UPS, TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING;
 	};

@@ -3,180 +3,150 @@
 #include <fstream>
 #include <random>
 
-gui::AudioSystem::volume                                                  gui::AudioSystem::musicVolume, gui::AudioSystem::interfaceVolume, gui::AudioSystem::gameVolume, gui::AudioSystem::masterVolume;
-unsigned short                                                            gui::AudioSystem::currentSong;
-std::unordered_map<unsigned short, sf::Music*>                            gui::AudioSystem::music;
-std::unordered_map<unsigned short, std::pair<sf::Sound, sf::SoundBuffer>> gui::AudioSystem::interfaceSound, gui::AudioSystem::gameSound;
-
-void gui::AudioSystem::loadResources(const std::string& musicPath, const std::string& interfaceSoundPath, const std::string& gameSoundPath)
+namespace gui
 {
-	loadMusic(musicPath);
-	loadInterfaceSound(interfaceSoundPath);
-	loadGameSound(gameSoundPath);
-}
+	Volume                                                                    AudioSystem::musicVolume = 100, AudioSystem::soundVolume = 100, AudioSystem::masterVolume = 100;
+	bool                                                                      AudioSystem::muted = false;
+	unsigned short                                                            AudioSystem::currentSong = -1;
+	std::unordered_map<unsigned short, std::unique_ptr<sf::Music>>            AudioSystem::music;
+	std::unordered_map<unsigned short, std::pair<sf::Sound, sf::SoundBuffer>> AudioSystem::sound;
 
-void gui::AudioSystem::loadMusic(const std::string& path)
-{
-	std::ifstream file(path);
-	if (file.good())
+	const bool AudioSystem::loadMusicFile(const unsigned short key, const std::string& path)
 	{
-		while (!file.eof())
+		if (key == unsigned short(-1))	return false;
+
+		music[key] ? 0 : music.at(key).reset(new sf::Music());
+		if (!music.at(key)->openFromFile(path))
 		{
-			std::string buffer;
+			music.erase(key);
+			return false;
+		}
+		else return true;
+	}
 
-			std::getline(file, buffer, '"');
-			std::getline(file, buffer, '"');
-			const unsigned short KEY_VAL = atoi(buffer.c_str());
-			music[KEY_VAL];
-
-			std::getline(file, buffer, '"');
-			std::getline(file, buffer, '"');
-			music[KEY_VAL]->openFromFile(buffer);
+	const bool AudioSystem::loadSoundFile(const unsigned short key, const std::string& path)
+	{
+		if (!(sound.count(key) ? sound.at(key).second.loadFromFile(path) : sound[key].second.loadFromFile(path)))
+		{
+			sound.erase(key);
+			return false;
+		}
+		else
+		{
+			sound.at(key).first.setBuffer(sound.at(key).second);
+			return true;
 		}
 	}
-}
 
-void gui::AudioSystem::loadInterfaceSound(const std::string& path)
-{
-	std::ifstream file(path);
-	if (file.good())
+	void AudioSystem::playSound(const unsigned short soundKey)
 	{
-		while (!file.eof())
+		if (sound.count(soundKey))
 		{
-			std::string buffer;
-
-			std::getline(file, buffer, '"');
-			std::getline(file, buffer, '"');
-			const unsigned short KEY_VAL = atoi(buffer.c_str());
-			interfaceSound[KEY_VAL];
-
-			std::getline(file, buffer, '"');
-			std::getline(file, buffer, '"');
-			interfaceSound[KEY_VAL].second.loadFromFile(buffer);
-			interfaceSound[KEY_VAL].first.setBuffer(interfaceSound[KEY_VAL].second);
+			sound.at(soundKey).first.setVolume(muted ? 0 : (soundVolume * masterVolume) / 10000);
+			sound.at(soundKey).first.play();
 		}
 	}
-}
 
-void gui::AudioSystem::loadGameSound(const std::string& path)
-{
-	std::ifstream file(path);
-	if (file.good())
+	void AudioSystem::playSong(const unsigned short key)
 	{
-		while (!file.eof())
+		if (music.count(key))
 		{
-			std::string buffer;
-
-			std::getline(file, buffer, '"');
-			std::getline(file, buffer, '"');
-			const unsigned short KEY_VAL = atoi(buffer.c_str());
-			gameSound[KEY_VAL];
-
-			std::getline(file, buffer, '"');
-			std::getline(file, buffer, '"');
-			gameSound[KEY_VAL].second.loadFromFile(buffer);
-			gameSound[KEY_VAL].first.setBuffer(interfaceSound[KEY_VAL].second);
+			if (music.count(currentSong))
+			{
+				if (!music.at(currentSong)) music.erase(currentSong);
+				else if (music.at(currentSong)->getStatus() != sf::Music::Stopped) music.at(currentSong)->stop();
+			}
+			music.at(key)->setVolume(muted ? 0 : (musicVolume * masterVolume) / 10000);
+			music.at(key)->play();
+			currentSong = key;
 		}
 	}
-}
 
-void gui::AudioSystem::playInterfaceSound(const unsigned short soundKey)
-{
-	if (interfaceSound.count(soundKey) && interfaceSound.at(soundKey).first.getStatus() != sf::Sound::Playing)
-	{
-		interfaceSound[soundKey].first.setVolume((musicVolume * masterVolume) / 100);
-		interfaceSound[soundKey].first.play();
-	}
-}
-
-void gui::AudioSystem::playGameSound(const unsigned short soundKey)
-{
-	if (gameSound.count(soundKey) && gameSound.at(soundKey).first.getStatus() != sf::Sound::Playing)
-	{
-		gameSound[soundKey].first.setVolume((musicVolume * masterVolume) / 100);
-		gameSound[soundKey].first.play();
-	}
-}
-
-void gui::AudioSystem::playSong(const unsigned short song)
-{
-	if (music.count(song))
-	{
-		if (music.count(currentSong) && music[currentSong]->getStatus() != sf::Music::Stopped) music[currentSong]->stop();
-		music[song]->play();
-		currentSong = song;
-	}
-}
-
-void gui::AudioSystem::playRandomSong()
-{
-	if ((music.count(currentSong) && music[currentSong]->getStatus() == sf::SoundStream::Stopped) || !music.count(currentSong))
+	void AudioSystem::playRandomSong()
 	{
 		std::random_device randomDevice;
 		std::mt19937 mt(randomDevice());
 		std::uniform_int_distribution<int> dist(0, music.size() - 1);
+		std::unordered_map<unsigned short, std::unique_ptr<sf::Music>>::const_iterator it;
 
-		unsigned short buffer;
-		std::unordered_map<unsigned short, sf::Music*>::const_iterator it;
-		do
-		{ 
+		if (music.count(currentSong))
+		{
+			if (music.at(currentSong)) music.at(currentSong)->stop();
+			else music.erase(currentSong);
+			do
+			{
+				it = music.begin();
+				std::advance(it, dist(mt));
+			} while (it->first == currentSong);
+		}
+		else
+		{
 			it = music.begin();
-			buffer = dist(mt);
-			std::advance(it, buffer);
-		} while (it->first == currentSong);
+			std::advance(it, dist(mt));
+		}
 
 		currentSong = it->first;
-		music[currentSong]->setVolume((musicVolume * masterVolume) / 100);
-		music[currentSong]->play();
+		music.at(currentSong)->setVolume(muted ? 0 : (musicVolume * masterVolume) / 10000);
+		music.at(currentSong)->play();
 	}
-}
 
-void gui::AudioSystem::setMusicVolume(const volume newVolume)
-{
-	newVolume < 100 ? musicVolume = newVolume : musicVolume = 100;
-}
+	void AudioSystem::setMusicVolume(const Volume newVolume)
+	{
+		newVolume < 100 ? musicVolume = newVolume : musicVolume = 100;
+	}
 
-void gui::AudioSystem::setInterfaceVolume(const volume newVolume)
-{
-	newVolume < 100 ? interfaceVolume = newVolume : interfaceVolume = 100;
-}
+	void AudioSystem::setSoundVolume(const Volume newVolume)
+	{
+		newVolume < 100 ? soundVolume = newVolume : soundVolume = 100;
+	}
 
-void gui::AudioSystem::setSoundVolume(const volume newVolume)
-{
-	newVolume < 100 ? gameVolume = newVolume : gameVolume = 100;
-}
+	void AudioSystem::setMasterVolume(const Volume newVolume)
+	{
+		newVolume < 100 ? masterVolume = newVolume : masterVolume = 100;
+	}
 
-void gui::AudioSystem::setMasterVolume(const volume newVolume)
-{
-	newVolume < 100 ? masterVolume = newVolume : masterVolume = 100;
-}
+	void AudioSystem::mute(const bool value)
+	{
+		muted = value;
 
-const gui::AudioSystem::volume gui::AudioSystem::getMusicVolume()
-{
-	return musicVolume;
-}
+		for (auto it = sound.begin(), end = sound.end(); it != end; ++it)
+			if (it->second.first.getStatus() == sf::Sound::Playing)
+				it->second.first.setVolume(muted ? 0 : (masterVolume * soundVolume) / 10000);
 
-const gui::AudioSystem::volume gui::AudioSystem::getInterfaceVolume()
-{
-	return interfaceVolume;
-}
+		if (music.count(currentSong))
+		{
+			if (!music.at(currentSong))
+			{
+				music.erase(currentSong);
+				return;
+			}
+			if (music.at(currentSong)->getStatus() == sf::Music::Playing)
+				music.at(currentSong)->setVolume(muted ? 0 : (masterVolume * musicVolume) / 10000);
+		}
+	}
 
-const gui::AudioSystem::volume gui::AudioSystem::getGameVolume()
-{
-	return gameVolume;
-}
+	const Volume AudioSystem::getMusicVolume()
+	{
+		return musicVolume;
+	}
 
-const gui::AudioSystem::volume gui::AudioSystem::getMasterVolume()
-{
-	return masterVolume;
-}
+	const Volume AudioSystem::getSoundVolume()
+	{
+		return soundVolume;
+	}
 
-const sf::Sound& gui::AudioSystem::getInterfaceSound(const unsigned short sound)
-{
-	return interfaceSound.at(sound).first;
-}
+	const Volume AudioSystem::getMasterVolume()
+	{
+		return masterVolume;
+	}
 
-const sf::Sound& gui::AudioSystem::getGameSound(const unsigned short sound)
-{
-	return gameSound.at(sound).first;
+	const bool AudioSystem::isSongPlaying()
+	{
+		return music.count(currentSong) && music.at(currentSong) && music.at(currentSong)->getStatus() == sf::Music::Playing;
+	}
+
+	const bool AudioSystem::isMuted()
+	{
+		return muted;
+	}
 }

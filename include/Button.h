@@ -17,12 +17,12 @@ namespace gui
 		Idle,
 		PressedDown
 	};
+	typedef std::vector<std::function<const bool()>>(PredicateArray);
 
 	class Button : public Icon
 	{
 		friend class CheckBox;
 	public:
-		typedef std::vector<std::function<const bool()>>(predicateArray);
 
 		Button(const Icon& visual, const std::function<void()>& onClick);
 		Button(Icon&& visual, std::function<void()>&& onClick);
@@ -50,8 +50,8 @@ namespace gui
 		Button& setPredicateMessage(const HoverMessage& message);
 		Button& setPredicateMessage(HoverMessage&& tempMessage);
 		virtual Button& setPosition(const float x, const float y)override;
-		Button& setPredicates(const predicateArray& predicates);
-		Button& setPredicates(predicateArray&& predicates);
+		Button& setPredicates(const PredicateArray& predicates);
+		Button& setPredicates(PredicateArray&& predicates);
 
 	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
@@ -61,14 +61,14 @@ namespace gui
 		const bool arePredicatesFulfilled()const;
 
 		mutable std::shared_ptr<HoverMessage>   messageBuffer = nullptr;
-		mutable std::unique_ptr<ColoredString>  stringBuffer = nullptr;
-		mutable std::unique_ptr<predicateArray> predicates = nullptr;
+		mutable std::unique_ptr<ColoredText>    stringBuffer = nullptr;
+		mutable std::unique_ptr<PredicateArray> predicates = nullptr;
 		std::shared_ptr<unsigned short>         sound = nullptr;
 		std::shared_ptr<TextArea>               name = nullptr;
 
 		mutable sf::Shader    stateShader;
 		std::function<void()> onClickAction;
-		float                 timeOfLastPredicateCheck = 0.0f;
+		TimePoint             timeOfLastPredicateCheck;
 		State                 state = Idle;
 		mutable bool          predicatesFulfilled = true;
 		

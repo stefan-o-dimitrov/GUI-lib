@@ -1,9 +1,9 @@
 #pragma once
 
 #include <memory>
+
 #include "HoverMessage.h"
 #include "Interactive.h"
-#include "Internals.h"
 
 namespace gui
 {
@@ -95,11 +95,6 @@ namespace gui
 		/// Shared pointer to the Hover Message, which should be drawn when the mouse is hovering over.
 		/// </summary>
 		mutable std::shared_ptr<HoverMessage> message = nullptr;
-
-		/// <summary>
-		/// Clock for the object to use to delay the mouseover message for a fixed time before starting to draw it.
-		/// </summary>
-		const sf::Clock& clock = Internals::getClock();
 		
 	private:
 		
@@ -121,7 +116,7 @@ namespace gui
 		/// <summary>
 		/// Pointer to the time at which the mouse entered, in seconds since program startup.
 		/// </summary>
-		std::unique_ptr<float> timeMouseEntered = nullptr;
+		std::unique_ptr<TimePoint> timeMouseEntered = nullptr;
 
 	};
 }
