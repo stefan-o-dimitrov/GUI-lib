@@ -5,14 +5,14 @@ gui::Icon::Icon(const sf::Texture& tex, const bool transparencyCheck)
 	setTexture(tex, transparencyCheck);
 }
 
-gui::Icon::Icon(const Icon& _lVal)
-	: Hoverable(_lVal), spr(_lVal.spr)
+gui::Icon::Icon(const Icon& copy)
+	: Hoverable(copy), spr(copy.spr)
 {
-	if (_lVal.transparency) transparency.reset(new TransparencyMap(*_lVal.transparency));
+	if (copy.transparency) transparency.reset(new TransparencyMap(*copy.transparency));
 }
 
-gui::Icon::Icon(Icon&& _rVal)
-	: Hoverable(std::move(_rVal)), transparency(std::move(_rVal.transparency)), spr(_rVal.spr) {}
+gui::Icon::Icon(Icon&& temp)
+	: Hoverable(std::move(temp)), transparency(std::move(temp.transparency)), spr(temp.spr) {}
 
 const bool gui::Icon::contains(const sf::Vector2f& pos)const
 {
@@ -62,9 +62,9 @@ gui::Icon& gui::Icon::setTexture(const sf::Texture& tex, const bool transparency
 	return *this;
 }
 
-gui::Icon& gui::Icon::setTransparencyCheck(const bool _tVal)
+gui::Icon& gui::Icon::setTransparencyCheck(const bool newTransparencyCheck)
 {
-	if (!_tVal){ transparency.reset(); return *this; }
+	if (!newTransparencyCheck){ transparency.reset(); return *this; }
 	transparency.reset(new TransparencyMap(*spr.getTexture()));
 	return *this;
 }
@@ -88,24 +88,25 @@ gui::Icon::TransparencyMap::TransparencyMap(const sf::Texture& tex)
 	generateTransparencyMap(tex);
 }
 
-gui::Icon::TransparencyMap::TransparencyMap(const TransparencyMap& _rVal)
+gui::Icon::TransparencyMap::TransparencyMap(const TransparencyMap& copy)
 {
-	mapSize = _rVal.mapSize;
-	if (_rVal.transparency)
+	mapSize = copy.mapSize;
+	if (copy.transparency)
 	{
 		transparency.reset(new std::unique_ptr<bool[]>[mapSize.x]);
 		for (unsigned short i = 0, end = mapSize.x; i != end; i++)
 		{
 			transparency[i].reset(new bool[mapSize.y]);
 			for (unsigned short j = 0, end1 = mapSize.y; j != end1; j++)
-				transparency[i][j] = _rVal.transparency[i][j];
+				transparency[i][j] = copy.transparency[i][j];
 		}
 	}
 }
 
-const bool gui::Icon::TransparencyMap::operator[](const sf::Vector2i& _rVal)const
+const bool gui::Icon::TransparencyMap::operator[](const sf::Vector2i& position)const
 {
-	if (transparency != nullptr && _rVal.x >= 0 && _rVal.y >= 0 && _rVal.x < mapSize.x && _rVal.y < mapSize.y) return transparency[_rVal.x][_rVal.y];
+	if (transparency != nullptr && position.x >= 0 && position.y >= 0 && position.x < mapSize.x && position.y < mapSize.y)
+		return transparency[position.x][position.y];
 	return true;
 }
 

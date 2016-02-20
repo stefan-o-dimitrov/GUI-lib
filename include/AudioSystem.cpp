@@ -8,16 +8,16 @@ unsigned short                                                            gui::A
 std::unordered_map<unsigned short, sf::Music*>                            gui::AudioSystem::music;
 std::unordered_map<unsigned short, std::pair<sf::Sound, sf::SoundBuffer>> gui::AudioSystem::interfaceSound, gui::AudioSystem::gameSound;
 
-void gui::AudioSystem::loadResources(const std::string& _musicPath, const std::string& _interfaceSoundPath, const std::string& _gameSoundPath)
+void gui::AudioSystem::loadResources(const std::string& musicPath, const std::string& interfaceSoundPath, const std::string& gameSoundPath)
 {
-	loadMusic(_musicPath);
-	loadInterfaceSound(_interfaceSoundPath);
-	loadGameSound(_gameSoundPath);
+	loadMusic(musicPath);
+	loadInterfaceSound(interfaceSoundPath);
+	loadGameSound(gameSoundPath);
 }
 
-void gui::AudioSystem::loadMusic(const std::string& _path)
+void gui::AudioSystem::loadMusic(const std::string& path)
 {
-	std::ifstream file(_path);
+	std::ifstream file(path);
 	if (file.good())
 	{
 		while (!file.eof())
@@ -36,9 +36,9 @@ void gui::AudioSystem::loadMusic(const std::string& _path)
 	}
 }
 
-void gui::AudioSystem::loadInterfaceSound(const std::string& _path)
+void gui::AudioSystem::loadInterfaceSound(const std::string& path)
 {
-	std::ifstream file(_path);
+	std::ifstream file(path);
 	if (file.good())
 	{
 		while (!file.eof())
@@ -58,9 +58,9 @@ void gui::AudioSystem::loadInterfaceSound(const std::string& _path)
 	}
 }
 
-void gui::AudioSystem::loadGameSound(const std::string& _path)
+void gui::AudioSystem::loadGameSound(const std::string& path)
 {
-	std::ifstream file(_path);
+	std::ifstream file(path);
 	if (file.good())
 	{
 		while (!file.eof())
@@ -98,13 +98,13 @@ void gui::AudioSystem::playGameSound(const unsigned short soundKey)
 	}
 }
 
-void gui::AudioSystem::playSong(const unsigned short _song)
+void gui::AudioSystem::playSong(const unsigned short song)
 {
-	if (music.count(_song))
+	if (music.count(song))
 	{
 		if (music.count(currentSong) && music[currentSong]->getStatus() != sf::Music::Stopped) music[currentSong]->stop();
-		music[_song]->play();
-		currentSong = _song;
+		music[song]->play();
+		currentSong = song;
 	}
 }
 
@@ -131,24 +131,24 @@ void gui::AudioSystem::playRandomSong()
 	}
 }
 
-void gui::AudioSystem::setMusicVolume(const volume _volume)
+void gui::AudioSystem::setMusicVolume(const volume newVolume)
 {
-	musicVolume = _volume;
+	newVolume < 100 ? musicVolume = newVolume : musicVolume = 100;
 }
 
-void gui::AudioSystem::setInterfaceVolume(const volume _volume)
+void gui::AudioSystem::setInterfaceVolume(const volume newVolume)
 {
-	interfaceVolume = _volume;
+	newVolume < 100 ? interfaceVolume = newVolume : interfaceVolume = 100;
 }
 
-void gui::AudioSystem::setSoundVolume(const volume _volume)
+void gui::AudioSystem::setSoundVolume(const volume newVolume)
 {
-	gameVolume = _volume;
+	newVolume < 100 ? gameVolume = newVolume : gameVolume = 100;
 }
 
-void gui::AudioSystem::setMasterVolume(const volume _volume)
+void gui::AudioSystem::setMasterVolume(const volume newVolume)
 {
-	masterVolume = _volume;
+	newVolume < 100 ? masterVolume = newVolume : masterVolume = 100;
 }
 
 const gui::AudioSystem::volume gui::AudioSystem::getMusicVolume()
@@ -171,12 +171,12 @@ const gui::AudioSystem::volume gui::AudioSystem::getMasterVolume()
 	return masterVolume;
 }
 
-const sf::Sound& gui::AudioSystem::getInterfaceSound(const unsigned short _soundKey)
+const sf::Sound& gui::AudioSystem::getInterfaceSound(const unsigned short sound)
 {
-	return interfaceSound.at(_soundKey).first;
+	return interfaceSound.at(sound).first;
 }
 
-const sf::Sound& gui::AudioSystem::getGameSound(const unsigned short _soundKey)
+const sf::Sound& gui::AudioSystem::getGameSound(const unsigned short sound)
 {
-	return gameSound.at(_soundKey).first;
+	return gameSound.at(sound).first;
 }

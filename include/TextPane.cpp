@@ -12,10 +12,10 @@ gui::TextPane::TextPane(const ColoredString & string, const sf::Font & font, con
 	setText(string);
 }
 
-gui::TextPane::TextPane(const TextPane& _lVal)
-	: position(_lVal.position)
+gui::TextPane::TextPane(const TextPane& copy)
+	: position(copy.position)
 {
-	for (auto it = _lVal.text.begin(), end = _lVal.text.end(); it != end; ++it)
+	for (auto it = copy.text.begin(), end = copy.text.end(); it != end; ++it)
 		text.push_back(std::unique_ptr<sf::Text>(new sf::Text(*(*it))));
 }
 
@@ -68,17 +68,19 @@ gui::TextPane& gui::TextPane::setText(const ColoredString& string)
 	return *this;
 }
 
-gui::TextPane& gui::TextPane::setFont(const sf::Font& _font)
+gui::TextPane& gui::TextPane::setFont(const sf::Font& newFont)
 {
-	font = &_font;
+	font = &newFont;
 	for (auto it = text.begin(), end = text.end(); it != end; ++it)
-		(*it)->setFont(_font);
+		(*it)->setFont(newFont);
 	return *this;
 }
 
-gui::TextPane& gui::TextPane::setCharacterSize(const unsigned char _characterSize)
+gui::TextPane& gui::TextPane::setCharacterSize(const unsigned char newCharacterSize)
 {
-	characterSize = _characterSize;
+	characterSize = newCharacterSize;
+	for (auto it = text.begin(), end = text.end(); it != end; ++it)
+		(*it)->setCharacterSize(characterSize);
 	ColoredString::arrangeText(text);
 	return *this;
 }

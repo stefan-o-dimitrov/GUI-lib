@@ -38,9 +38,9 @@ namespace gui
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 
-		sf::Vector2f                           position = sf::Vector2f(0, 0);
-		const sf::Font*                        font = nullptr;
-		unsigned char                          characterSize = 13;
-		std::vector<std::unique_ptr<sf::Text>> text;
+		sf::Vector2f                position = sf::Vector2f(0, 0);
+		const sf::Font*             font = nullptr;
+		unsigned char               characterSize = 13;
+		unique_ptr_vector<sf::Text> text;
 	};
 };

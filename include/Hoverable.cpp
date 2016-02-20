@@ -32,34 +32,34 @@ gui::Hoverable& gui::Hoverable::clearMessage()
 	return *this;
 }
 
-gui::Hoverable& gui::Hoverable::setMessage(const HoverMessage& _message)
+gui::Hoverable& gui::Hoverable::setMessage(const HoverMessage& newMessage)
 {
-	message.reset(new HoverMessage(_message));
+	message.reset(new HoverMessage(newMessage));
 	return *this;
 }
 
-gui::Hoverable& gui::Hoverable::setMessage(HoverMessage&& _message)
+gui::Hoverable& gui::Hoverable::setMessage(HoverMessage&& tempMessage)
 {
-	message.reset(new HoverMessage((HoverMessage&&)_message));
+	message.reset(new HoverMessage(std::move(tempMessage)));
 	return *this;
 }
 
-gui::Hoverable& gui::Hoverable::setDelay(const float _delay)
+gui::Hoverable& gui::Hoverable::setDelay(const float newDelay)
 {
-	_delay >= 0.0f ? delay = _delay : delay = 0.0f;
+	newDelay >= 0.0f ? delay = newDelay : delay = 0.0f;
 	return *this;
 }
 
-gui::Hoverable::Hoverable(const HoverMessage& _message, const float _delay)
-	: message(new HoverMessage(_message))
+gui::Hoverable::Hoverable(const HoverMessage& newMessage, const float newDelay)
+	: message(new HoverMessage(newMessage))
 {
-	setDelay(_delay);
+	setDelay(newDelay);
 }
 
-gui::Hoverable::Hoverable(const Hoverable& _lVal)
+gui::Hoverable::Hoverable(const Hoverable& copy)
 {
-	setDelay(_lVal.delay);
-	if (_lVal.message) message.reset(new HoverMessage(*_lVal.message));
+	setDelay(copy.delay);
+	if (copy.message) message.reset(new HoverMessage(*copy.message));
 }
 
 void gui::Hoverable::mouseEntered(const sf::Vector2f& mousePos)

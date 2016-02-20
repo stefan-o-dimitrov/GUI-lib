@@ -1,19 +1,19 @@
 #include "CheckBox.h"
 
-gui::CheckBox::CheckBox(const Button& _fState, const Button& _tState, const sf::Vector2f& _pos, const bool _state)
-	: Button(_fState), trueState(_tState), checked(_state)
+gui::CheckBox::CheckBox(const Button& fState, const Button& tState, const sf::Vector2f& pos, const bool state)
+	: Button(fState), trueState(tState), checked(state)
 {
 	if (name) name.reset();
 	if (trueState.name) trueState.name.reset();
-	setPosition(_pos);
+	setPosition(pos);
 }
 
-gui::CheckBox::CheckBox(Button&& _fState, Button&& _tState, const sf::Vector2f & _pos, const bool _state)
-	: Button(std::move(_tState)), trueState(std::move(_tState)), checked(_state)
+gui::CheckBox::CheckBox(Button&& fState, Button&& tState, const sf::Vector2f& pos, const bool state)
+	: Button(std::move(fState)), trueState(std::move(tState)), checked(state)
 {
 	if (name) name.reset();
 	if (trueState.name) trueState.name.reset();
-	setPosition(_pos);
+	setPosition(pos);
 }
 
 const bool gui::CheckBox::input(const sf::Event& event)
@@ -30,10 +30,10 @@ const bool gui::CheckBox::input(const sf::Event& event)
 	}
 }
 
-const bool gui::CheckBox::contains(const sf::Vector2f& _pos)const
+const bool gui::CheckBox::contains(const sf::Vector2f& pos)const
 {
-	if (checked) return trueState.contains(_pos);
-	else return Button::contains(_pos);
+	if (checked) return trueState.contains(pos);
+	else return Button::contains(pos);
 }
 
 const gui::State gui::CheckBox::getState()const
@@ -91,9 +91,9 @@ void gui::CheckBox::toggle()
 	}
 }
 
-gui::CheckBox& gui::CheckBox::setIsChecked(const bool _cVal)
+gui::CheckBox& gui::CheckBox::setIsChecked(const bool state)
 {
-	if (checked != _cVal)
+	if (checked != state)
 		toggle();
 	return *this;
 }
@@ -105,45 +105,45 @@ gui::CheckBox& gui::CheckBox::setPosition(const float x, const float y)
 	return *this;
 }
 
-gui::CheckBox& gui::CheckBox::setTrueStateTexture(const sf::Texture& _tex, const bool _transpCheck)
+gui::CheckBox& gui::CheckBox::setTrueStateTexture(const sf::Texture& tex, const bool transpCheck)
 {
-	trueState.setTexture(_tex, _transpCheck);
+	trueState.setTexture(tex, transpCheck);
 	return *this;
 }
 
-gui::CheckBox& gui::CheckBox::setTrueStateTransparencyCheck(const bool _transpCheck)
+gui::CheckBox& gui::CheckBox::setTrueStateTransparencyCheck(const bool transpCheck)
 {
-	trueState.setTransparencyCheck(_transpCheck);
+	trueState.setTransparencyCheck(transpCheck);
 	return *this;
 }
 
-gui::CheckBox& gui::CheckBox::setTrueStateTextureRect(const sf::IntRect& _rect)
+gui::CheckBox& gui::CheckBox::setTrueStateTextureRect(const sf::IntRect& rect)
 {
-	trueState.setTextureRect(_rect);
+	trueState.setTextureRect(rect);
 	return *this;
 }
 
-gui::CheckBox& gui::CheckBox::setTrueStateClickSound(const unsigned short _soundKey)
+gui::CheckBox& gui::CheckBox::setTrueStateClickSound(const unsigned short sound)
 {
-	trueState.setClickSound(_soundKey);
+	trueState.setClickSound(sound);
 	return *this;
 }
 
-gui::CheckBox& gui::CheckBox::setTrueStateMessage(const HoverMessage& _message)
+gui::CheckBox& gui::CheckBox::setTrueStateMessage(const HoverMessage& newMessage)
 {
-	trueState.setMessage(_message);
+	trueState.setMessage(newMessage);
 	return *this;
 }
 
-gui::CheckBox& gui::CheckBox::setTrueStateMessage(HoverMessage&& _message)
+gui::CheckBox& gui::CheckBox::setTrueStateMessage(HoverMessage&& tempMessage)
 {
-	trueState.setMessage((HoverMessage&&)_message);
+	trueState.setMessage(std::move(tempMessage));
 	return *this;
 }
 
-gui::CheckBox& gui::CheckBox::setTrueStatePredicates(const predicateArray& _predArray, const sf::Font& font, const unsigned char charSize)
+gui::CheckBox& gui::CheckBox::setTrueStatePredicates(const predicateArray& newPredicates)
 {
-	trueState.setPredicates(_predArray, font, charSize);
+	trueState.setPredicates(newPredicates);
 	return *this;
 }
 

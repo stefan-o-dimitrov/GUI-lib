@@ -22,7 +22,7 @@ namespace gui
 	{
 		friend class CheckBox;
 	public:
-		typedef std::vector<std::pair<std::function<const bool()>, ColoredString>>(predicateArray);
+		typedef std::vector<std::function<const bool()>>(predicateArray);
 
 		Button(const Icon& visual, const std::function<void()>& onClick);
 		Button(Icon&& visual, std::function<void()>&& onClick);
@@ -46,29 +46,31 @@ namespace gui
 		Button& setName(TextArea&& nameTemp);
 		Button& setClickSound(const unsigned short soundKey);
 		Button& setMessage(const HoverMessage& message)override;
-		Button& setMessage(HoverMessage&& messageTemp)override;
+		Button& setMessage(HoverMessage&& tempMessage)override;
+		Button& setPredicateMessage(const HoverMessage& message);
+		Button& setPredicateMessage(HoverMessage&& tempMessage);
 		virtual Button& setPosition(const float x, const float y)override;
-		Button& setPredicates(const predicateArray& predicates, const sf::Font& font, const unsigned char characterSize = 13);
+		Button& setPredicates(const predicateArray& predicates);
+		Button& setPredicates(predicateArray&& predicates);
 
 	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 
 	private:
 
-		void checkPredicates()const;
 		const bool arePredicatesFulfilled()const;
 
-		mutable std::shared_ptr<HoverMessage>  messageBuffer = nullptr;
-		mutable std::unique_ptr<ColoredString> stringBuffer = nullptr;
-		std::unique_ptr<predicateArray>        predicates = nullptr;
-		std::shared_ptr<unsigned short>        sound = nullptr;
-		std::shared_ptr<TextArea>              name = nullptr;
+		mutable std::shared_ptr<HoverMessage>   messageBuffer = nullptr;
+		mutable std::unique_ptr<ColoredString>  stringBuffer = nullptr;
+		mutable std::unique_ptr<predicateArray> predicates = nullptr;
+		std::shared_ptr<unsigned short>         sound = nullptr;
+		std::shared_ptr<TextArea>               name = nullptr;
 
-		mutable sf::Shader                     stateShader;
-		std::function<void()>                  onClickAction;
-		float                                  timeOfLastPredicateCheck = 0.0f;
-		State                                  state = Idle;
-		mutable bool                           predicatesFulfilled = true;
+		mutable sf::Shader    stateShader;
+		std::function<void()> onClickAction;
+		float                 timeOfLastPredicateCheck = 0.0f;
+		State                 state = Idle;
+		mutable bool          predicatesFulfilled = true;
 		
 		static const std::string STATE_SHADER;
 		static const unsigned char PREDICATE_CHECKS_PER_SECOND;

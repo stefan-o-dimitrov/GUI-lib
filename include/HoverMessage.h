@@ -18,6 +18,9 @@ namespace gui
 		HoverMessage(ColoredString&& string, const sf::Font& font, const unsigned char characterSize = 13);
 		HoverMessage(const HoverMessage& copy);
 		HoverMessage(HoverMessage&& temp);
+
+		HoverMessage& operator=(const HoverMessage& copy);
+		HoverMessage& operator=(HoverMessage&& temp);
 		
 		const sf::FloatRect getGlobalBounds()const;
 		const sf::Font& getFont()const;
@@ -43,13 +46,13 @@ namespace gui
 
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 
-		sf::Vector2f                                                  position = sf::Vector2f(0, 0);
-		const sf::Font*                                               font = nullptr;
-		unsigned char                                                 characterSize = 13;
-		ColoredString                                                 string;
-		mutable ptr_vector<sf::Text>                                  text;
-		mutable sf::RectangleShape                                    textBox;
-		mutable float                                                 timeOfLastUpdate = 0.0f;
+		sf::Vector2f                        position = sf::Vector2f(0, 0);
+		const sf::Font*                     font = nullptr;
+		unsigned char                       characterSize = 13;
+		ColoredString                       string;
+		mutable unique_ptr_vector<sf::Text> text;
+		mutable sf::RectangleShape          textBox;
+		mutable float                       timeOfLastUpdate = 0.0f;
 
 		static const unsigned char TEXT_UPS, TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING;
 	};

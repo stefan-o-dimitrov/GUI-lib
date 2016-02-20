@@ -44,7 +44,7 @@ namespace gui
 		CheckBox& setTrueStateClickSound(const unsigned short soundKey);
 		CheckBox& setTrueStateMessage(const HoverMessage& message);
 		CheckBox& setTrueStateMessage(HoverMessage&& messageTemp);
-		CheckBox& setTrueStatePredicates(const predicateArray& predicates, const sf::Font& font, const unsigned char characterSize = 13);
+		CheckBox& setTrueStatePredicates(const predicateArray& predicates);
 
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;

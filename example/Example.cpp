@@ -45,8 +45,7 @@ void main()
 	main.add(std::move(gui::Button(
 		gui::Icon(buttonTex, true),
 		std::bind(increment, -AMOUNT))
-		.setPredicates(gui::Button::predicateArray{ std::make_pair(std::bind(canChange, -LIMIT, true), gui::bind("Integer less than 10.", sf::Color::White)) },
-			font)
+		.setPredicates(gui::Button::predicateArray{ std::bind(canChange, -LIMIT, true) })
 		.setName(std::move(gui::TextArea("Decrease Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Green)))
 		.setDelay(0.5f)
 		.setMessage(std::move(gui::HoverMessage(
@@ -65,8 +64,7 @@ void main()
 		.add(gui::Button(
 			gui::Icon(buttonTex, false),
 			std::bind(increment, AMOUNT))
-			.setPredicates(gui::Button::predicateArray{ std::make_pair(std::bind(canChange, LIMIT, false), gui::bind("Integer greater than 10.", sf::Color::White)) },
-				font)
+			.setPredicates(gui::Button::predicateArray{ std::bind(canChange, LIMIT, false) })
 			.setName(gui::TextArea("Increase Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Yellow))
 			.setDelay(0.5f)
 			.setMessage(gui::HoverMessage(

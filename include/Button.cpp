@@ -28,18 +28,18 @@ gui::Button::Button(Icon&& visual, std::function<void()>&& onClick)
 	stateShader.setParameter("tex", sf::Shader::CurrentTexture);
 }
 
-gui::Button::Button(const Button& _lVal)
-	: Icon(_lVal), onClickAction(_lVal.onClickAction)
+gui::Button::Button(const Button& copy)
+	: Icon(copy), onClickAction(copy.onClickAction)
 {
 	stateShader.loadFromMemory(STATE_SHADER, sf::Shader::Fragment);
 	Icon::spr.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
 	state = Idle;
 
-	if (_lVal.messageBuffer) messageBuffer.reset(new HoverMessage(*_lVal.messageBuffer));
-	if (_lVal.stringBuffer) stringBuffer.reset(new ColoredString(*_lVal.stringBuffer));
-	if (_lVal.name) name.reset(new TextArea(*_lVal.name));
-	if (_lVal.sound) sound.reset(new unsigned short(*_lVal.sound));
-	if (_lVal.predicates) predicates.reset(new predicateArray(*_lVal.predicates));
+	if (copy.messageBuffer) messageBuffer.reset(new HoverMessage(*copy.messageBuffer));
+	if (copy.stringBuffer) stringBuffer.reset(new ColoredString(*copy.stringBuffer));
+	if (copy.name) name.reset(new TextArea(*copy.name));
+	if (copy.sound) sound.reset(new unsigned short(*copy.sound));
+	if (copy.predicates) predicates.reset(new predicateArray(*copy.predicates));
 }
 
 const bool gui::Button::input(const sf::Event& event)
@@ -120,41 +120,53 @@ const std::shared_ptr<const unsigned short> gui::Button::getClickSound()const
 	return sound;
 }
 
-gui::Button& gui::Button::setName(const TextArea& _lVal)
+gui::Button& gui::Button::setName(const TextArea& newName)
 {
-	name.reset(new TextArea(_lVal));
+	name.reset(new TextArea(newName));
 	name->message.reset();
 	name->setPosition(getPosition().x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2, getPosition().y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
 	return *this;
 }
 
-gui::Button& gui::Button::setName(TextArea&& _rVal)
+gui::Button& gui::Button::setName(TextArea&& tempName)
 {
-	name.reset(new TextArea(std::move(_rVal)));
+	name.reset(new TextArea(std::move(tempName)));
 	name->message.reset();
 	name->updateFunction.reset();
 	name->setPosition(getPosition().x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2, getPosition().y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
 	return *this;
 }
 
-gui::Button& gui::Button::setClickSound(const unsigned short _soundKey)
+gui::Button& gui::Button::setClickSound(const unsigned short newSound)
 {
-	sound.reset(new unsigned short(_soundKey));
+	sound ? *sound = newSound : sound.reset(new unsigned short(newSound));
 	return *this;
 }
 
-gui::Button& gui::Button::setMessage(const HoverMessage& _message)
+gui::Button& gui::Button::setMessage(const HoverMessage& newMessage)
 {
-	if (predicatesFulfilled) message.reset(new HoverMessage(_message));
-	else messageBuffer.reset(new HoverMessage(_message));
+	if (predicatesFulfilled) message.reset(new HoverMessage(newMessage));
+	else messageBuffer.reset(new HoverMessage(newMessage));
 	return *this;
 }
 
-gui::Button& gui::Button::setMessage(HoverMessage&& _message)
+gui::Button& gui::Button::setMessage(HoverMessage&& tempMessage)
 {
-	if (predicatesFulfilled) message.reset(new HoverMessage(std::move(_message)));
-	else messageBuffer.reset(new HoverMessage(std::move(_message)));
+	if (predicatesFulfilled) message.reset(new HoverMessage(std::move(tempMessage)));
+	else messageBuffer.reset(new HoverMessage(std::move(tempMessage)));
 	return *this;
+}
+
+gui::Button& gui::Button::setPredicateMessage(const HoverMessage& newMessage)
+{
+	predicatesFulfilled ? messageBuffer ? *messageBuffer = newMessage : messageBuffer.reset(new HoverMessage(newMessage))
+		: message ? *message = newMessage : message.reset(new HoverMessage(newMessage));
+}
+
+gui::Button& gui::Button::setPredicateMessage(HoverMessage&& tempMessage)
+{
+	predicatesFulfilled ? messageBuffer ? *messageBuffer = std::move(tempMessage) : messageBuffer.reset(new HoverMessage(std::move(tempMessage)))
+		: message ? *message = std::move(tempMessage) : message.reset(new HoverMessage(std::move(tempMessage)));
 }
 
 gui::Button& gui::Button::setPosition(const float x, const float y)
@@ -164,45 +176,47 @@ gui::Button& gui::Button::setPosition(const float x, const float y)
 	return *this;
 }
 
-gui::Button& gui::Button::setPredicates(const predicateArray& _predArray, const sf::Font& font, const unsigned char charSize)
+gui::Button& gui::Button::setPredicates(const predicateArray& newPredicates)
 {
-	predicates.reset(new predicateArray(_predArray));
-	if (predicatesFulfilled) messageBuffer.reset(new HoverMessage(bind("", sf::Color()), font, charSize));
-	else message.reset(new HoverMessage(bind("", sf::Color()), font, charSize));
-	checkPredicates();
+	predicates.reset(new predicateArray(newPredicates));
+	return *this;
+}
+
+gui::Button& gui::Button::setPredicates(predicateArray&& tempPredicates)
+{
+	predicates.reset(new predicateArray(std::move(tempPredicates)));
 	return *this;
 }
 
 void gui::Button::draw(sf::RenderTarget& target, sf::RenderStates states)const
 {
 	if (predicates && Internals::getClock().getElapsedTime().asSeconds() - timeOfLastPredicateCheck > 1.0f / PREDICATE_CHECKS_PER_SECOND)
-	{
-		if (hasMessageDelayPassed())
-			checkPredicates();
-		else arePredicatesFulfilled();
-	}
+		arePredicatesFulfilled();
 	predicatesFulfilled ? 0 : states.shader = &stateShader;
 	Icon::draw(target, states);
 	if (name) target.draw(*name, states);
 }
 
-void gui::Button::checkPredicates()const
-{
-	arePredicatesFulfilled();
-}
-
 const bool gui::Button::arePredicatesFulfilled()const
 {
-	if(predicates)
-	for (auto it = predicates->begin(), end = predicates->end(); it != end; ++it)
-		if (!it->first())
-		{
-			if (predicatesFulfilled)
-				spr.setColor(sf::Color(255, 255, 255, 255));
-			return predicatesFulfilled = false;
-		}
+	if (predicates)
+	{
+		for (auto it = predicates->begin(), end = predicates->end(); it != end; ++it)
+			if (!(*it)())
+			{
+				if (predicatesFulfilled)
+				{
+					spr.setColor(sf::Color(255, 255, 255, 255));
+					message.swap(messageBuffer);
+				}
+				return predicatesFulfilled = false;
+			}
 
-	if (!predicatesFulfilled)
-		spr.setColor(sf::Color((1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, 255));
+		if (!predicatesFulfilled)
+		{
+			spr.setColor(sf::Color((1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, 255));
+			message.swap(messageBuffer);
+		}
+	}
 	return predicatesFulfilled = true;
 }

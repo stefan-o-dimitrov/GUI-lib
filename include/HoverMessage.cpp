@@ -19,15 +19,34 @@ gui::HoverMessage::HoverMessage(ColoredString&& str, const sf::Font& font, const
 	updateBox();
 }
 
-gui::HoverMessage::HoverMessage(const HoverMessage& _lVal)
-	: position(_lVal.position), textBox(_lVal.textBox), font(_lVal.font), string(_lVal.string)
+gui::HoverMessage::HoverMessage(const HoverMessage& copy)
+	: position(copy.position), textBox(copy.textBox), font(copy.font), string(copy.string)
 {
-	for (auto it = _lVal.text.begin(), end = _lVal.text.end(); it != end; ++it)
+	for (auto it = copy.text.begin(), end = copy.text.end(); it != end; ++it)
 		text.emplace_back(new sf::Text(*(*it)));
 }
 
-gui::HoverMessage::HoverMessage(HoverMessage&& _rVal)
-	: position(_rVal.position), textBox(_rVal.textBox), text(std::move(_rVal.text)), font(_rVal.font), string(std::move(_rVal.string)) {}
+gui::HoverMessage::HoverMessage(HoverMessage&& temp)
+	: position(temp.position), textBox(temp.textBox), text(std::move(temp.text)), font(temp.font), string(std::move(temp.string)) {}
+
+gui::HoverMessage& gui::HoverMessage::operator=(const HoverMessage& copy)
+{
+	position = copy.position;
+	textBox = copy.textBox;
+	font = copy.font; 
+	string = copy.string;
+	for (auto it = copy.text.begin(), end = copy.text.end(); it != end; ++it)
+		text.emplace_back(new sf::Text(*(*it)));
+}
+
+gui::HoverMessage& gui::HoverMessage::operator=(HoverMessage&& temp)
+{
+	position = temp.position;
+	textBox = temp.textBox;
+	text = std::move(temp.text);
+	font = temp.font; 
+	string = std::move(temp.string);
+}
 
 const sf::FloatRect gui::HoverMessage::getGlobalBounds()const
 {
@@ -77,9 +96,9 @@ const sf::Vector2f& gui::HoverMessage::getPosition()const
 	return position;
 }
 
-gui::HoverMessage& gui::HoverMessage::setText(const ColoredString& val)
+gui::HoverMessage& gui::HoverMessage::setText(const ColoredString& newText)
 {
-	string = val;
+	string = newText;
 	string.getText(text, *font, characterSize);
 	updateBox();
 	return *this;
@@ -93,17 +112,17 @@ gui::HoverMessage& gui::HoverMessage::setText(ColoredString&& val)
 	return *this;
 }
 
-gui::HoverMessage& gui::HoverMessage::setFont(const sf::Font& _font)
+gui::HoverMessage& gui::HoverMessage::setFont(const sf::Font& newFont)
 {
-	font = &_font;
+	font = &newFont;
 	for (auto it = text.begin(), end = text.end(); it != end; ++it)
-		(*it)->setFont(_font);
+		(*it)->setFont(newFont);
 	return *this;
 }
 
-gui::HoverMessage& gui::HoverMessage::setCharacterSize(const unsigned char _characterSize)
+gui::HoverMessage& gui::HoverMessage::setCharacterSize(const unsigned char newCharacterSize)
 {
-	characterSize = _characterSize;
+	characterSize = newCharacterSize;
 	ColoredString::arrangeText(text);
 	updateBox();
 	return *this;

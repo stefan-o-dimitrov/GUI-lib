@@ -4,18 +4,18 @@
 
 const float gui::ProgressBar::PROGRESS_UPS = 10.0f;
 
-gui::ProgressBar::ProgressBar(const Icon& background, const Icon& _fill, 
-	const unsigned char _progress) : Icon(background), fill(_fill)
+gui::ProgressBar::ProgressBar(const Icon& newBackground, const Icon& newFill,
+	const unsigned char newProgress) : Icon(newBackground), fill(newFill)
 {
 	fill.clearMessage();
-	setProgress(_progress);
+	setProgress(newProgress);
 	setPosition(0, 0);
 }
 
-gui::ProgressBar::ProgressBar(Icon&& _background, Icon&& _fill, const unsigned char _progress)
-	: Icon(std::move(_background)), fill(_fill)
+gui::ProgressBar::ProgressBar(Icon&& newBackground, Icon&& newFill, const unsigned char newProgress)
+	: Icon(std::move(newBackground)), fill(newFill)
 {
-	setProgress(_progress);
+	setProgress(newProgress);
 	setPosition(0, 0);
 }
 
@@ -63,21 +63,21 @@ gui::ProgressBar& gui::ProgressBar::setUpdateFunction(std::function<const float(
 	return *this;
 }
 
-gui::ProgressBar& gui::ProgressBar::setProgress(float _progress)const
+gui::ProgressBar& gui::ProgressBar::setProgress(float newProgress)const
 {
-	if (_progress > 1.0f) _progress = 1.0f;
-	if (_progress < 0.0f) _progress = 0.0f;
+	if (newProgress > 1.0f) newProgress = 1.0f;
+	if (newProgress < 0.0f) newProgress = 0.0f;
 
-	progress = _progress;
+	progress = newProgress;
 	fill.setTextureRect(sf::IntRect(0, 0,
 		fill.getTexture().getSize().x * progress,
 		fill.getTexture().getSize().y));
 	return (ProgressBar&)*this;
 }
 
-gui::ProgressBar& gui::ProgressBar::setFillTexture(const sf::Texture& _fill, const bool transparencyCheck)
+gui::ProgressBar& gui::ProgressBar::setFillTexture(const sf::Texture& newTexture, const bool transparencyCheck)
 {
-	fill.setTexture(_fill, transparencyCheck);
+	fill.setTexture(newTexture, transparencyCheck);
 	return *this;
 }
 

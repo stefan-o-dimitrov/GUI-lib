@@ -5,11 +5,11 @@
 
 const unsigned char gui::TextArea::TEXT_UPS = 10;
 
-gui::TextArea::TextArea(const std::string& _text, const sf::Font& _font, const unsigned char _characterSize)
-	: text(_text, _font, _characterSize) {}
+gui::TextArea::TextArea(const std::string& newText, const sf::Font& newFont, const unsigned char newCharacterSize)
+	: text(newText, newFont, newCharacterSize) {}
 
-gui::TextArea::TextArea(const TextArea& _lVal)
-	: Hoverable(_lVal), text(_lVal.text) {}
+gui::TextArea::TextArea(const TextArea& copy)
+	: Hoverable(copy), text(copy.text) {}
 
 const bool gui::TextArea::contains(const sf::Vector2f& pos) const
 {
@@ -42,22 +42,22 @@ gui::TextArea& gui::TextArea::setPosition(const float x, const float y)
 	return *this;
 }
 
-gui::TextArea& gui::TextArea::setText(const cString& _text)const
+gui::TextArea& gui::TextArea::setText(const cString& newText)const
 {
-	text.setString(_text.first);
-	text.setColor(_text.second);
+	text.setString(newText.first);
+	text.setColor(newText.second);
 	return (TextArea&)*this;
 }
 
-gui::TextArea& gui::TextArea::setFont(const sf::Font& _font)
+gui::TextArea& gui::TextArea::setFont(const sf::Font& newFont)
 {
-	text.setFont(_font);
+	text.setFont(newFont);
 	return *this;
 }
 
-gui::TextArea& gui::TextArea::setCharacterSize(const unsigned char _characterSize)
+gui::TextArea& gui::TextArea::setCharacterSize(const unsigned char newCharacterSize)
 {
-	text.setCharacterSize(_characterSize);
+	text.setCharacterSize(newCharacterSize);
 	return *this;
 }
 
