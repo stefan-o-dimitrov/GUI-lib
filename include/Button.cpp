@@ -14,27 +14,19 @@ namespace gui
 			float greyValue = color.r * 0.29 + color.g * 0.58 + color.b * 0.13;\
 			gl_FragColor = vec4(greyValue, greyValue, greyValue, color.a);\
 		}";
-
+	sf::Shader Button::shader;
+	const bool Button::shaderLoadSuccessful = Button::loadShader();
 	const unsigned char Button::PREDICATE_CHECKS_PER_SECOND = 10;
 
 	Button::Button(const Icon& visual, const std::function<void()>& onClick)
-		: Icon(visual), onClickAction(onClick)
-	{
-		stateShader.loadFromMemory(STATE_SHADER, sf::Shader::Fragment);
-		stateShader.setParameter("tex", sf::Shader::CurrentTexture);
-	}
+		: Icon(visual), onClickAction(onClick) {}
 
 	Button::Button(Icon&& visual, std::function<void()>&& onClick)
-		: Icon(std::move(visual)), onClickAction(std::move(onClick))
-	{
-		stateShader.loadFromMemory(STATE_SHADER, sf::Shader::Fragment);
-		stateShader.setParameter("tex", sf::Shader::CurrentTexture);
-	}
+		: Icon(std::move(visual)), onClickAction(std::move(onClick)){}
 
 	Button::Button(const Button& copy)
 		: Icon(copy), onClickAction(copy.onClickAction)
 	{
-		stateShader.loadFromMemory(STATE_SHADER, sf::Shader::Fragment);
 		Icon::spr.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
 		state = Idle;
 
@@ -197,7 +189,7 @@ namespace gui
 	{
 		if (predicates && Duration(Internals::timeSinceStart() - timeOfLastPredicateCheck).count() > 1.0f / PREDICATE_CHECKS_PER_SECOND)
 			arePredicatesFulfilled();
-		predicatesFulfilled ? 0 : states.shader = &stateShader;
+		predicatesFulfilled ? 0 : states.shader = &shader;
 		target.draw(spr, states);
 		if (name) target.draw(*name, states);
 		Hoverable::draw(target, states);
@@ -225,5 +217,14 @@ namespace gui
 			}
 		}
 		return predicatesFulfilled = true;
+	}
+	const bool Button::loadShader()
+	{
+		if (shader.loadFromMemory(STATE_SHADER, sf::Shader::Fragment))
+		{
+			shader.setParameter("tex", sf::Shader::CurrentTexture);
+			return true;
+		}
+		else return false;
 	}
 }

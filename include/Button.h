@@ -66,13 +66,16 @@ namespace gui
 		std::shared_ptr<unsigned short>         sound = nullptr;
 		std::shared_ptr<TextArea>               name = nullptr;
 
-		mutable sf::Shader    stateShader;
 		std::function<void()> onClickAction;
 		TimePoint             timeOfLastPredicateCheck;
 		State                 state = Idle;
 		mutable bool          predicatesFulfilled = true;
-		
-		static const std::string STATE_SHADER;
+
+		static const bool loadShader();
+
+		static const bool          shaderLoadSuccessful;
+		static sf::Shader          shader;
+		static const std::string   STATE_SHADER;
 		static const unsigned char PREDICATE_CHECKS_PER_SECOND;
 	};
 };
