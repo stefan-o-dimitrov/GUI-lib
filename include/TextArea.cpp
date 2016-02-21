@@ -5,8 +5,6 @@
 
 namespace gui
 {
-	const unsigned char TextArea::TEXT_UPS = 10;
-
 	TextArea::TextArea(const std::string& newText, const sf::Font& newFont, const unsigned char newCharacterSize)
 		: text(newText, newFont, newCharacterSize) {}
 
@@ -65,7 +63,7 @@ namespace gui
 
 	void TextArea::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
-		if (updateFunction && Duration(Internals::timeSinceStart() - timeOfLastUpdate).count() > 1.0f / TEXT_UPS)
+		if (updateFunction && Duration(Internals::timeSinceStart() - timeOfLastUpdate).count() > 1.0f / Internals::getUPS())
 		{
 			setText((*updateFunction)());
 			timeOfLastUpdate = Internals::timeSinceStart();

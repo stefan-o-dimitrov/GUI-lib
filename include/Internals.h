@@ -11,7 +11,11 @@ namespace gui
 	{
 	public:
 		static const TimePoint timeSinceStart();
+		static void setUPS(const unsigned char updatesPerSecond);
+		static const unsigned char getUPS();
+
 	private:
 		static std::chrono::high_resolution_clock clock;
+		static unsigned char UPS;
 	};
 };

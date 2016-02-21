@@ -167,10 +167,5 @@ namespace gui
 		/// Icon for the fill of the progress bar.
 		/// </summary>
 		mutable Icon fill;
-
-		/// <summary>
-		/// How many times the progress percentage should be updated per second.
-		/// </summary>
-		static const float PROGRESS_UPS;
 	};
 };

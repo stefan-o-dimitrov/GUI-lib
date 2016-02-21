@@ -5,6 +5,7 @@
 
 #include "Internals.h"
 #include "Interactive.h"
+#include "HoverMessage.h"
 #include "Hoverable.h"
 
 namespace gui 

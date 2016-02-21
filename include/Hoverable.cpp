@@ -65,6 +65,12 @@ namespace gui
 		if (copy.message) message.reset(new HoverMessage(*copy.message));
 	}
 
+	Hoverable& Hoverable::operator=(const Hoverable& copy)
+	{
+		setDelay(copy.delay);
+		if (copy.message) message.reset(new HoverMessage(*copy.message));
+	}
+
 	void Hoverable::mouseEntered(const sf::Vector2f& mousePos)
 	{
 		if (!timeMouseEntered) timeMouseEntered.reset(new TimePoint(Internals::timeSinceStart()));

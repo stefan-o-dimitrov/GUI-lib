@@ -6,6 +6,7 @@
 
 #include "Internals.h"
 #include "Interactive.h"
+#include "HoverMessage.h"
 #include "Hoverable.h"
 
 namespace gui {
@@ -44,7 +45,5 @@ namespace gui {
 		mutable sf::Text text;
 		std::unique_ptr<std::function<ColoredString()>> updateFunction = nullptr;
 		mutable TimePoint timeOfLastUpdate;
-
-		static const unsigned char TEXT_UPS;
 	};
 };

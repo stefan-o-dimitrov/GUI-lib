@@ -3,15 +3,15 @@
 #include <windows.h>
 #include <sstream>
 
+#ifdef _MSC_VER
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
+
 #define LIMIT 10
 #define AMOUNT 1
 
 int integer = 0;
-
-void increment(const int amount)
-{
-	integer += amount;
-}
+bool running = true;
 
 const bool canChange(const int limit, const bool increaseOrDecrease = 0)
 {
@@ -32,25 +32,27 @@ std::string getInt()
 
 void main()
 {
-	sf::Texture buttonTex, barBackgroundTex, barFillTex;
+	sf::Texture buttonTex, closeButtonTex, barBackgroundTex, barFillTex;
 	sf::Font font;
 
-	barBackgroundTex.loadFromFile("bar_background.png");
-	barFillTex.loadFromFile("bar_fill.png");
-	buttonTex.loadFromFile("button.png");
-	font.loadFromFile("font.ttf");
+	barBackgroundTex.loadFromFile("resources/bar_background.png");
+	barFillTex.loadFromFile("resources/bar_fill.png");
+	buttonTex.loadFromFile("resources/button.png");
+	closeButtonTex.loadFromFile("resources/close_button.png");
+	font.loadFromFile("resources/font.ttf");
 	
 	gui::Window main;
+	sf::RenderWindow window(sf::VideoMode(800, 300), "Example", sf::Style::None);
 	
 	main.add(std::move(gui::Button(
 		gui::Icon(buttonTex, true),
-		std::bind(increment, -AMOUNT))
+		std::bind([](const int amount) {integer += amount; }, -AMOUNT))
 		.setPredicates(gui::PredicateArray{ std::bind(canChange, -LIMIT, true) })
 		.setPredicateMessage(gui::HoverMessage(gui::bind("Integer is less than ", sf::Color::White) + gui::bind(std::to_string(LIMIT), sf::Color::Yellow),
 			font, 15))
 		.setName(std::move(gui::TextArea("Decrease Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Red)))
 		.setDelay(0.5f)
-		.setMessage(std::move(gui::HoverMessage(
+		.setMessage((gui::HoverMessage&&)gui::HoverMessage(
 			gui::bind("This button ", sf::Color::White) + gui::bind("reduces ", sf::Color::Red) + gui::bind("the integer", sf::Color::White) + []()
 				{
 					return integer == 0 ? gui::bind("", sf::Color()) : gui::bind(". It is ", sf::Color::White)
@@ -60,23 +62,23 @@ void main()
 			.setBackgroundFill(sf::Color::Black)
 			.setBorderFill(sf::Color::Blue)
 			.setBorderThickness(2.0f)
-			.setCharacterSize(15)))
-		.setPosition(110, 200)))
+			.setCharacterSize(15))
+		.setPosition(50, 150)))
 
 		.add(gui::Button(
 			gui::Icon(buttonTex, false),
-			std::bind(increment, AMOUNT))
+			std::bind([](const int amount) {integer += amount; }, AMOUNT))
 			.setPredicates(gui::PredicateArray{ std::bind(canChange, LIMIT, false) })
 			.setName(gui::TextArea("Increase Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Green))
 			.setDelay(0.5f)
-			.setMessage(gui::HoverMessage(
+			.setMessage((gui::HoverMessage&&)gui::HoverMessage(
 				gui::bind("This button ", sf::Color::White) + gui::bind("increases ", sf::Color::Green) + gui::bind("the integer.", sf::Color::White),
 				font)
 				.setBackgroundFill(sf::Color::Black)
 				.setBorderFill(sf::Color::Blue)
 				.setBorderThickness(2.0f)
 				.setCharacterSize(15))
-			.setPosition(700, 200))
+			.setPosition(50 + buttonTex.getSize().x, 150))
 
 		.add(std::move(gui::TextArea("", font, 40)
 			.setColor(sf::Color::Red)
@@ -90,29 +92,32 @@ void main()
 				.setBackgroundFill(sf::Color::Black)
 				.setBorderFill(sf::Color::Yellow)
 				.setBorderThickness(2.0f)))
-			.setPosition(100, 100)))
+					.setPosition(50, 50)))
 
-		.add(gui::ProgressBar(gui::Icon(barBackgroundTex, true), gui::Icon(barFillTex, true))
-			.setUpdateFunction(std::bind(getProgress, LIMIT))
-			.setPosition(100, 500)
-			.setFillMessage(gui::HoverMessage(gui::bind("This message is superfluous", sf::Color::Yellow), font).setBackgroundFill(sf::Color::Black))
-			.setMessage(gui::HoverMessage(gui::bind("This progress bar represents the integer's progress toward 10", sf::Color::White), font).setBackgroundFill(sf::Color::Black)))
+					.add(gui::ProgressBar(gui::Icon(barBackgroundTex, true), gui::Icon(barFillTex, true))
+						.setUpdateFunction(std::bind(getProgress, LIMIT))
+						.setPosition(50, 175 + buttonTex.getSize().y)
+						.setFillMessage(gui::HoverMessage(gui::bind("This message is superfluous", sf::Color::Yellow), font).setBackgroundFill(sf::Color::Black))
+						.setMessage(gui::HoverMessage(gui::bind("This progress bar represents the integer's progress toward ", sf::Color::White)
+							+ gui::bind(std::to_string(LIMIT), sf::Color::White), font).setBackgroundFill(sf::Color::Black)))
 
-		.add(gui::ProgressBar(gui::Icon(barBackgroundTex, true), gui::Icon(barFillTex, true))
-			.setUpdateFunction(std::bind(getProgress, -LIMIT))
-			.setPosition(100, 550)
-			.setMessage(gui::HoverMessage(gui::bind("This progress bar represents the integer's progress toward -10", sf::Color::White), font).setBackgroundFill(sf::Color(20, 30, 40, 210))));
+					.add(gui::ProgressBar(gui::Icon(barBackgroundTex, true), gui::Icon(barFillTex, true))
+						.setUpdateFunction(std::bind(getProgress, -LIMIT))
+						.setPosition(50, 200 + buttonTex.getSize().y + barBackgroundTex.getSize().y)
+						.setMessage(gui::HoverMessage(gui::bind("This progress bar represents the integer's progress toward -", sf::Color::White)
+							+ gui::bind(std::to_string(LIMIT), sf::Color::White), font).setBackgroundFill(sf::Color(20, 30, 40, 210))))
 
+					.add(gui::Button(gui::Icon(closeButtonTex, true),
+						[]() {running = false; })
+						.setPosition(window.getSize().x - closeButtonTex.getSize().x, 0));
+				
+	window.setVerticalSyncEnabled(true);
 
-	sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Example", sf::Style::Fullscreen);
-
-	window.setFramerateLimit(40);
-
-	while (window.isOpen())
+	while (running)
 	{
 		sf::Event event;
 		while (window.pollEvent(event))
-			if (event.type == sf::Event::Closed) window.close();
+			if (event.type == sf::Event::Closed) running = false;
 			else main.input(event);
 
 		window.draw(main);

@@ -7,8 +7,6 @@
 
 namespace gui
 {
-	const unsigned char TextPane::TEXT_UPS = 10;
-
 	TextPane::TextPane(const ColoredText& newString, const sf::Font& newFont, const unsigned char newCharacterSize)
 		: font(&newFont), characterSize(newCharacterSize), string(newString)
 	{
@@ -20,6 +18,19 @@ namespace gui
 	{
 		for (auto it = copy.text.begin(), end = copy.text.end(); it != end; ++it)
 			text.push_back(std::unique_ptr<sf::Text>(new sf::Text(*(*it))));
+	}
+
+	TextPane& TextPane::operator=(const TextPane& copy)
+	{
+		position = copy.position;
+		string = copy.string;
+		for (auto it = copy.text.begin(), end = copy.text.end(); it != end; ++it)
+			text.push_back(std::unique_ptr<sf::Text>(new sf::Text(*(*it))));
+	}
+
+	const bool TextPane::input(const sf::Event& event)
+	{
+		return false;
 	}
 
 	const bool TextPane::contains(const sf::Vector2f& pos) const
@@ -34,8 +45,10 @@ namespace gui
 		sf::FloatRect returnValue(0, 0, 0, 0);
 		for (auto it = text.begin(), end = text.end(); it != end; ++it)
 		{
-			if (returnValue.width < (*it)->getGlobalBounds().width + (*it)->getPosition().x) returnValue.width = (*it)->getGlobalBounds().width + (*it)->getPosition().x;
-			if (returnValue.height < (*it)->getGlobalBounds().height + (*it)->getPosition().y) returnValue.height = (*it)->getGlobalBounds().height + (*it)->getPosition().y;
+			if (returnValue.width < (*it)->getGlobalBounds().width + (*it)->getPosition().x)
+				returnValue.width = (*it)->getGlobalBounds().width + (*it)->getPosition().x;
+			if (returnValue.height < (*it)->getGlobalBounds().height + (*it)->getPosition().y)
+				returnValue.height = (*it)->getGlobalBounds().height + (*it)->getPosition().y;
 		}
 		returnValue.left = position.x;
 		returnValue.top = position.y;
@@ -90,21 +103,24 @@ namespace gui
 	TextPane& TextPane::setCharacterSize(const unsigned char newCharacterSize)
 	{
 		characterSize = newCharacterSize;
-		for (auto it = text.begin(), end = text.end(); it != end; ++it)
-			(*it)->setCharacterSize(characterSize);
-		ColoredText::arrangeText(text);
+		update();
 		return *this;
 	}
 
 	void TextPane::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
-		if (string.isVolatile() && Duration(Internals::timeSinceStart() - timeOfLastUpdate).count() > 1.0f / TEXT_UPS)
+		if (string.isVolatile() && Duration(Internals::timeSinceStart() - timeOfLastUpdate).count() > 1.0f / Internals::getUPS())
 		{
-			string.getText(text, *font, characterSize);
+			update();
 			timeOfLastUpdate = Internals::timeSinceStart();
 		}
 		states.transform.translate(position);
 		for (auto it = text.begin(), end = text.end(); it != end; ++it)
 			target.draw(**it, states);
+	}
+
+	void TextPane::update() const
+	{
+		string.getText(text, *font, characterSize);
 	}
 }

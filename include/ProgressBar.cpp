@@ -4,8 +4,6 @@
 
 namespace gui
 {
-	const float ProgressBar::PROGRESS_UPS = 10.0f;
-
 	ProgressBar::ProgressBar(const Icon& newBackground, const Icon& newFill,
 		const unsigned char newProgress) : Icon(newBackground), fill(newFill)
 	{
@@ -131,13 +129,14 @@ namespace gui
 
 	void ProgressBar::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
-		if (updateFunction && Duration(Internals::timeSinceStart() - timeOfLastUpdate).count() > 1.0f / PROGRESS_UPS)
+		if (updateFunction && Duration(Internals::timeSinceStart() - timeOfLastUpdate).count() > 1.0f / Internals::getUPS())
 		{
 			setProgress((*updateFunction)());
 			timeOfLastUpdate = Internals::timeSinceStart();
 		}
 
-		Icon::draw(target, states);
+		target.draw(spr, states);
 		target.draw(fill, states);
+		Hoverable::draw(target, states);
 	}
 }
