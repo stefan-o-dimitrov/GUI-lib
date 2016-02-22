@@ -1,4 +1,4 @@
-#include "../include/GUI.h"
+#include <GUI/GUI.h>
 
 #include <windows.h>
 #include <sstream>
