@@ -38,7 +38,7 @@ namespace gui
 		void update()const override;
 		const sf::Vector2f& getPosition()const override;
 		HoverMessage& setPosition(const float x, const float y)override;
-		HoverMessage& setPosition(const sf::Vector2f& position);
+		HoverMessage& setPosition(const sf::Vector2f& position)override;
 
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 

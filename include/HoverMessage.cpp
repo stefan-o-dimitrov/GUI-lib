@@ -84,6 +84,11 @@ namespace gui
 		return *this;
 	}
 
+	HoverMessage& HoverMessage::setPosition(const sf::Vector2f& pos)
+	{
+		return setPosition(pos.x, pos.y);
+	}
+	
 	HoverMessage& HoverMessage::setBackgroundFill(const sf::Color& color)
 	{
 		textBox.setFillColor(color);
@@ -102,11 +107,6 @@ namespace gui
 		return *this;
 	}
 	
-	HoverMessage& HoverMessage::setPosition(const sf::Vector2f& pos)
-	{
-		return setPosition(pos.x, pos.y);
-	}
-
 	void HoverMessage::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
 		sf::Vector2f pos = sf::Vector2f(position.x + textBox.getGlobalBounds().width > target.getSize().x ? 

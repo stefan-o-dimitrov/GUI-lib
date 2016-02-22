@@ -5,37 +5,57 @@
 
 namespace gui
 {
-	void Window::clear()
-	{
-		elements.clear();
-	}
-
 	Window& Window::add(Interactive&& element)
 	{
 		elements.emplace_back(element.move());
 		return *this;
 	}
 
-	Window& Window::add(const Interactive & element)
+	Window& Window::add(const Interactive& element)
 	{
 		elements.emplace_back(element.copy());
 		return *this;
 	}
 
+	void Window::clear()
+	{
+		elements.clear();
+	}
+
+	const bool Window::erase(const unsigned short index)
+	{
+		if (index >= elements.size()) return false;
+		elements.erase(elements.begin() + index);
+		return true;
+	}
+
+	Interactive& Window::at(const unsigned short index)
+	{
+		return *elements.at(index);
+	}
+
+	const Interactive& Window::at(const unsigned short index) const
+	{
+		return *elements.at(index);
+	}
 	const bool Window::input(const sf::Event& event)
 	{
-		for (auto it = elements.rbegin(), end = elements.rend(); it != end; ++it)
-			if (*it && (*it)->input(event))
+		for (auto it = elements.begin(), end = elements.end(); it != end; ++it)
+			if (*it)
 			{
-				elements.rbegin()->swap(*it);
-				return true;
+				if ((*it)->input(event)) 
+				{
+					elements.begin()->swap(*it);
+					return true;
+				}
 			}
+			else it = elements.erase(it);
 		return false;
 	}
 
 	void Window::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
-		for (auto it = elements.begin(), end = elements.end(); it != end; ++it)
+		for (auto it = elements.rbegin(), end = elements.rend(); it != end; ++it)
 			target.draw(**it, states);
 	}
 }

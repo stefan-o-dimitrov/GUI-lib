@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GUI_TEXT_PANE
+#define GUI_TEXT_PANE
 
 #include <SFML/Graphics.hpp>
 #include <memory>
@@ -21,8 +22,8 @@ namespace gui
 		TextPane& operator=(const TextPane& copy);
 		TextPane& operator=(TextPane&& temp) = default;
 
-		TextPane* copy()const override { return new TextPane(*this); }
-		TextPane* move()override { return new TextPane(std::move(*this)); }
+		std::unique_ptr<Interactive> copy()const override;
+		std::unique_ptr<Interactive> move()override;
 
 		const bool input(const sf::Event& event)override;
 		const bool contains(const sf::Vector2f& point)const;
@@ -33,6 +34,8 @@ namespace gui
 		const unsigned char getCharacterSize()const;
 
 		virtual TextPane& setPosition(const float x, const float y) override;
+		virtual TextPane& setPosition(const sf::Vector2f& position) override;
+
 		TextPane& setText(const ColoredText& text);
 		TextPane& setText(ColoredText&& text);
 		TextPane& setFont(const sf::Font& font);
@@ -45,10 +48,12 @@ namespace gui
 		sf::Vector2f position = sf::Vector2f(0, 0);
 
 	private:
-		ColoredText                         string;
-		const sf::Font*                     font = nullptr;
-		unsigned char                       characterSize = 13;
-		mutable TimePoint                   timeOfLastUpdate;
 		mutable unique_ptr_vector<sf::Text> text;
+		const sf::Font* font = nullptr;
+		unsigned char characterSize = 13;
+		ColoredText string;
+		mutable TimePoint timeOfLastUpdate;
 	};
-};
+}
+
+#endif

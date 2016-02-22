@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GUI_BUTTON
+#define GUI_BUTTON
 
 #include <SFML/Graphics.hpp>
 #include <functional>
@@ -31,25 +32,29 @@ namespace gui
 		Button() = default;
 		~Button() = default;
 
-		virtual Button* copy()const override { return new Button(*this); }
-		virtual Button* move()override { return new Button(std::move(*this)); };
+		virtual std::unique_ptr<Interactive> copy()const override;
+		virtual std::unique_ptr<Interactive> move()override;
 
 		virtual const bool input(const sf::Event& event)override;
+		
+		const std::shared_ptr<const HoverMessage> getMessage()const override;
 
 		virtual const State getState()const;
 		const std::shared_ptr<const HoverMessage> getPredicateMessage()const;
-		const std::shared_ptr<const HoverMessage> getMessage()const override;
 		const std::shared_ptr<const TextArea> getName()const;
 		const std::shared_ptr<const unsigned short> getClickSound()const;
+
+		virtual Button& setPosition(const float x, const float y)override;
+		virtual Button& setPosition(const sf::Vector2f& position)override;
+		Button& clearMessage()override;
+		Button& setMessage(const HoverMessage& message)override;
+		Button& setMessage(HoverMessage&& tempMessage)override;
 
 		Button& setName(const TextArea& name);
 		Button& setName(TextArea&& nameTemp);
 		Button& setClickSound(const unsigned short soundKey);
-		Button& setMessage(const HoverMessage& message)override;
-		Button& setMessage(HoverMessage&& tempMessage)override;
 		Button& setPredicateMessage(const HoverMessage& message);
 		Button& setPredicateMessage(HoverMessage&& tempMessage);
-		virtual Button& setPosition(const float x, const float y)override;
 		Button& setPredicates(const PredicateArray& predicates);
 		Button& setPredicates(PredicateArray&& predicates);
 
@@ -76,6 +81,7 @@ namespace gui
 		static const bool          shaderLoadSuccessful;
 		static sf::Shader          shader;
 		static const std::string   STATE_SHADER;
-		static const unsigned char PREDICATE_CHECKS_PER_SECOND;
 	};
 };
+
+#endif

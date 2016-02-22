@@ -3,6 +3,7 @@
 
 namespace gui
 {
+
 	const bool Hoverable::input(const sf::Event& event)
 	{
 		switch (event.type)
@@ -24,40 +25,47 @@ namespace gui
 		}
 	}
 
+
 	const std::shared_ptr<const HoverMessage> Hoverable::getMessage() const
 	{
 		return message;
 	}
 
+
 	Hoverable& Hoverable::clearMessage()
 	{
 		message.reset();
-		return *this;
+		return (Hoverable&)*this;
 	}
+
 
 	Hoverable& Hoverable::setMessage(const HoverMessage& newMessage)
 	{
 		message.reset(new HoverMessage(newMessage));
-		return *this;
+		return (Hoverable&)*this;
 	}
+
 
 	Hoverable& Hoverable::setMessage(HoverMessage&& tempMessage)
 	{
 		message.reset(new HoverMessage(std::move(tempMessage)));
-		return *this;
+		return (Hoverable&)*this;
 	}
+
 
 	Hoverable& Hoverable::setDelay(const float newDelay)
 	{
 		newDelay >= 0.0f ? delay = newDelay : delay = 0.0f;
-		return *this;
+		return (Hoverable&)*this;
 	}
+
 
 	Hoverable::Hoverable(const HoverMessage& newMessage, const float newDelay)
 		: message(new HoverMessage(newMessage))
 	{
 		setDelay(newDelay);
 	}
+
 
 	Hoverable::Hoverable(const Hoverable& copy)
 	{
@@ -69,6 +77,7 @@ namespace gui
 	{
 		setDelay(copy.delay);
 		if (copy.message) message.reset(new HoverMessage(*copy.message));
+		return *this;
 	}
 
 	void Hoverable::mouseEntered(const sf::Vector2f& mousePos)

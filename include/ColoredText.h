@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GUI_COLORED_STRING
+#define GUI_COLORED_STRING
 
 #include <SFML/Graphics.hpp>
 #include <vector>
@@ -52,3 +53,5 @@ namespace gui
 
 	ColoredText bind(const std::string& string, const sf::Color& color);
 }
+
+#endif

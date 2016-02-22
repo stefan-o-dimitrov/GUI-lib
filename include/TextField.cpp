@@ -14,6 +14,16 @@ namespace gui
 		if (source.prompt) prompt.reset(new sf::Text(*source.prompt));
 	}
 
+	std::unique_ptr<Interactive> TextField::copy() const
+	{
+		return std::unique_ptr<TextField>(new TextField(*this));
+	}
+
+	std::unique_ptr<Interactive> TextField::move()
+	{ 
+		return std::unique_ptr<TextField>(new TextField(std::move(*this)));
+	}
+
 	const bool TextField::input(const sf::Event& event)
 	{
 		switch (event.type)
@@ -108,6 +118,11 @@ namespace gui
 		position.y = y;
 		if (prompt) prompt->setPosition(x, y);
 		return *this;
+	}
+
+	TextField& TextField::setPosition(const sf::Vector2f& newPosition)
+	{
+		return setPosition(newPosition.x, newPosition.y);
 	}
 
 	TextField& TextField::setFont(const sf::Font& font)

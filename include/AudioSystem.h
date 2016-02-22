@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GUI_AUDIO_SYSTEM
+#define GUI_AUDIO_SYSTEM
 
 #include <SFML/Audio.hpp>
 #include <unordered_map>
@@ -39,3 +40,5 @@ namespace gui
 		static std::unordered_map<unsigned short, std::pair<sf::Sound, sf::SoundBuffer>> sound;
 	};
 };
+
+#endif

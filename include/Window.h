@@ -2,19 +2,16 @@
 #define ELEMENT_CONTAINER
 
 #include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Window/Event.hpp>
 
 #include <vector>
 #include <memory>
 
-namespace sf
-{
-	class Event;
-}
+#include "Interactive.h"
 
 namespace gui
 {
-	class Interactive;
-	class Window : public sf::Drawable
+	class Window final : public sf::Drawable
 	{
 	public:
 		Window(const Window& copy) = delete;
@@ -22,10 +19,17 @@ namespace gui
 		Window() = default;
 		~Window() = default;
 
-		void clear();
+		const bool input(const sf::Event& event);
+
 		Window& add(Interactive&& element);
 		Window& add(const Interactive& element);
-		const bool input(const sf::Event& event);
+
+		void clear();
+		const bool erase(const unsigned short index);
+
+		Interactive& at(const unsigned short index);
+		const Interactive& at(const unsigned short index)const;
+
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 

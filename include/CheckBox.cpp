@@ -18,6 +18,16 @@ namespace gui
 		setPosition(pos);
 	}
 
+	std::unique_ptr<Interactive> CheckBox::copy() const
+	{ 
+		return std::unique_ptr<CheckBox>(new CheckBox(*this));
+	}
+
+	std::unique_ptr<Interactive> CheckBox::move()
+	{
+		return std::unique_ptr<CheckBox>(new CheckBox(std::move(*this)));
+	}
+
 	const bool CheckBox::input(const sf::Event& event)
 	{
 		if (checked)
@@ -105,6 +115,11 @@ namespace gui
 		Button::setPosition(x, y);
 		trueState.setPosition(x + getGlobalBounds().width / 2.0f - trueState.getGlobalBounds().width / 2.0f, y + getGlobalBounds().height / 2.0f - trueState.getGlobalBounds().height / 2.0f);
 		return *this;
+	}
+
+	CheckBox& CheckBox::setPosition(const sf::Vector2f& newPosition)
+	{
+		return setPosition(newPosition.x, newPosition.y);
 	}
 
 	CheckBox& CheckBox::setTrueStateTexture(const sf::Texture& tex, const bool transpCheck)

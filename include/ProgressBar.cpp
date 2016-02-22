@@ -25,6 +25,16 @@ namespace gui
 		updateFunction(copy.updateFunction ? new std::function<const float()>(*copy.updateFunction) : nullptr),
 		progress(copy.progress) {}
 
+	std::unique_ptr<Interactive> ProgressBar::copy() const
+	{ 
+		return std::unique_ptr<ProgressBar>(new ProgressBar(*this));
+	}
+
+	std::unique_ptr<Interactive> ProgressBar::move()
+	{ 
+		return std::unique_ptr<ProgressBar>(new ProgressBar(std::move(*this)));
+	}
+
 	const bool ProgressBar::input(const sf::Event& event)
 	{
 		if (fill.input(event))
@@ -95,11 +105,11 @@ namespace gui
 		return *this;
 	}
 
-	ProgressBar& ProgressBar::setPosition(const sf::Vector2f& pos)
+	ProgressBar& ProgressBar::setPosition(const sf::Vector2f& newPosition)
 	{
-		return setPosition(pos.x, pos.y);
+		return setPosition(newPosition.x, newPosition.y);
 	}
-
+	
 	const std::shared_ptr<const HoverMessage> ProgressBar::getFillMessage() const
 	{
 		return fill.getMessage();

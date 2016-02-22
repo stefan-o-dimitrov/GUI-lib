@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GUI_CHECK_BOX
+#define GUI_CHECK_BOX
 
 #include <SFML/Graphics.hpp>
 
@@ -16,8 +17,8 @@ namespace gui
 		CheckBox() = default;
 		~CheckBox() = default;
 
-		CheckBox* copy()const override { return new CheckBox(*this); }
-		CheckBox* move()override { return new CheckBox(std::move(*this)); }
+		std::unique_ptr<Interactive> copy()const override;
+		std::unique_ptr<Interactive> move()override;
 
 		const bool input(const sf::Event& event)override;
 		const bool contains(const sf::Vector2f& point)const;
@@ -34,10 +35,10 @@ namespace gui
 		
 		void toggle();
 
-		CheckBox& setIsChecked(const bool isChecked);
 		CheckBox& setPosition(const float x, const float y)override;
-		using Interactive::setPosition;
+		CheckBox& setPosition(const sf::Vector2f& position)override;
 
+		CheckBox& setIsChecked(const bool isChecked);
 		CheckBox& setTrueStateTexture(const sf::Texture& texture, const bool transparencyCheck = false);
 		CheckBox& setTrueStateTransparencyCheck(const bool transparencyCheck);
 		CheckBox& setTrueStateTextureRect(const sf::IntRect& textureRect);
@@ -54,6 +55,8 @@ namespace gui
 		using Button::setName;
 
 		Button trueState;
-		bool   checked = false;
+		bool checked = false;
 	};
 };
+
+#endif;

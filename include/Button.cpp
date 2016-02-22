@@ -16,25 +16,39 @@ namespace gui
 		}";
 	sf::Shader Button::shader;
 	const bool Button::shaderLoadSuccessful = Button::loadShader();
-	const unsigned char Button::PREDICATE_CHECKS_PER_SECOND = 10;
 
 	Button::Button(const Icon& visual, const std::function<void()>& onClick)
-		: Icon(visual), onClickAction(onClick) {}
-
-	Button::Button(Icon&& visual, std::function<void()>&& onClick)
-		: Icon(std::move(visual)), onClickAction(std::move(onClick)){}
-
-	Button::Button(const Button& copy)
-		: Icon(copy), onClickAction(copy.onClickAction)
+		: Icon(visual), onClickAction(onClick), state(Idle) 
 	{
 		Icon::spr.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
-		state = Idle;
+	}
+
+	Button::Button(Icon&& visual, std::function<void()>&& onClick)
+		: Icon(std::move(visual)), onClickAction(std::move(onClick)) 
+	{
+		Icon::spr.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
+	}
+
+	Button::Button(const Button& copy)
+		: Icon(copy), onClickAction(copy.onClickAction), state(Idle)
+	{
+		Icon::spr.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
 
 		if (copy.messageBuffer) messageBuffer.reset(new HoverMessage(*copy.messageBuffer));
 		if (copy.stringBuffer) stringBuffer.reset(new ColoredText(*copy.stringBuffer));
 		if (copy.name) name.reset(new TextArea(*copy.name));
 		if (copy.sound) sound.reset(new unsigned short(*copy.sound));
 		if (copy.predicates) predicates.reset(new PredicateArray(*copy.predicates));
+	}
+
+	std::unique_ptr<Interactive> Button::copy() const
+	{ 
+		return std::unique_ptr<Button>(new Button(*this));
+	}
+
+	std::unique_ptr<Interactive> Button::move()
+	{ 
+		return std::unique_ptr<Button>(new Button(std::move(*this)));
 	}
 
 	const bool Button::input(const sf::Event& event)
@@ -138,6 +152,12 @@ namespace gui
 		return *this;
 	}
 
+	Button& Button::clearMessage()
+	{
+		Hoverable::clearMessage();
+		return *this;
+	}
+
 	Button& Button::setMessage(const HoverMessage& newMessage)
 	{
 		if (predicatesFulfilled) message.reset(new HoverMessage(newMessage));
@@ -173,6 +193,11 @@ namespace gui
 		return *this;
 	}
 
+	Button& Button::setPosition(const sf::Vector2f& newPosition)
+	{
+		return setPosition(newPosition.x, newPosition.y);
+	}
+
 	Button& Button::setPredicates(const PredicateArray& newPredicates)
 	{
 		predicates.reset(new PredicateArray(newPredicates));
@@ -187,7 +212,7 @@ namespace gui
 
 	void Button::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
-		if (predicates && Duration(Internals::timeSinceStart() - timeOfLastPredicateCheck).count() > 1.0f / PREDICATE_CHECKS_PER_SECOND)
+		if (predicates && Duration(Internals::timeSinceStart() - timeOfLastPredicateCheck).count() > 1.0f / Internals::getUPS())
 			arePredicatesFulfilled();
 		predicatesFulfilled ? 0 : states.shader = &shader;
 		target.draw(spr, states);

@@ -16,6 +16,16 @@ namespace gui
 	Icon::Icon(Icon&& temp)
 		: Hoverable(std::move(temp)), transparency(std::move(temp.transparency)), spr(temp.spr) {}
 
+	std::unique_ptr<Interactive> Icon::copy() const
+	{ 
+		return  std::unique_ptr<Icon>(new Icon(*this));
+	}
+
+	std::unique_ptr<Interactive> Icon::move()
+	{ 
+		return  std::unique_ptr<Icon>(new Icon(std::move(*this)));
+	}
+
 	const bool Icon::contains(const sf::Vector2f& pos)const
 	{
 		if (spr.getGlobalBounds().contains(pos))
@@ -57,6 +67,11 @@ namespace gui
 		return *this;
 	}
 
+	Icon& Icon::setPosition(const sf::Vector2f& newPosition)
+	{
+		return setPosition(newPosition.x, newPosition.y);
+	}
+
 	Icon& Icon::setTexture(const sf::Texture& tex, const bool transparencyCheck)
 	{
 		spr.setTexture(tex);
@@ -74,6 +89,24 @@ namespace gui
 	Icon& Icon::setTextureRect(const sf::IntRect& rect)
 	{
 		spr.setTextureRect(rect);
+		return *this;
+	}
+
+	Icon& Icon::clearMessage()
+	{
+		Hoverable::clearMessage();
+		return *this;
+	}
+
+	Icon& Icon::setMessage(const HoverMessage& newMessage)
+	{
+		Hoverable::setMessage(newMessage);
+		return *this;
+	}
+
+	Icon& Icon::setMessage(HoverMessage&& tempMessage)
+	{
+		Hoverable::setMessage(std::move(tempMessage));
 		return *this;
 	}
 

@@ -28,6 +28,16 @@ namespace gui
 			text.push_back(std::unique_ptr<sf::Text>(new sf::Text(*(*it))));
 	}
 
+	std::unique_ptr<Interactive> TextPane::copy() const
+	{
+		return std::unique_ptr<TextPane>(new TextPane(*this));
+	}
+
+	std::unique_ptr<Interactive> TextPane::move()
+	{ 
+		return std::unique_ptr<TextPane>(new TextPane(std::move(*this)));
+	}
+
 	const bool TextPane::input(const sf::Event& event)
 	{
 		return false;
@@ -76,6 +86,11 @@ namespace gui
 		position.x = x;
 		position.y = y;
 		return *this;
+	}
+
+	TextPane& TextPane::setPosition(const sf::Vector2f& newPosition)
+	{
+		return setPosition(newPosition.x, newPosition.y);
 	}
 
 	TextPane& TextPane::setText(const ColoredText& newText)
