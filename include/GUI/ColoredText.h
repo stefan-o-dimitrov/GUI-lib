@@ -40,6 +40,11 @@ namespace gui
 		shared_ptr_vector<ColoredString> text;
 		std::unordered_multimap<size_t, std::function<ColoredText()>> volatileText;
 
+		static void stringToArrangedText(unique_ptr_vector<sf::Text>& target,
+			const ColoredString& string, const sf::Font& font,
+			const unsigned char characterSize, sf::Vector2f& addPosition,
+			const float TEXT_HEIGHT);
+
 		static const float LINE_SPACING;
 
 		friend ColoredText bind(const std::string& string, const sf::Color& color);

@@ -14,6 +14,7 @@ namespace gui
 	{
 	public:
 		TextPane(const ColoredText& text, const sf::Font& font, const unsigned char characterSize = 13);
+		TextPane(ColoredText&& text, const sf::Font& font, const unsigned char characterSize = 13);
 		TextPane(const TextPane& copy);
 		TextPane(TextPane&& temp) = default;
 		TextPane() = default;

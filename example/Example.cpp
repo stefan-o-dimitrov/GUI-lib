@@ -42,28 +42,32 @@ void main()
 	font.loadFromFile("resources/font.ttf");
 	
 	gui::Window main;
-	sf::RenderWindow window(sf::VideoMode(800, 300), "Example", sf::Style::None);
+	sf::RenderWindow window(sf::VideoMode(700, 300), "Example", sf::Style::None);
 	
-	main.add(std::move(gui::Button(gui::Icon(buttonTex, true), std::bind([](const int amount) {integer += amount; }, -AMOUNT))
+	main.add(std::move(gui::Button(gui::Icon(buttonTex, true), std::bind([](const int amount) 
+			{
+				integer += amount;
+			}, -AMOUNT))
 		.setPredicates(gui::PredicateArray{ std::bind(canChange, -LIMIT, true) })
 		.setPredicateMessage(gui::HoverMessage(gui::bind("Integer is less than ", sf::Color::White) + 
 			gui::bind(std::to_string(LIMIT), sf::Color::Yellow),
 			font, 15))
-		.setName(std::move(gui::TextArea("Decrease Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Red)))
+		.setName(std::move(gui::TextArea("Decrease Int by " + 
+			std::to_string(AMOUNT), font, 18).setColor(sf::Color(175, 45, 65, 220))))
 		.setDelay(0.5f)
-		.setMessage((gui::HoverMessage&&)gui::HoverMessage(gui::bind("This button ", sf::Color::White) +
-			gui::bind("reduces ", sf::Color::Red) + gui::bind("the integer", sf::Color::White) + []()
+		.setMessage((gui::HoverMessage&&)gui::HoverMessage(gui::bind("This button ", sf::Color(87, 87, 87, 230)) +
+			gui::bind("reduces ", sf::Color(160, 40, 60, 220)) + gui::bind("the integer", sf::Color(87, 87, 87, 230)) + []()
 				{
-					return integer == 0 ? gui::bind("", sf::Color()) : gui::bind(". It is ", sf::Color::White)
-						+ gui::bind("\ncurrently at ", sf::Color::White) + gui::bind(std::to_string(integer), integer > 0.0f ?
-							sf::Color::Green : sf::Color::Red);
-				} + gui::bind(".", sf::Color::White),
+					return integer == 0 ? gui::bind("", sf::Color()) : gui::bind(". It is ", sf::Color(87, 87, 87, 230))
+						+ gui::bind("\ncurrently at ", sf::Color(87, 87, 87, 230)) +
+						gui::bind(std::to_string(integer), integer > 0.0f ? sf::Color(40, 145, 60, 220) : sf::Color(160, 40, 60, 220));
+				} + gui::bind(".", sf::Color(87, 87, 87, 255)),
 			font)
-			.setBackgroundFill(sf::Color::Black)
-			.setBorderFill(sf::Color::Blue)
+			.setBackgroundFill(sf::Color(240, 240, 242, 225))
+			.setBorderFill(sf::Color(118, 118, 118, 210))
 			.setBorderThickness(2.0f)
-			.setCharacterSize(15))
-		.setPosition(50, 150)))
+			.setCharacterSize(13))
+		.setPosition(50, 130)))
 
 		.add(gui::Button(gui::Icon(buttonTex, false), std::bind([](const int amount) {integer += amount; }, AMOUNT))
 			.setPredicates(gui::PredicateArray{ std::bind(canChange, LIMIT, false) })
@@ -76,11 +80,12 @@ void main()
 				.setBorderFill(sf::Color::Blue)
 				.setBorderThickness(2.0f)
 				.setCharacterSize(15))
-			.setPosition(50 + buttonTex.getSize().x, 150))
+			.setPosition(50 + buttonTex.getSize().x, 130))
 
 		.add(std::move(gui::TextArea("", font, 40)
 			.setMessage(std::move(gui::HoverMessage(gui::bind("This is the ", sf::Color::White) + 
-				gui::bind("current value ", sf::Color::Yellow) + gui::bind("of the ", sf::Color::White) + gui::bind("integer.", sf::Color::Yellow) +
+				gui::bind("current value ", sf::Color::Yellow) + gui::bind("of the ", sf::Color::White) +
+				gui::bind("integer.", sf::Color::Yellow) +
 				gui::bind("\nThis text gets updated automatically every 1 / 10 second.", sf::Color::Red), font, 15)
 				.setBackgroundFill(sf::Color::Black)
 				.setBorderFill(sf::Color::Yellow)
@@ -91,12 +96,13 @@ void main()
 					return gui::ColoredString(std::to_string(integer), integer > 0.0f ? sf::Color::Green : integer == 0.0f ? 
 						sf::Color::Yellow : sf::Color::Red);
 				})			
-			.setPosition(50, 50)))
+			.setPosition(50, 30)))
 
 		.add(gui::ProgressBar(gui::Icon(barBackgroundTex, true), gui::Icon(barFillTex, true))
 			.setUpdateFunction(std::bind(getProgress, LIMIT))
 			.setPosition(50, 175 + buttonTex.getSize().y)
-			.setFillMessage(gui::HoverMessage(gui::bind("This message is superfluous", sf::Color::Yellow), font).setBackgroundFill(sf::Color::Black))
+			.setFillMessage(gui::HoverMessage(gui::bind("This message is superfluous", sf::Color::Yellow), font)
+				.setBackgroundFill(sf::Color::Black))
 			.setMessage(gui::HoverMessage(gui::bind("This progress bar represents the integer's progress toward ", sf::Color::White)
 				+ gui::bind(std::to_string(LIMIT), sf::Color::White), font).setBackgroundFill(sf::Color::Black)))
 
@@ -108,7 +114,13 @@ void main()
 					
 		.add(gui::Button(gui::Icon(closeButtonTex, true),
 			[]() {running = false; })
-			.setPosition(window.getSize().x - closeButtonTex.getSize().x, 0));
+			.setPosition(window.getSize().x - closeButtonTex.getSize().x, 0))
+					
+		.add(gui::TextPane(gui::bind("This is a simple program demonstrating ", sf::Color::White) +
+			gui::bind("\nSHT Games", sf::Color::Yellow) + 
+			gui::bind("' GUI Library. If you encounter\nany issues, please contact us at:\n", sf::Color::White) +
+			gui::bind("shtgamessts@gmail.com", sf::Color::Yellow), font, 15)
+			.setPosition(120, 20));
 				
 	window.setVerticalSyncEnabled(true);
 
@@ -122,6 +134,6 @@ void main()
 		window.draw(main);
 
 		window.display();
-		window.clear(sf::Color(190, 190, 190, 255));
+		window.clear(sf::Color(150, 150, 150, 255));
 	}
 }

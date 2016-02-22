@@ -10,7 +10,13 @@ namespace gui
 	TextPane::TextPane(const ColoredText& newString, const sf::Font& newFont, const unsigned char newCharacterSize)
 		: font(&newFont), characterSize(newCharacterSize), string(newString)
 	{
-		setText(newString);
+		string.getText(text, *font, characterSize);
+	}
+
+	TextPane::TextPane(ColoredText&& newString, const sf::Font& newFont, const unsigned char newCharacterSize)
+		: font(&newFont), characterSize(newCharacterSize), string(std::move(newString))
+	{
+		string.getText(text, *font, characterSize);
 	}
 
 	TextPane::TextPane(const TextPane& copy)
@@ -96,14 +102,14 @@ namespace gui
 	TextPane& TextPane::setText(const ColoredText& newText)
 	{
 		string = newText;
-		newText.getText(text, *font, characterSize);
+		string.getText(text, *font, characterSize);
 		return *this;
 	}
 
 	TextPane& TextPane::setText(ColoredText&& newText)
 	{
 		string = std::move(newText);
-		newText.getText(text, *font, characterSize);
+		string.getText(text, *font, characterSize);
 		return *this;
 	}
 
