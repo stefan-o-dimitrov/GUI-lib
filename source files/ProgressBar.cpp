@@ -145,7 +145,7 @@ namespace gui
 			timeOfLastUpdate = Internals::timeSinceStart();
 		}
 
-		target.draw(spr, states);
+		target.draw(Icon::spr, states);
 		target.draw(fill, states);
 		Hoverable::draw(target, states);
 	}

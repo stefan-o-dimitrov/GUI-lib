@@ -35,28 +35,28 @@ namespace gui
 	Hoverable& Hoverable::clearMessage()
 	{
 		message.reset();
-		return (Hoverable&)*this;
+		return *this;
 	}
 
 
 	Hoverable& Hoverable::setMessage(const HoverMessage& newMessage)
 	{
 		message.reset(new HoverMessage(newMessage));
-		return (Hoverable&)*this;
+		return *this;
 	}
 
 
 	Hoverable& Hoverable::setMessage(HoverMessage&& tempMessage)
 	{
 		message.reset(new HoverMessage(std::move(tempMessage)));
-		return (Hoverable&)*this;
+		return *this;
 	}
 
 
 	Hoverable& Hoverable::setDelay(const float newDelay)
 	{
 		newDelay >= 0.0f ? delay = newDelay : delay = 0.0f;
-		return (Hoverable&)*this;
+		return *this;
 	}
 
 
@@ -65,7 +65,6 @@ namespace gui
 	{
 		setDelay(newDelay);
 	}
-
 
 	Hoverable::Hoverable(const Hoverable& copy)
 	{
@@ -83,27 +82,26 @@ namespace gui
 	void Hoverable::mouseEntered(const sf::Vector2f& mousePos)
 	{
 		if (!timeMouseEntered) timeMouseEntered.reset(new TimePoint(Internals::timeSinceStart()));
-		if (message) message->setPosition(mousePos.x, mousePos.y + 32);
+		if (message && message->fadeAmount != 1.0f) message->setPosition(mousePos.x, mousePos.y + 32);
 	}
 
 	void Hoverable::mouseLeft()
 	{
 		hasBeenPressed = false;
-		messageDelayPassed = false;
 		timeMouseEntered.reset();
 	}
 
 	const bool Hoverable::hasMessageDelayPassed() const
 	{
-		return messageDelayPassed;
+		return timeMouseEntered ? Duration(Internals::timeSinceStart() - *timeMouseEntered).count() > delay :
+			false;
 	}
 
 	void Hoverable::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
-		if (timeMouseEntered && (messageDelayPassed || Duration(Internals::timeSinceStart() - *timeMouseEntered).count() > delay) && message)
+		if (message)
 		{
-			states.shader = nullptr;
-			messageDelayPassed = true;
+			message->setFadeDirection(hasMessageDelayPassed());
 			target.draw(*message, states);
 		}
 	}

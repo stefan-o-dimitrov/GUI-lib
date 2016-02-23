@@ -37,8 +37,7 @@ namespace gui
 		const bool hasMessageDelayPassed()const;
 		mutable std::shared_ptr<HoverMessage> message = nullptr;
 		
-	private:		
-		mutable bool messageDelayPassed = false;
+	private:
 		float delay = 0.75f;
 		bool hasBeenPressed = false;
 		std::unique_ptr<TimePoint> timeMouseEntered = nullptr;

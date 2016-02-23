@@ -33,17 +33,29 @@ namespace gui
 		HoverMessage& setBorderThickness(const char thickness);
 
 	private:
-		
-		void updateBox()const;
-		void update()const override;
+
 		const sf::Vector2f& getPosition()const override;
 		HoverMessage& setPosition(const float x, const float y)override;
 		HoverMessage& setPosition(const sf::Vector2f& position)override;
+		HoverMessage& setFadeDirection(const bool direction);
+
+		void updateFadeAmount()const;
+		void updateBox()const;
+		void update()const override;
 
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 
+		mutable TimePoint timeOfLastAnimationStep;
+		mutable float fadeAmount = 0.0f;
+		mutable bool fadeDirection = false;
 		mutable sf::RectangleShape textBox;
 
-		static const unsigned char TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING;
+		static const bool loadShader();
+
+		static sf::Shader fadeShaderTextured, fadeShader;
+		static const std::string FADE_SHADER_TEXTURED, FADE_SHADER;
+		static const bool shaderLoadSuccessful;
+		static const float FADE_ANIMATION_DURATION;
+		static const unsigned char TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING, FADE_ANIMATION_FPS;
 	};
 };

@@ -10,7 +10,7 @@ namespace gui
 		\
 		void main()\
 		{\
-			vec4 color = texture2D( tex, gl_TexCoord[0].xy );\
+			vec4 color = texture2D( tex, gl_TexCoord[0].xy ) * gl_Color;\
 			float greyValue = color.r * 0.29 + color.g * 0.58 + color.b * 0.13;\
 			gl_FragColor = vec4(greyValue, greyValue, greyValue, color.a);\
 		}";
@@ -214,7 +214,10 @@ namespace gui
 	{
 		if (predicates && Duration(Internals::timeSinceStart() - timeOfLastPredicateCheck).count() > 1.0f / Internals::getUPS())
 			arePredicatesFulfilled();
-		predicatesFulfilled ? 0 : states.shader = &shader;
+
+		states.shader = !predicatesFulfilled && shaderLoadSuccessful ?
+			&shader : nullptr;
+
 		target.draw(spr, states);
 		if (name) target.draw(*name, states);
 		Hoverable::draw(target, states);
@@ -243,6 +246,7 @@ namespace gui
 		}
 		return predicatesFulfilled = true;
 	}
+
 	const bool Button::loadShader()
 	{
 		if (shader.loadFromMemory(STATE_SHADER, sf::Shader::Fragment))

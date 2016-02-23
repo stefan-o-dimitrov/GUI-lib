@@ -3,7 +3,28 @@
 
 namespace gui
 {
-	const unsigned char HoverMessage::TEXT_BOX_X_SPACING = 10, HoverMessage::TEXT_BOX_Y_SPACING = 10;
+	sf::Shader HoverMessage::fadeShaderTextured, HoverMessage::fadeShader;
+	const std::string HoverMessage::FADE_SHADER_TEXTURED =
+		"uniform sampler2D tex;\
+		uniform const float fadeAmount;\
+		\
+		void main()\
+		{\
+			vec4 color = texture2D( tex, gl_TexCoord[0].xy ) * gl_Color;\
+			gl_FragColor = vec4(color.r, color.g, color.b, color.a * fadeAmount);\
+		}",
+		HoverMessage::FADE_SHADER =
+		"uniform const float fadeAmount;\
+		\
+		void main()\
+		{\
+			gl_FragColor = vec4(gl_Color.r, gl_Color.g, gl_Color.b, gl_Color.a * fadeAmount);\
+		}\
+		";
+	const bool HoverMessage::shaderLoadSuccessful = HoverMessage::loadShader();
+	const float HoverMessage::FADE_ANIMATION_DURATION = 0.25f;
+	const unsigned char HoverMessage::TEXT_BOX_X_SPACING = 10, HoverMessage::TEXT_BOX_Y_SPACING = 10,
+		HoverMessage::FADE_ANIMATION_FPS = 20;
 
 	HoverMessage::HoverMessage(const ColoredText& str, const sf::Font& font, const unsigned char characterSize)
 		: TextPane(str, font, characterSize)
@@ -59,6 +80,18 @@ namespace gui
 		return textBox.getOutlineThickness();
 	}
 
+	void HoverMessage::updateFadeAmount() const
+	{
+		if ((fadeAmount < 1.0f && fadeDirection) || (fadeAmount > 0.0f && !fadeDirection) &&
+			Duration(Internals::timeSinceStart() - timeOfLastAnimationStep).count() > 1.0f / FADE_ANIMATION_FPS)
+		{
+			fadeAmount += (fadeDirection ? 1.0f : -1.0f) / (FADE_ANIMATION_FPS * FADE_ANIMATION_DURATION);
+			timeOfLastAnimationStep = Internals::timeSinceStart();
+			if (fadeAmount > 1.0f) fadeAmount = 1.0f;
+			else if (fadeAmount < 0.0f)	fadeAmount = 0.0f;
+		}
+	}
+
 	void HoverMessage::updateBox()const
 	{
 		const sf::FloatRect rect = TextPane::getGlobalBounds();
@@ -88,6 +121,12 @@ namespace gui
 	{
 		return setPosition(pos.x, pos.y);
 	}
+
+	HoverMessage& HoverMessage::setFadeDirection(const bool direction)
+	{
+		fadeDirection = direction;
+		return *this;
+	}
 	
 	HoverMessage& HoverMessage::setBackgroundFill(const sf::Color& color)
 	{
@@ -109,14 +148,37 @@ namespace gui
 	
 	void HoverMessage::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
-		sf::Vector2f pos = sf::Vector2f(position.x + textBox.getGlobalBounds().width > target.getSize().x ? 
+		if (shaderLoadSuccessful)
+		{
+			updateFadeAmount();
+			if (fadeAmount == 0.0f) return;
+			fadeShader.setParameter("fadeAmount", fadeAmount);
+			fadeShaderTextured.setParameter("fadeAmount", fadeAmount);
+		}
+
+		sf::Vector2f pos = sf::Vector2f(position.x + textBox.getGlobalBounds().width > target.getSize().x ?
 			(target.getSize().x - textBox.getGlobalBounds().width) - position.x : 0,
-			position.y + textBox.getGlobalBounds().height > target.getSize().y ? 
+			position.y + textBox.getGlobalBounds().height > target.getSize().y ?
 			(target.getSize().y - textBox.getGlobalBounds().height) - position.y : 0);
 
 		states.transform.translate(pos);
+		
+		states.shader = shaderLoadSuccessful ? &fadeShader : nullptr;
 		target.draw(textBox, states);
+
 		states.transform.translate(TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING);
+		states.shader = shaderLoadSuccessful ? &fadeShaderTextured : nullptr;
 		TextPane::draw(target, states);
+	}
+
+	const bool HoverMessage::loadShader()
+	{
+		if (fadeShader.loadFromMemory(FADE_SHADER, sf::Shader::Fragment)
+			&& fadeShaderTextured.loadFromMemory(FADE_SHADER_TEXTURED, sf::Shader::Fragment))
+		{
+			fadeShaderTextured.setParameter("tex", sf::Shader::CurrentTexture);
+			return true;
+		}
+		else return false;
 	}
 }
