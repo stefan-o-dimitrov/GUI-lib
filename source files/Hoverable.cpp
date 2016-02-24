@@ -82,7 +82,7 @@ namespace gui
 	void Hoverable::mouseEntered(const sf::Vector2f& mousePos)
 	{
 		if (!timeMouseEntered) timeMouseEntered.reset(new TimePoint(Internals::timeSinceStart()));
-		if (message && message->fadeAmount != 1.0f) message->setPosition(mousePos.x, mousePos.y + 32);
+		if (message && message->getFadeAmount() != 1.0f) message->setPosition(mousePos.x, mousePos.y + 32);
 	}
 
 	void Hoverable::mouseLeft()

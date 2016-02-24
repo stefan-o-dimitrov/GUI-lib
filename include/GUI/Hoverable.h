@@ -11,6 +11,14 @@ namespace gui
 	class Hoverable : public virtual Interactive
 	{
 	public:
+		Hoverable(const HoverMessage& message, const float delay = 0.75f);
+		Hoverable(const Hoverable& copy);
+		Hoverable(Hoverable&& temp) = default;
+		Hoverable() = default;
+
+		Hoverable& operator=(const Hoverable& copy);
+		Hoverable& operator=(Hoverable&& temp) = default;
+
 		virtual const bool input(const sf::Event& event)override;
 		virtual const bool contains(const sf::Vector2f& point)const = 0;
 
@@ -21,15 +29,7 @@ namespace gui
 		virtual Hoverable& setMessage(HoverMessage&& messageTemp);
 		Hoverable& setDelay(const float delaySeconds);
 
-	protected:		
-		Hoverable(const HoverMessage& message, const float delay = 0.75f);
-		Hoverable(const Hoverable& copy);
-		Hoverable(Hoverable&& temp) = default;
-		Hoverable() = default;
-
-		Hoverable& operator=(const Hoverable& copy);
-		Hoverable& operator=(Hoverable&& temp) = default;
-
+	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const;
 
 		void mouseEntered(const sf::Vector2f& position);

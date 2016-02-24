@@ -3,18 +3,18 @@
 
 namespace gui
 {
-	sf::Shader HoverMessage::fadeShaderTextured, HoverMessage::fadeShader;
-	const std::string HoverMessage::FADE_SHADER_TEXTURED =
+	sf::Shader HoverMessage::fadeShaderTextured, HoverMessage::fadeShaderNoTexture;
+	const std::string FADE_SHADER_TEXTURED =
 		"uniform sampler2D tex;\
-		uniform const float fadeAmount;\
+		uniform float fadeAmount;\
 		\
 		void main()\
 		{\
 			vec4 color = texture2D( tex, gl_TexCoord[0].xy ) * gl_Color;\
 			gl_FragColor = vec4(color.r, color.g, color.b, color.a * fadeAmount);\
 		}",
-		HoverMessage::FADE_SHADER =
-		"uniform const float fadeAmount;\
+		FADE_SHADER_NO_TEXTURE =
+		"uniform float fadeAmount;\
 		\
 		void main()\
 		{\
@@ -78,6 +78,11 @@ namespace gui
 	const char HoverMessage::getBorderThickness()const
 	{
 		return textBox.getOutlineThickness();
+	}
+
+	const float HoverMessage::getFadeAmount() const
+	{
+		return fadeAmount;
 	}
 
 	void HoverMessage::updateFadeAmount() const
@@ -148,11 +153,12 @@ namespace gui
 	
 	void HoverMessage::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
+		updateFadeAmount();
+		if (fadeAmount == 0.0f) return;
+
 		if (shaderLoadSuccessful)
 		{
-			updateFadeAmount();
-			if (fadeAmount == 0.0f) return;
-			fadeShader.setParameter("fadeAmount", fadeAmount);
+			fadeShaderNoTexture.setParameter("fadeAmount", fadeAmount);
 			fadeShaderTextured.setParameter("fadeAmount", fadeAmount);
 		}
 
@@ -163,7 +169,7 @@ namespace gui
 
 		states.transform.translate(pos);
 		
-		states.shader = shaderLoadSuccessful ? &fadeShader : nullptr;
+		states.shader = shaderLoadSuccessful ? &fadeShaderNoTexture : nullptr;
 		target.draw(textBox, states);
 
 		states.transform.translate(TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING);
@@ -173,7 +179,7 @@ namespace gui
 
 	const bool HoverMessage::loadShader()
 	{
-		if (fadeShader.loadFromMemory(FADE_SHADER, sf::Shader::Fragment)
+		if (fadeShaderNoTexture.loadFromMemory(FADE_SHADER_NO_TEXTURE, sf::Shader::Fragment)
 			&& fadeShaderTextured.loadFromMemory(FADE_SHADER_TEXTURED, sf::Shader::Fragment))
 		{
 			fadeShaderTextured.setParameter("tex", sf::Shader::CurrentTexture);

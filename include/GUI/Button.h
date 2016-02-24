@@ -79,8 +79,7 @@ namespace gui
 		static const bool loadShader();
 
 		static const bool          shaderLoadSuccessful;
-		static sf::Shader          shader;
-		static const std::string   STATE_SHADER;
+		static sf::Shader          grayscaleShader;
 	};
 };
 

@@ -5,7 +5,7 @@
 
 namespace gui
 {
-	const std::string Button::STATE_SHADER =
+	const std::string GRAYSCALE_SHADER =
 		"uniform sampler2D tex;\
 		\
 		void main()\
@@ -14,7 +14,7 @@ namespace gui
 			float greyValue = color.r * 0.29 + color.g * 0.58 + color.b * 0.13;\
 			gl_FragColor = vec4(greyValue, greyValue, greyValue, color.a);\
 		}";
-	sf::Shader Button::shader;
+	sf::Shader Button::grayscaleShader;
 	const bool Button::shaderLoadSuccessful = Button::loadShader();
 
 	Button::Button(const Icon& visual, const std::function<void()>& onClick)
@@ -216,7 +216,7 @@ namespace gui
 			arePredicatesFulfilled();
 
 		states.shader = !predicatesFulfilled && shaderLoadSuccessful ?
-			&shader : nullptr;
+			&grayscaleShader : nullptr;
 
 		target.draw(spr, states);
 		if (name) target.draw(*name, states);
@@ -249,9 +249,9 @@ namespace gui
 
 	const bool Button::loadShader()
 	{
-		if (shader.loadFromMemory(STATE_SHADER, sf::Shader::Fragment))
+		if (grayscaleShader.loadFromMemory(GRAYSCALE_SHADER, sf::Shader::Fragment))
 		{
-			shader.setParameter("tex", sf::Shader::CurrentTexture);
+			grayscaleShader.setParameter("tex", sf::Shader::CurrentTexture);
 			return true;
 		}
 		else return false;
