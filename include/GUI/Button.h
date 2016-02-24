@@ -1,7 +1,8 @@
 #ifndef GUI_BUTTON
 #define GUI_BUTTON
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Shader.hpp>
+
 #include <functional>
 #include <iostream>
 

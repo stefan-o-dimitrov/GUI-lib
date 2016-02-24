@@ -1,7 +1,9 @@
 #ifndef GUI_TEXT_AREA
 #define GUI_TEXT_AREA
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Text.hpp>
+
 #include <memory>
 #include <functional>
 

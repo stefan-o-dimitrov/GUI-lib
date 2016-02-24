@@ -28,6 +28,11 @@ namespace gui
 		return true;
 	}
 
+	const size_t Window::size() const
+	{
+		return elements.size();
+	}
+
 	Interactive& Window::at(const unsigned short index)
 	{
 		return *elements.at(index);
@@ -37,6 +42,7 @@ namespace gui
 	{
 		return *elements.at(index);
 	}
+
 	const bool Window::input(const sf::Event& event)
 	{
 		for (auto it = elements.begin(), end = elements.end(); it != end; ++it)
@@ -45,7 +51,7 @@ namespace gui
 				if ((*it)->input(event)) 
 				{
 					elements.begin()->swap(*it);
-					return true;
+					return event.type == sf::Event::MouseButtonPressed;
 				}
 			}
 			else it = elements.erase(it);
@@ -55,6 +61,6 @@ namespace gui
 	void Window::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		for (auto it = elements.rbegin(), end = elements.rend(); it != end; ++it)
-			target.draw(**it, states);
+			if(*it) target.draw(**it, states);
 	}
 }

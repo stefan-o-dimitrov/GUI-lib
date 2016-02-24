@@ -26,6 +26,7 @@ namespace gui
 
 		void clear();
 		const bool erase(const unsigned short index);
+		const size_t size()const;
 
 		Interactive& at(const unsigned short index);
 		const Interactive& at(const unsigned short index)const;

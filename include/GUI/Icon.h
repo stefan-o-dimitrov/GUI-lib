@@ -1,7 +1,9 @@
 #ifndef GUI_ICON
 #define GUI_ICON
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Rect.hpp>
+
 #include <memory>
 
 #include "Internals.h"

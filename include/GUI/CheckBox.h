@@ -1,8 +1,6 @@
 #ifndef GUI_CHECK_BOX
 #define GUI_CHECK_BOX
 
-#include <SFML/Graphics.hpp>
-
 #include "Button.h"
 
 namespace gui

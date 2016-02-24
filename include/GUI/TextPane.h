@@ -1,7 +1,9 @@
 #ifndef GUI_TEXT_PANE
 #define GUI_TEXT_PANE
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Text.hpp>
+
 #include <memory>
 
 #include "Internals.h"

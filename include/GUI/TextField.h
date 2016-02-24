@@ -1,7 +1,9 @@
 #ifndef GUI_TEXT_FIELD
 #define GUI_TEXT_FIELD
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Text.hpp>
+
 #include <functional>
 #include <memory>
 

@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Window/Event.hpp>
+
 #include <memory>
 #include <functional>
 

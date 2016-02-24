@@ -1,7 +1,11 @@
 #ifndef GUI_INTERACTIVE
 #define GUI_INTERACTIVE
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Window/Event.hpp>
+
 #include <memory>
 
 #include "Internals.h"

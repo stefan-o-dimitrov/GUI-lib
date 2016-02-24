@@ -1,7 +1,10 @@
 #ifndef GUI_AUDIO_SYSTEM
 #define GUI_AUDIO_SYSTEM
 
-#include <SFML/Audio.hpp>
+#include <SFML/Audio/Music.hpp>
+#include <SFML/Audio/Sound.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
+
 #include <unordered_map>
 #include <memory>
 
