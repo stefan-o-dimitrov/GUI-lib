@@ -1,6 +1,6 @@
 # GUI Library
 
-This is a high-level, object-oriented C++11 library for creating and using GUIs in an SFML context, with an intuitive,
+This is a high-level, object-oriented C++11 library for creating and using GUIs in an SFML 2.3.2 context, with an intuitive,
 easy-to-use API. Each class has been designed such that it can automatically update any text, progress, color and other
 properties it may have, without your having to do so manually in the main program loop.
 
