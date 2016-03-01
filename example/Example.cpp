@@ -1,11 +1,6 @@
 #include <GUI/GUI.h>
 
-#include <windows.h>
 #include <sstream>
-
-#ifdef _MSC_VER
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
-#endif
 
 #define LIMIT 10
 #define AMOUNT 1
