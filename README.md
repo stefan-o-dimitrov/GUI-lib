@@ -15,6 +15,7 @@ Currently, the library has the following GUI elements included:
   - Slider (WIP)
   - Scrollable List (WIP)
   - Window Manager (WIP)
+  - Audio Manager (WIP)
   
 Example code demonstrating the usage of those classes not marked as WIP can be found under example in the master branch,
 compileable and including the image and font resources used.
