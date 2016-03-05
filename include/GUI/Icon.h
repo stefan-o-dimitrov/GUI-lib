@@ -27,7 +27,6 @@
 
 #include <memory>
 
-#include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 
@@ -35,6 +34,7 @@
 #include "Interactive.h"
 #include "HoverMessage.h"
 #include "Hoverable.h"
+#include "TransparencyMap.h"
 
 namespace gui 
 {
@@ -67,10 +67,9 @@ namespace gui
 		virtual Icon& setMessage(const HoverMessage& message)override;
 		virtual Icon& setMessage(HoverMessage&& tempMessage)override;
 
-		Icon& setTexture(const sf::Texture& texture, const bool transparencyCheck = false);
-		Icon& setTransparencyCheck(const bool transparencyCheck);
-		Icon& setTextureRect(const sf::IntRect& textureRect);
-
+		virtual Icon& setTexture(const sf::Texture& texture, const bool transparencyCheck = false);
+		virtual Icon& setTransparencyCheck(const bool transparencyCheck);
+		virtual Icon& setTextureRect(const sf::IntRect& textureRect);
 
 	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const;
@@ -78,22 +77,6 @@ namespace gui
 		mutable sf::Sprite spr;
 				
 	private:
-		class TransparencyMap
-		{
-		public:
-			TransparencyMap(const sf::Texture& texture);
-			TransparencyMap(const TransparencyMap& copy);
-			TransparencyMap(TransparencyMap&& temp) = default;
-
-			const bool operator[](const sf::Vector2i& coordinates)const;
-
-			void generateTransparencyMap(const sf::Texture& texture);
-
-		private:
-			std::unique_ptr<std::unique_ptr<bool[]>[]> transparency = nullptr;
-			sf::Vector2i mapSize = sf::Vector2i(0, 0);
-		};
-
 		std::unique_ptr<TransparencyMap> transparency = nullptr;
 	};
 };

@@ -29,21 +29,31 @@
 #include <memory>
 
 #include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Window/Event.hpp>
 
 #include "Interactive.h"
+#include "TransparencyMap.h"
 
 namespace gui
 {
 	class Window final : public sf::Drawable
 	{
 	public:
+		Window(const sf::Texture& backgroundTexture, const bool transparencyCheck = false);
 		Window(const Window& copy) = delete;
 		Window(Window&& temp) = default;
 		Window() = default;
 		~Window() = default;
 
+		const bool contains(const sf::Vector2f& point)const;
 		const bool input(const sf::Event& event);
+
+		Window& setPosition(const sf::Vector2f& position);
+		Window& setPosition(const float x, const float y);
+		Window& setBackgroundTexture(const sf::Texture& texture, const bool transparencyCheck = false);
+		Window& setTransparencyCheck(const bool transparencyCheck);
+		Window& setBackgroundTextureRect(const sf::IntRect& textureRect);
 
 		Window& add(Interactive&& element);
 		Window& add(const Interactive& element);
@@ -57,7 +67,9 @@ namespace gui
 
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
-
+		
+		sf::Sprite background;
+		std::unique_ptr<TransparencyMap> transparency = nullptr;
 		std::vector<std::unique_ptr<Interactive>> elements;
 	};
 }

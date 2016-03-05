@@ -28,15 +28,24 @@
 
 namespace gui
 {
+	Window::Window(const sf::Texture& backgroundTexture, const bool transparencyCheck)
+	{
+		setBackgroundTexture(backgroundTexture, transparencyCheck);
+	}
+
 	Window& Window::add(Interactive&& element)
 	{
 		elements.emplace_back(element.move());
+		elements.back()->setPosition(elements.back()->getPosition().x + background.getPosition().x,
+			elements.back()->getPosition().y + background.getPosition().y);
 		return *this;
 	}
 
 	Window& Window::add(const Interactive& element)
 	{
 		elements.emplace_back(element.copy());
+		elements.back()->setPosition(elements.back()->getPosition().x + background.getPosition().x,
+			elements.back()->getPosition().y + background.getPosition().y);
 		return *this;
 	}
 
@@ -67,6 +76,50 @@ namespace gui
 		return *elements.at(index);
 	}
 
+	Window& Window::setPosition(const sf::Vector2f& position)
+	{
+		return setPosition(position.x, position.y);
+	}
+
+	Window& Window::setPosition(const float x, const float y)
+	{
+		const sf::Vector2f moveAmount(x - background.getPosition().x, y - background.getPosition().y);
+		background.setPosition(x, y);
+
+		for (auto it = elements.begin(), end = elements.end(); it != end; ++it)
+			(*it)->setPosition((*it)->getPosition().x + moveAmount.x,
+				(*it)->getPosition().y + moveAmount.y);
+		return *this;
+	}
+
+	Window& Window::setBackgroundTexture(const sf::Texture& texture, const bool transparencyCheck)
+	{
+		background.setTexture(texture);
+		return *this;
+	}
+
+	Window& Window::setTransparencyCheck(const bool transparencyCheck)
+	{
+		transparencyCheck ? transparency.reset(new TransparencyMap(*background.getTexture())) : transparency.reset();
+		return *this;
+	}
+
+	Window& Window::setBackgroundTextureRect(const sf::IntRect& textureRect)
+	{
+		background.setTextureRect(textureRect);
+		return *this;
+	}
+
+	const bool Window::contains(const sf::Vector2f& point) const
+	{
+		if (background.getGlobalBounds().contains(point))
+		{
+			if (!transparency) return true;
+			if (!(*transparency)[sf::Vector2i(point.x - background.getPosition().x, point.y - background.getPosition().y)]) return true;
+		}
+		return false;
+	}
+
 	const bool Window::input(const sf::Event& event)
 	{
 		for (auto it = elements.begin(), end = elements.end(); it != end; ++it)
@@ -84,6 +137,7 @@ namespace gui
 
 	void Window::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
+		target.draw(background, states);
 		for (auto it = elements.rbegin(), end = elements.rend(); it != end; ++it)
 			if(*it) target.draw(**it, states);
 	}
