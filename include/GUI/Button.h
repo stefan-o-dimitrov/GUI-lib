@@ -26,7 +26,7 @@
 #define GUI_BUTTON
 
 #include <functional>
-#include <iostream>
+#include <unordered_map>
 
 #include <SFML/Graphics/Shader.hpp>
 
@@ -37,21 +37,30 @@
 
 namespace gui 
 {
-	enum State
-	{
-		Hot,
-		Idle,
-		PressedDown
-	};
-	typedef std::vector<std::function<const bool()>>(PredicateArray);
 
 	class Button : public Icon
 	{
-		friend class CheckBox;
 	public:
+		enum State
+		{
+			Hot,
+			Idle,
+			PressedDown
+		};
 
-		Button(const Icon& visual, const std::function<void()>& onClick);
-		Button(Icon&& visual, std::function<void()>&& onClick);
+		enum Event
+		{
+			Pressed,
+			Released,
+			PredicatesFulfilled,
+			PredicatesUnfulfilled
+		};
+
+		typedef std::vector<std::function<const bool()>>(PredicateArray);
+		typedef std::unordered_map<Event, std::function<void()>>(EventMap);
+
+		Button(const Icon& visual, const EventMap& eventMap = EventMap());
+		Button(Icon&& visual, EventMap&& eventMap = EventMap());
 		Button(const Button& copy);
 		Button(Button&& temp) = default;
 		Button() = default;
@@ -67,7 +76,6 @@ namespace gui
 		virtual const State getState()const;
 		const std::shared_ptr<const HoverMessage> getPredicateMessage()const;
 		const std::shared_ptr<const TextArea> getName()const;
-		const std::shared_ptr<const unsigned short> getClickSound()const;
 
 		virtual Button& setPosition(const float x, const float y)override;
 		virtual Button& setPosition(const sf::Vector2f& position)override;
@@ -77,34 +85,34 @@ namespace gui
 
 		Button& setName(const TextArea& name);
 		Button& setName(TextArea&& nameTemp);
-		Button& setClickSound(const unsigned short soundKey);
 		Button& setPredicateMessage(const HoverMessage& message);
 		Button& setPredicateMessage(HoverMessage&& tempMessage);
 		Button& setPredicates(const PredicateArray& predicates);
 		Button& setPredicates(PredicateArray&& predicates);
+		Button& bindAction(const Event event, const std::function<void()>& action);
+		Button& bindAction(const Event event, std::function<void()>&& action);
 
 	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 
 	private:
-
-		const bool arePredicatesFulfilled()const;
+		void checkPredicates()const;
 
 		mutable std::shared_ptr<HoverMessage>   messageBuffer = nullptr;
-		mutable std::unique_ptr<ColoredText>    stringBuffer = nullptr;
 		mutable std::unique_ptr<PredicateArray> predicates = nullptr;
-		std::shared_ptr<unsigned short>         sound = nullptr;
 		std::shared_ptr<TextArea>               name = nullptr;
+		EventMap                                onEvent;
 
-		std::function<void()> onClickAction;
-		TimePoint             timeOfLastPredicateCheck;
-		State                 state = Idle;
-		mutable bool          predicatesFulfilled = true;
+		TimePoint    timeOfLastPredicateCheck;
+		State        state = Idle;
+		mutable bool predicatesFulfilled = true;
 
 		static const bool loadShader();
 
 		static const bool          shaderLoadSuccessful;
 		static sf::Shader          grayscaleShader;
+
+		friend class CheckBox;
 	};
 };
 

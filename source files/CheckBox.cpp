@@ -72,7 +72,7 @@ namespace gui
 		else return Button::contains(pos);
 	}
 
-	const State CheckBox::getState()const
+	const Button::State CheckBox::getState()const
 	{
 		if (checked) return trueState.getState();
 		else return Button::getState();
@@ -118,12 +118,12 @@ namespace gui
 		if (checked)
 		{
 			checked = false;
-			trueState.onClickAction();
+			if(trueState.onEvent.count(Released)) trueState.onEvent.at(Released)();
 		}
 		else
 		{
 			checked = true;
-			onClickAction();
+			if(Button::onEvent.count(Released)) Button::onEvent.at(Released)();
 		}
 	}
 
@@ -164,12 +164,6 @@ namespace gui
 		return *this;
 	}
 
-	CheckBox& CheckBox::setTrueStateClickSound(const unsigned short sound)
-	{
-		trueState.setClickSound(sound);
-		return *this;
-	}
-
 	CheckBox& CheckBox::setTrueStateMessage(const HoverMessage& newMessage)
 	{
 		trueState.setMessage(newMessage);
@@ -179,6 +173,18 @@ namespace gui
 	CheckBox& CheckBox::setTrueStateMessage(HoverMessage&& tempMessage)
 	{
 		trueState.setMessage(std::move(tempMessage));
+		return *this;
+	}
+
+	CheckBox& CheckBox::setTrueStatePredicateMessage(const HoverMessage& newMessage)
+	{
+		trueState.setPredicateMessage(newMessage);
+		return *this;
+	}
+
+	CheckBox& CheckBox::setTrueStatePredicateMessage(HoverMessage&& tempMessage)
+	{
+		trueState.setPredicateMessage(std::move(tempMessage));
 		return *this;
 	}
 

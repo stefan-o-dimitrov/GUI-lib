@@ -23,13 +23,12 @@
 ////////////////////////////////////////////////////////////
 
 #include "../include/GUI/Button.h"
-#include "../include/GUI/AudioSystem.h"
 
 #include <sstream>
 
 namespace gui
 {
-	const std::string GRAYSCALE_SHADER =
+	const std::string GRAYSCALE_SHADER_CODE =
 		"uniform sampler2D tex;\
 		\
 		void main()\
@@ -41,27 +40,25 @@ namespace gui
 	sf::Shader Button::grayscaleShader;
 	const bool Button::shaderLoadSuccessful = Button::loadShader();
 
-	Button::Button(const Icon& visual, const std::function<void()>& onClick)
-		: Icon(visual), onClickAction(onClick), state(Idle) 
+	Button::Button(const Icon& visual, const EventMap& eventMap)
+		: Icon(visual), onEvent(eventMap), state(Idle)
 	{
 		Icon::spr.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
 	}
 
-	Button::Button(Icon&& visual, std::function<void()>&& onClick)
-		: Icon(std::move(visual)), onClickAction(std::move(onClick)) 
+	Button::Button(Icon&& visual, EventMap&& eventMap)
+		: Icon(std::move(visual)), onEvent(std::move(eventMap))
 	{
 		Icon::spr.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
 	}
 
 	Button::Button(const Button& copy)
-		: Icon(copy), onClickAction(copy.onClickAction), state(Idle)
+		: Icon(copy), onEvent(copy.onEvent), state(Idle)
 	{
 		Icon::spr.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
 
 		if (copy.messageBuffer) messageBuffer.reset(new HoverMessage(*copy.messageBuffer));
-		if (copy.stringBuffer) stringBuffer.reset(new ColoredText(*copy.stringBuffer));
 		if (copy.name) name.reset(new TextArea(*copy.name));
-		if (copy.sound) sound.reset(new unsigned short(*copy.sound));
 		if (copy.predicates) predicates.reset(new PredicateArray(*copy.predicates));
 	}
 
@@ -89,7 +86,7 @@ namespace gui
 				return true;
 			}
 			else
-			{
+			{			
 				if (predicatesFulfilled && state != Idle)
 					Icon::spr.setColor(sf::Color(0.85 * 255, 0.85 * 255, 0.85 * 255, 255));
 				state = Idle;
@@ -98,6 +95,8 @@ namespace gui
 		case sf::Event::MouseButtonPressed:
 			if (Icon::input(event))
 			{
+				if (onEvent.count(Pressed))
+					onEvent.at(Pressed)();
 				if (predicatesFulfilled && state != PressedDown)
 					Icon::spr.setColor(sf::Color(0.7 * 255, 0.7 * 255, 0.7 * 255, 255));
 				state = PressedDown;
@@ -109,11 +108,8 @@ namespace gui
 			{
 				if (predicatesFulfilled)
 				{
-					if (state == PressedDown)
-					{
-						if (sound) AudioSystem::playSound(*sound);
-						onClickAction();
-					}
+					if (state == PressedDown && onEvent.count(Released))
+						onEvent.at(Released)();
 					if (state != Hot)
 						Icon::spr.setColor(sf::Color(255, 255, 255, 255));
 					state = Hot;
@@ -126,7 +122,7 @@ namespace gui
 		}
 	}
 
-	const State Button::getState()const
+	const Button::State Button::getState()const
 	{
 		return state;
 	}
@@ -148,16 +144,12 @@ namespace gui
 		return name;
 	}
 
-	const std::shared_ptr<const unsigned short> Button::getClickSound()const
-	{
-		return sound;
-	}
-
 	Button& Button::setName(const TextArea& newName)
 	{
 		name.reset(new TextArea(newName));
 		name->message.reset();
-		name->setPosition(getPosition().x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2, getPosition().y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
+		name->setPosition(getPosition().x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2,
+			getPosition().y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
 		return *this;
 	}
 
@@ -166,13 +158,8 @@ namespace gui
 		name.reset(new TextArea(std::move(tempName)));
 		name->message.reset();
 		name->updateFunction.reset();
-		name->setPosition(getPosition().x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2, getPosition().y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
-		return *this;
-	}
-
-	Button& Button::setClickSound(const unsigned short newSound)
-	{
-		sound ? *sound = newSound : sound.reset(new unsigned short(newSound));
+		name->setPosition(getPosition().x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2,
+			getPosition().y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
 		return *this;
 	}
 
@@ -213,7 +200,8 @@ namespace gui
 	Button& Button::setPosition(const float x, const float y)
 	{
 		Icon::setPosition(x, y);
-		if (name) name->setPosition(x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2, y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
+		if (name) name->setPosition(x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2,
+			y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
 		return *this;
 	}
 
@@ -234,10 +222,26 @@ namespace gui
 		return *this;
 	}
 
+	Button& Button::bindAction(const Event event, const std::function<void()>& action)
+	{
+		if (onEvent.count(event))
+			onEvent.at(event) = action;
+		else
+			onEvent.emplace(event, action);
+	}
+
+	Button& Button::bindAction(const Event event, std::function<void()>&& action)
+	{
+		if (onEvent.count(event))
+			onEvent.at(event) = std::move(action);
+		else
+			onEvent.emplace(event, std::move(action));
+	}
+
 	void Button::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
 		if (predicates && Duration(Internals::timeSinceStart() - timeOfLastPredicateCheck).count() > 1.0f / Internals::getUPS())
-			arePredicatesFulfilled();
+			checkPredicates();
 
 		states.shader = !predicatesFulfilled && shaderLoadSuccessful ?
 			&grayscaleShader : nullptr;
@@ -247,33 +251,37 @@ namespace gui
 		Hoverable::draw(target, states);
 	}
 
-	const bool Button::arePredicatesFulfilled()const
+	void Button::checkPredicates()const
 	{
-		if (predicates)
-		{
-			for (auto it = predicates->begin(), end = predicates->end(); it != end; ++it)
-				if (!(*it)())
-				{
-					if (predicatesFulfilled)
-					{
-						spr.setColor(sf::Color(255, 255, 255, 255));
-						message.swap(messageBuffer);
-					}
-					return predicatesFulfilled = false;
-				}
+		if (!predicates) return;
 
-			if (!predicatesFulfilled)
+		for (auto it = predicates->begin(), end = predicates->end(); it != end; ++it)
+			if (!(*it)())
 			{
-				spr.setColor(sf::Color((1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, 255));
-				message.swap(messageBuffer);
+				if (predicatesFulfilled)
+				{
+					if (onEvent.count(PredicatesUnfulfilled))
+						onEvent.at(PredicatesUnfulfilled)();
+					message.swap(messageBuffer);
+					spr.setColor(sf::Color(255, 255, 255, 255));
+					predicatesFulfilled = false;
+				}
+				return;
 			}
+
+		if (!predicatesFulfilled)
+		{
+			if (onEvent.count(PredicatesFulfilled))
+				onEvent.at(PredicatesFulfilled)();
+			message.swap(messageBuffer);
+			spr.setColor(sf::Color((1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, 255));
+			predicatesFulfilled = true;
 		}
-		return predicatesFulfilled = true;
 	}
 
 	const bool Button::loadShader()
 	{
-		if (grayscaleShader.loadFromMemory(GRAYSCALE_SHADER, sf::Shader::Fragment))
+		if (grayscaleShader.loadFromMemory(GRAYSCALE_SHADER_CODE, sf::Shader::Fragment))
 		{
 			grayscaleShader.setParameter("tex", sf::Shader::CurrentTexture);
 			return true;

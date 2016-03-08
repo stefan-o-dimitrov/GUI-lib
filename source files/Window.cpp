@@ -28,9 +28,15 @@
 
 namespace gui
 {
-	Window::Window(const sf::Texture& backgroundTexture, const bool transparencyCheck)
+	Window::Window(const Window& copy)
+		: background(copy.background), movable(copy.movable)
 	{
-		setBackgroundTexture(backgroundTexture, transparencyCheck);
+		copy.transparency ? transparency.reset(new TransparencyMap(*copy.transparency)) : 0;
+		copy.mouseDragOffset ? mouseDragOffset.reset(new sf::Vector2f(*copy.mouseDragOffset)) : 0;
+
+		elements.reserve(copy.elements.size());
+		for (auto it = copy.elements.begin(), end = copy.elements.end(); it != end; ++it)
+			elements.emplace_back(std::move((*it)->copy()));
 	}
 
 	Window& Window::add(Interactive&& element)
@@ -110,6 +116,11 @@ namespace gui
 		return *this;
 	}
 
+	Window& Window::setMovable(const bool isMovable)
+	{
+		movable = isMovable;
+	}
+	
 	const bool Window::contains(const sf::Vector2f& point) const
 	{
 		if (background.getGlobalBounds().contains(point))
@@ -123,16 +134,36 @@ namespace gui
 	const bool Window::input(const sf::Event& event)
 	{
 		for (auto it = elements.begin(), end = elements.end(); it != end; ++it)
-			if (*it)
+			if ((*it)->input(event)) 
 			{
-				if ((*it)->input(event)) 
-				{
-					elements.begin()->swap(*it);
-					return event.type == sf::Event::MouseButtonPressed;
-				}
+				elements.begin()->swap(*it);
+				return true;
 			}
-			else it = elements.erase(it);
+
+		if (movable)
+			switch (event.type)
+			{
+			case sf::Event::MouseMoved:
+				if (mouseDragOffset)
+					setPosition(sf::Vector2f(event.mouseMove.x - mouseDragOffset->x, event.mouseMove.y - mouseDragOffset->y));
+			case sf::Event::MouseButtonPressed:
+				if (contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)))
+					mouseDragOffset.reset(new sf::Vector2f(event.mouseButton.x - getPosition().x, event.mouseButton.y - getPosition().y));
+			case sf::Event::MouseButtonReleased:
+				mouseDragOffset.reset();
+			}
+
 		return false;
+	}
+
+	const sf::Vector2f& Window::getPosition() const
+	{
+		return background.getPosition();
+	}
+
+	const bool Window::isMovable() const
+	{
+		return movable;
 	}
 
 	void Window::draw(sf::RenderTarget& target, sf::RenderStates states) const

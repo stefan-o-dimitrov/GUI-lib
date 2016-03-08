@@ -32,8 +32,6 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Window/Event.hpp>
 
-#include "Internals.h"
-
 namespace gui 
 {
 	class Interactive : public sf::Drawable

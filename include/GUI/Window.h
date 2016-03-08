@@ -40,8 +40,7 @@ namespace gui
 	class Window final : public sf::Drawable
 	{
 	public:
-		Window(const sf::Texture& backgroundTexture, const bool transparencyCheck = false);
-		Window(const Window& copy) = delete;
+		Window(const Window& copy);
 		Window(Window&& temp) = default;
 		Window() = default;
 		~Window() = default;
@@ -49,11 +48,15 @@ namespace gui
 		const bool contains(const sf::Vector2f& point)const;
 		const bool input(const sf::Event& event);
 
+		const sf::Vector2f& getPosition()const;
+		const bool isMovable()const;
+
 		Window& setPosition(const sf::Vector2f& position);
 		Window& setPosition(const float x, const float y);
 		Window& setBackgroundTexture(const sf::Texture& texture, const bool transparencyCheck = false);
 		Window& setTransparencyCheck(const bool transparencyCheck);
 		Window& setBackgroundTextureRect(const sf::IntRect& textureRect);
+		Window& setMovable(const bool isMovable);
 
 		Window& add(Interactive&& element);
 		Window& add(const Interactive& element);
@@ -70,6 +73,8 @@ namespace gui
 		
 		sf::Sprite background;
 		std::unique_ptr<TransparencyMap> transparency = nullptr;
+		bool movable = false;
+		std::unique_ptr<sf::Vector2f> mouseDragOffset = nullptr;
 		std::vector<std::unique_ptr<Interactive>> elements;
 	};
 }

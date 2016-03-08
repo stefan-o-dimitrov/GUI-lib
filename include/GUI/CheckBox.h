@@ -64,9 +64,10 @@ namespace gui
 		CheckBox& setTrueStateTexture(const sf::Texture& texture, const bool transparencyCheck = false);
 		CheckBox& setTrueStateTransparencyCheck(const bool transparencyCheck);
 		CheckBox& setTrueStateTextureRect(const sf::IntRect& textureRect);
-		CheckBox& setTrueStateClickSound(const unsigned short soundKey);
 		CheckBox& setTrueStateMessage(const HoverMessage& message);
-		CheckBox& setTrueStateMessage(HoverMessage&& messageTemp);
+		CheckBox& setTrueStateMessage(HoverMessage&& tempMessage);
+		CheckBox& setTrueStatePredicateMessage(const HoverMessage& message);
+		CheckBox& setTrueStatePredicateMessage(HoverMessage&& tempMessage);
 		CheckBox& setTrueStatePredicates(const PredicateArray& predicates);
 		CheckBox& setTrueStatePredicates(PredicateArray&& predicates);
 
