@@ -125,11 +125,13 @@ namespace gui
 	ColoredText& operator+(ColoredText& lhs, const ColoredString& rhs)
 	{
 		lhs.text.emplace_back(new ColoredString(rhs));
+		return lhs;
 	}
 
 	ColoredText& operator+(ColoredText& lhs, ColoredString&& rhs)
 	{
 		lhs.text.emplace_back(new ColoredString(std::move(rhs)));
+		return lhs;
 	}
 
 	ColoredText& operator+(ColoredText& lhs, const std::function<ColoredText()>& rhs)

@@ -38,7 +38,7 @@
 
 namespace gui 
 {
-	class HoverMessage final : public TextPane
+	class HoverMessage final : private TextPane, public virtual sf::Drawable
 	{
 	public:
 		HoverMessage(const ColoredText& string, const sf::Font& font, const unsigned char characterSize = 13);
@@ -50,24 +50,31 @@ namespace gui
 		HoverMessage& operator=(HoverMessage&& temp);
 
 		const sf::Vector2f& getPosition()const override;
+		const sf::Font& getFont()const override;
+		const unsigned char getCharacterSize()const override;
+
 		const sf::FloatRect getGlobalBounds()const;
 		const sf::Color& getBackgroundFill()const;
 		const sf::Color& getBorderFill()const;
 		const char getBorderThickness()const;
 		const float getFadeAmount()const;
+		
+		HoverMessage& setPosition(const float x, const float y)override;
+		HoverMessage& setPosition(const sf::Vector2f& position)override;
+		HoverMessage& setText(const ColoredText& text)override;
+		HoverMessage& setText(ColoredText&& text)override;
+		HoverMessage& setFont(const sf::Font& font)override;
+		HoverMessage& setCharacterSize(const unsigned char characterSize)override;
 
 		HoverMessage& setBackgroundFill(const sf::Color& color);
 		HoverMessage& setBorderFill(const sf::Color& color);
 		HoverMessage& setBorderThickness(const char thickness);
-		HoverMessage& setPosition(const float x, const float y)override;
-		HoverMessage& setPosition(const sf::Vector2f& position)override;
 		HoverMessage& setFadeDirection(const bool direction);
 
-
 	private:
+		void update()const override;
 		void updateFadeAmount()const;
 		void updateBox()const;
-		void update()const override;
 
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 

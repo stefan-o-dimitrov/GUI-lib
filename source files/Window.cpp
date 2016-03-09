@@ -119,6 +119,7 @@ namespace gui
 	Window& Window::setMovable(const bool isMovable)
 	{
 		movable = isMovable;
+		return *this;
 	}
 	
 	const bool Window::contains(const sf::Vector2f& point) const
@@ -146,11 +147,15 @@ namespace gui
 			case sf::Event::MouseMoved:
 				if (mouseDragOffset)
 					setPosition(sf::Vector2f(event.mouseMove.x - mouseDragOffset->x, event.mouseMove.y - mouseDragOffset->y));
+				return true;
 			case sf::Event::MouseButtonPressed:
 				if (contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)))
-					mouseDragOffset.reset(new sf::Vector2f(event.mouseButton.x - getPosition().x, event.mouseButton.y - getPosition().y));
+					mouseDragOffset.reset(new sf::Vector2f(event.mouseButton.x - getPosition().x,
+						event.mouseButton.y - getPosition().y));
+				return true;
 			case sf::Event::MouseButtonReleased:
 				mouseDragOffset.reset();
+				return true;
 			}
 
 		return false;

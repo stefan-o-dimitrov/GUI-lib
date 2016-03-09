@@ -44,6 +44,7 @@ namespace gui
 
 		const bool input(const sf::Event& event)override;
 		const bool contains(const sf::Vector2f& point)const;
+		void toggle();
 
 		const State getState()const override;
 		const bool isChecked()const;
@@ -55,12 +56,10 @@ namespace gui
 		const std::shared_ptr<const HoverMessage> getTrueStateMessage()const;
 		const std::shared_ptr<const HoverMessage> getTrueStatePredicateMessage()const;
 		
-		void toggle();
-
 		CheckBox& setPosition(const float x, const float y)override;
 		CheckBox& setPosition(const sf::Vector2f& position)override;
-
 		CheckBox& setIsChecked(const bool isChecked);
+
 		CheckBox& setTrueStateTexture(const sf::Texture& texture, const bool transparencyCheck = false);
 		CheckBox& setTrueStateTransparencyCheck(const bool transparencyCheck);
 		CheckBox& setTrueStateTextureRect(const sf::IntRect& textureRect);

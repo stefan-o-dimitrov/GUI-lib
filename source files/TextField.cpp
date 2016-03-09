@@ -79,7 +79,7 @@ namespace gui
 
 	const sf::Vector2f& TextField::getPosition() const
 	{
-		// TODO: insert return statement here
+		return sf::Vector2f();
 	}
 
 	const sf::FloatRect TextField::getGlobalBounds() const
@@ -128,6 +128,7 @@ namespace gui
 	{
 		if (!prompt) prompt.reset(new sf::Text("", *currentInput.getFont(), currentInput.getCharacterSize()));
 		prompt->setColor(color);
+		return *this;
 	}
 
 	TextField& TextField::clearPrompt()

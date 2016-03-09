@@ -138,6 +138,16 @@ namespace gui
 		return position;
 	}
 
+	const sf::Font& HoverMessage::getFont() const
+	{
+		return TextPane::getFont();
+	}
+
+	const unsigned char HoverMessage::getCharacterSize() const
+	{
+		return TextPane::getCharacterSize();
+	}
+
 	HoverMessage& HoverMessage::setPosition(const float x, const float y)
 	{
 		position.x = x;
@@ -149,6 +159,30 @@ namespace gui
 	HoverMessage& HoverMessage::setPosition(const sf::Vector2f& pos)
 	{
 		return setPosition(pos.x, pos.y);
+	}
+
+	HoverMessage& HoverMessage::setText(const ColoredText& newText)
+	{
+		TextPane::setText(newText);
+		return *this;
+	}
+
+	HoverMessage& HoverMessage::setText(ColoredText&& newText)
+	{
+		TextPane::setText(std::move(newText));
+		return *this;
+	}
+
+	HoverMessage& HoverMessage::setFont(const sf::Font& newFont)
+	{
+		TextPane::setFont(newFont);
+		return *this;
+	}
+
+	HoverMessage& HoverMessage::setCharacterSize(const unsigned char newCharacterSize)
+	{
+		TextPane::setCharacterSize(newCharacterSize);
+		return *this;
 	}
 
 	HoverMessage& HoverMessage::setFadeDirection(const bool direction)

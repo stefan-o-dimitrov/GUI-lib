@@ -56,6 +56,7 @@ namespace gui
 		string = copy.string;
 		for (auto it = copy.text.begin(), end = copy.text.end(); it != end; ++it)
 			text.push_back(std::unique_ptr<sf::Text>(new sf::Text(*(*it))));
+		return *this;
 	}
 
 	std::unique_ptr<Interactive> TextPane::copy() const

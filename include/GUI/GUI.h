@@ -41,5 +41,6 @@
 #include "TextField.h"
 #include "TextPane.h"
 #include "Window.h"
+#include "WindowManager.h"
 
 #endif

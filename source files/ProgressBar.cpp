@@ -142,6 +142,7 @@ namespace gui
 	ProgressBar& ProgressBar::clearFillMessage()
 	{
 		fill.clearMessage();
+		return *this;
 	}
 
 	ProgressBar& ProgressBar::setFillMessage(const HoverMessage& message)
@@ -159,6 +160,7 @@ namespace gui
 	ProgressBar& ProgressBar::setFillDelay(const float delaySeconds)
 	{
 		fill.setDelay(delaySeconds);
+		return *this;
 	}
 
 	void ProgressBar::draw(sf::RenderTarget& target, sf::RenderStates states) const

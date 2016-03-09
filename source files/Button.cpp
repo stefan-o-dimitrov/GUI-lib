@@ -228,6 +228,7 @@ namespace gui
 			onEvent.at(event) = action;
 		else
 			onEvent.emplace(event, action);
+		return *this;
 	}
 
 	Button& Button::bindAction(const Event event, std::function<void()>&& action)
@@ -236,6 +237,7 @@ namespace gui
 			onEvent.at(event) = std::move(action);
 		else
 			onEvent.emplace(event, std::move(action));
+		return *this;
 	}
 
 	void Button::draw(sf::RenderTarget& target, sf::RenderStates states)const

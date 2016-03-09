@@ -60,6 +60,8 @@ namespace gui
 			buffer.emplace_back(std::move(*it));
 
 		target = std::move(buffer);
+
+		return *this;
 	}
 
 	WindowManager& WindowManager::pushBack(Window&& window, const bool fullscreen)
@@ -74,16 +76,20 @@ namespace gui
 			buffer.emplace_back(std::move(*it));
 
 		target = std::move(buffer);
+
+		return *this;
 	}
 
 	WindowManager& WindowManager::pushFront(const Window& window, const bool fullscreen)
 	{
 		fullscreen ? windows.emplace_back(new Window(window)) : dialogBoxes.emplace_back(new Window(window));
+		return *this;
 	}
 
 	WindowManager& WindowManager::pushFront(Window&& window, const bool fullscreen)
 	{
 		fullscreen ? windows.emplace_back(new Window(std::move(window))) : dialogBoxes.emplace_back(new Window(std::move(window)));
+		return *this;
 	}
 
 	void WindowManager::clear(const bool fullscreen)

@@ -109,8 +109,8 @@ namespace gui
 
 		static const bool loadShader();
 
-		static const bool          shaderLoadSuccessful;
-		static sf::Shader          grayscaleShader;
+		static const bool shaderLoadSuccessful;
+		static sf::Shader grayscaleShader;
 
 		friend class CheckBox;
 	};

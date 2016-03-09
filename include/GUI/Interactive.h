@@ -34,7 +34,7 @@
 
 namespace gui 
 {
-	class Interactive : public sf::Drawable
+	class Interactive : public virtual sf::Drawable
 	{
 	public:
 		virtual ~Interactive() {};
@@ -44,7 +44,7 @@ namespace gui
 
 		virtual const bool input(const sf::Event& event) = 0;
 
-		virtual const sf::FloatRect getGlobalBounds(void) const = 0;
+		virtual const sf::FloatRect getGlobalBounds() const = 0;
 		virtual const sf::Vector2f& getPosition() const = 0;
 
 		virtual Interactive& setPosition(const float x, const float y) = 0;
