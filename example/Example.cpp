@@ -39,7 +39,7 @@ void main()
 	
 	gui::WindowManager main;
 	sf::RenderWindow window(sf::VideoMode(1600, 800), "Example", sf::Style::None);
-	
+
 	main.pushFront(gui::Window()
 		.setPosition(300, 100)
 		.setBackgroundTexture(windowBackground, true)
@@ -77,6 +77,9 @@ void main()
 					integer += amount;
 				}, AMOUNT))
 			.setPredicates(gui::Button::PredicateArray{ std::bind(canChange, LIMIT, false) })
+			.setPredicateMessage(gui::HoverMessage(gui::bind("Integer is greater than ", sf::Color::White) +
+				gui::bind(std::to_string(LIMIT), sf::Color::Yellow),
+				font, 15))
 			.setName(gui::TextArea("Increase Int by " + std::to_string(AMOUNT), font, 18).setColor(sf::Color::Green))
 			.setDelay(0.5f)
 			.setMessage(std::move(gui::HoverMessage(gui::bind("This button ", sf::Color::White) +
@@ -84,6 +87,7 @@ void main()
 				font)
 				.setBackgroundFill(sf::Color::Black)
 				.setBorderFill(sf::Color::Blue)
+				.setBorderThickness(-1.0f)
 				.setBorderThickness(2.0f)
 				.setCharacterSize(15)))
 			.setPosition(50 + buttonTex.getSize().x, 130))
@@ -128,7 +132,11 @@ void main()
 		.add(gui::TextPane(gui::bind("This is a simple program demonstrating ", sf::Color::White) +
 			gui::bind("\nSHT Games", sf::Color::Yellow) + 
 			gui::bind("' GUI Library. If you encounter\nany issues, please contact us at:\n", sf::Color::White) +
-			gui::bind("shtgamessts@gmail.com", sf::Color::Yellow), font, 15)
+			gui::bind("shtgamessts@gmail.com", sf::Color::Yellow) + []() 
+				{
+					return integer == 0 ? gui::bind("", sf::Color()) :
+						gui::bind("Tikva", sf::Color::Red);
+				}, font, 15)
 			.setPosition(120, 20)), false);
 				
 	window.setVerticalSyncEnabled(true);

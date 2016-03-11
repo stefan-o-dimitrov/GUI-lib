@@ -40,14 +40,14 @@ namespace gui
 	sf::Shader Button::grayscaleShader;
 	const bool Button::shaderLoadSuccessful = Button::loadShader();
 
-	Button::Button(const Icon& visual, const EventMap& eventMap)
-		: Icon(visual), onEvent(eventMap), state(Idle)
+	Button::Button(const Icon& visual)
+		: Icon(visual), state(Idle)
 	{
 		Icon::spr.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
 	}
 
-	Button::Button(Icon&& visual, EventMap&& eventMap)
-		: Icon(std::move(visual)), onEvent(std::move(eventMap))
+	Button::Button(Icon&& visual)
+		: Icon(std::move(visual))
 	{
 		Icon::spr.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
 	}
@@ -129,14 +129,12 @@ namespace gui
 
 	const std::shared_ptr<const HoverMessage> Button::getPredicateMessage()const
 	{
-		if (predicatesFulfilled) return messageBuffer;
-		else return message;
+		return predicatesFulfilled ? messageBuffer : message;
 	}
 
 	const std::shared_ptr<const HoverMessage> Button::getMessage()const
 	{
-		if (predicatesFulfilled) return message;
-		else return messageBuffer;
+		return predicatesFulfilled ? message : messageBuffer;
 	}
 
 	const std::shared_ptr<const TextArea> Button::getName()const
@@ -163,38 +161,52 @@ namespace gui
 		return *this;
 	}
 
+	Button& Button::clearPredicateMessage()
+	{
+		if (predicatesFulfilled) messageBuffer.reset();
+		else Hoverable::clearMessage();
+		return *this;
+	}
+
 	Button& Button::clearMessage()
 	{
-		Hoverable::clearMessage();
+		if (predicatesFulfilled) Hoverable::clearMessage();
+		else messageBuffer.reset();
 		return *this;
 	}
 
 	Button& Button::setMessage(const HoverMessage& newMessage)
 	{
-		if (predicatesFulfilled) message.reset(new HoverMessage(newMessage));
-		else messageBuffer.reset(new HoverMessage(newMessage));
+		predicatesFulfilled ? message.reset(new HoverMessage(newMessage)) :
+			messageBuffer.reset(new HoverMessage(newMessage));
 		return *this;
 	}
 
 	Button& Button::setMessage(HoverMessage&& tempMessage)
 	{
-		if (predicatesFulfilled) message.reset(new HoverMessage(std::move(tempMessage)));
-		else messageBuffer.reset(new HoverMessage(std::move(tempMessage)));
+		predicatesFulfilled ? message.reset(new HoverMessage(std::move(tempMessage))) :
+			messageBuffer.reset(new HoverMessage(std::move(tempMessage)));
 		return *this;
 	}
 
 	Button& Button::setPredicateMessage(const HoverMessage& newMessage)
 	{
-		predicatesFulfilled ? messageBuffer ? *messageBuffer = newMessage : messageBuffer.reset(new HoverMessage(newMessage))
-			: message ? *message = newMessage : message.reset(new HoverMessage(newMessage));
+		predicatesFulfilled ? messageBuffer.reset(new HoverMessage(newMessage))
+			: message.reset(new HoverMessage(newMessage));
 		return *this;
 	}
 
 	Button& Button::setPredicateMessage(HoverMessage&& tempMessage)
 	{
-		predicatesFulfilled ? messageBuffer ? *messageBuffer = std::move(tempMessage) : messageBuffer.reset(new HoverMessage(std::move(tempMessage)))
-			: message ? *message = std::move(tempMessage) : message.reset(new HoverMessage(std::move(tempMessage)));
+		predicatesFulfilled ? messageBuffer.reset(new HoverMessage(std::move(tempMessage)))
+			: message.reset(new HoverMessage(std::move(tempMessage)));
 		return *this;
+	}
+
+	Button& Button::clearPredicates()
+	{
+		predicates.reset();
+		checkPredicates();
 	}
 
 	Button& Button::setPosition(const float x, const float y)
@@ -224,19 +236,15 @@ namespace gui
 
 	Button& Button::bindAction(const Event event, const std::function<void()>& action)
 	{
-		if (onEvent.count(event))
-			onEvent.at(event) = action;
-		else
-			onEvent.emplace(event, action);
+		if (onEvent.count(event)) onEvent.at(event) = action;
+		else onEvent.emplace(event, action);
 		return *this;
 	}
 
 	Button& Button::bindAction(const Event event, std::function<void()>&& action)
 	{
-		if (onEvent.count(event))
-			onEvent.at(event) = std::move(action);
-		else
-			onEvent.emplace(event, std::move(action));
+		if (onEvent.count(event)) onEvent.at(event) = std::move(action);
+		else onEvent.emplace(event, std::move(action));
 		return *this;
 	}
 
@@ -255,15 +263,23 @@ namespace gui
 
 	void Button::checkPredicates()const
 	{
-		if (!predicates) return;
+		if (!predicates)
+		{
+			if (!predicatesFulfilled)
+			{
+				message.swap(messageBuffer);
+				spr.setColor(sf::Color((1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, 255));
+				predicatesFulfilled = true;
+			}
+			return;
+		}
 
 		for (auto it = predicates->begin(), end = predicates->end(); it != end; ++it)
 			if (!(*it)())
 			{
 				if (predicatesFulfilled)
 				{
-					if (onEvent.count(PredicatesUnfulfilled))
-						onEvent.at(PredicatesUnfulfilled)();
+					if (onEvent.count(PredicatesUnfulfilled)) onEvent.at(PredicatesUnfulfilled)();
 					message.swap(messageBuffer);
 					spr.setColor(sf::Color(255, 255, 255, 255));
 					predicatesFulfilled = false;
@@ -273,8 +289,7 @@ namespace gui
 
 		if (!predicatesFulfilled)
 		{
-			if (onEvent.count(PredicatesFulfilled))
-				onEvent.at(PredicatesFulfilled)();
+			if (onEvent.count(PredicatesFulfilled)) onEvent.at(PredicatesFulfilled)();
 			message.swap(messageBuffer);
 			spr.setColor(sf::Color((1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, 255));
 			predicatesFulfilled = true;

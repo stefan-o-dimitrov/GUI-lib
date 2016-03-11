@@ -76,7 +76,7 @@ namespace gui
 
 	private:
 		mutable unique_ptr_vector<sf::Text> text;
-		const sf::Font* font = nullptr;
+		const sf::Font* font;
 		unsigned char characterSize = 13;
 		ColoredText string;
 		mutable TimePoint timeOfLastUpdate;

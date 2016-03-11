@@ -36,8 +36,9 @@ namespace gui
 		const unsigned char characterSize, sf::Vector2f& addPosition,
 		const float TEXT_HEIGHT)
 	{
-		std::string buffer("");
+		std::string buffer;
 		for (auto it = str.first.begin(), end = str.first.end(); it != end; ++it)
+		{
 			if (*it != '\n') buffer.push_back(*it);
 			else
 			{
@@ -48,6 +49,8 @@ namespace gui
 				addPosition.y += TEXT_HEIGHT + LINE_SPACING;
 				buffer.clear();
 			}
+		}
+
 		if (!buffer.empty())
 		{
 			target.emplace_back(new sf::Text(buffer, font, characterSize));
@@ -64,7 +67,7 @@ namespace gui
 
 	void ColoredText::getText(unique_ptr_vector<sf::Text>& target, const sf::Font& font, const unsigned char characterSize)const
 	{
-		const float TEXT_HEIGHT = sf::Text("I", font, characterSize).getGlobalBounds().height + LINE_SPACING;
+		const float TEXT_HEIGHT = font.getLineSpacing(characterSize) + LINE_SPACING;
 		sf::Vector2f addPosition(0, 0);
 		target.clear();
 

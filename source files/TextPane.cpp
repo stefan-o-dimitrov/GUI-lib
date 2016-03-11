@@ -27,20 +27,19 @@
 #include "../include/GUI/Internals.h"
 
 #include <sstream>
-#include <iostream>
 
 namespace gui
 {
 	TextPane::TextPane(const ColoredText& newString, const sf::Font& newFont, const unsigned char newCharacterSize)
 		: font(&newFont), characterSize(newCharacterSize), string(newString)
 	{
-		string.getText(text, *font, characterSize);
+		update();
 	}
 
 	TextPane::TextPane(ColoredText&& newString, const sf::Font& newFont, const unsigned char newCharacterSize)
 		: font(&newFont), characterSize(newCharacterSize), string(std::move(newString))
 	{
-		string.getText(text, *font, characterSize);
+		update();
 	}
 
 	TextPane::TextPane(const TextPane& copy)
@@ -127,14 +126,14 @@ namespace gui
 	TextPane& TextPane::setText(const ColoredText& newText)
 	{
 		string = newText;
-		string.getText(text, *font, characterSize);
+		update();
 		return *this;
 	}
 
 	TextPane& TextPane::setText(ColoredText&& newText)
 	{
 		string = std::move(newText);
-		string.getText(text, *font, characterSize);
+		update();
 		return *this;
 	}
 
@@ -142,7 +141,7 @@ namespace gui
 	{
 		font = &newFont;
 		for (auto it = text.begin(), end = text.end(); it != end; ++it)
-			(*it)->setFont(newFont);
+			(*it)->setFont(*font);
 		return *this;
 	}
 
@@ -156,10 +155,7 @@ namespace gui
 	void TextPane::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
 		if (string.isVolatile() && Duration(Internals::timeSinceStart() - timeOfLastUpdate).count() > 1.0f / Internals::getUPS())
-		{
 			update();
-			timeOfLastUpdate = Internals::timeSinceStart();
-		}
 		states.transform.translate(position);
 		for (auto it = text.begin(), end = text.end(); it != end; ++it)
 			target.draw(**it, states);
@@ -168,5 +164,6 @@ namespace gui
 	void TextPane::update() const
 	{
 		string.getText(text, *font, characterSize);
+		timeOfLastUpdate = Internals::timeSinceStart();
 	}
 }

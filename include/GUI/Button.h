@@ -57,10 +57,9 @@ namespace gui
 		};
 
 		typedef std::vector<std::function<const bool()>>(PredicateArray);
-		typedef std::unordered_map<Event, std::function<void()>>(EventMap);
 
-		Button(const Icon& visual, const EventMap& eventMap = EventMap());
-		Button(Icon&& visual, EventMap&& eventMap = EventMap());
+		Button(const Icon& visual);
+		Button(Icon&& visual);
 		Button(const Button& copy);
 		Button(Button&& temp) = default;
 		Button() = default;
@@ -85,8 +84,10 @@ namespace gui
 
 		Button& setName(const TextArea& name);
 		Button& setName(TextArea&& nameTemp);
+		Button& clearPredicateMessage();
 		Button& setPredicateMessage(const HoverMessage& message);
 		Button& setPredicateMessage(HoverMessage&& tempMessage);
+		Button& clearPredicates();
 		Button& setPredicates(const PredicateArray& predicates);
 		Button& setPredicates(PredicateArray&& predicates);
 		Button& bindAction(const Event event, const std::function<void()>& action);
@@ -96,6 +97,8 @@ namespace gui
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 
 	private:
+		typedef std::unordered_map<Event, std::function<void()>>(EventMap);
+
 		void checkPredicates()const;
 
 		mutable std::shared_ptr<HoverMessage>   messageBuffer = nullptr;
