@@ -32,6 +32,10 @@ namespace gui
 		{
 			if (dialogBoxes.front()->input(event)) return;
 
+			if (event.type == sf::Event::MouseMoved)
+				for (auto it = dialogBoxes.begin() + 1, end = dialogBoxes.end(); it != end; ++it)
+					(*it)->input(event);
+
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
 				const sf::Vector2f position(event.mouseButton.x, event.mouseButton.y);

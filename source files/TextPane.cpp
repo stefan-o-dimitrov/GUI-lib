@@ -31,14 +31,16 @@
 namespace gui
 {
 	TextPane::TextPane(const ColoredText& newString, const sf::Font& newFont, const unsigned char newCharacterSize)
-		: font(&newFont), characterSize(newCharacterSize), string(newString)
+		: characterSize(newCharacterSize), string(newString)
 	{
+		setFont(newFont);
 		update();
 	}
 
 	TextPane::TextPane(ColoredText&& newString, const sf::Font& newFont, const unsigned char newCharacterSize)
-		: font(&newFont), characterSize(newCharacterSize), string(std::move(newString))
+		: characterSize(newCharacterSize), string(std::move(newString))
 	{
+		setFont(newFont);
 		update();
 	}
 
@@ -70,7 +72,9 @@ namespace gui
 
 	const bool TextPane::input(const sf::Event& event)
 	{
-		return false;
+		return (event.type == sf::Event::MouseMoved && contains(sf::Vector2f(event.mouseMove.x, event.mouseMove.y))) ||
+			((event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased) &&
+				contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)));
 	}
 
 	const bool TextPane::contains(const sf::Vector2f& pos) const
@@ -163,7 +167,7 @@ namespace gui
 
 	void TextPane::update() const
 	{
-		string.getText(text, *font, characterSize);
+		string.getText(text, text.size() != 0 ? *text.front()->getFont() : *font, characterSize);
 		timeOfLastUpdate = Internals::timeSinceStart();
 	}
 }

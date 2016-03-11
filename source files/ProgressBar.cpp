@@ -124,8 +124,8 @@ namespace gui
 	ProgressBar& ProgressBar::setPosition(const float x, const float y)
 	{
 		Icon::setPosition(x, y);
-		fill.setPosition(x - fill.getGlobalBounds().width / 2.0f,
-			y + Icon::getGlobalBounds().height / 2.0f - fill.getGlobalBounds().height / 2.0f);
+		fill.setPosition(x + (Icon::getTexture().getSize().x - fill.getTexture().getSize().x) / 2.0f,
+			y + (Icon::getTexture().getSize().y - fill.getTexture().getSize().y) / 2.0f);
 		return *this;
 	}
 

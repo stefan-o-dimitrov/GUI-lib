@@ -137,7 +137,54 @@ void main()
 					return integer == 0 ? gui::bind("", sf::Color()) :
 						gui::bind("Tikva", sf::Color::Red);
 				}, font, 15)
-			.setPosition(120, 20)), false);
+			.setPosition(120, 20)), false)
+
+		.pushFront(gui::Window()
+		.setPosition(50, 20)
+		.setBackgroundTexture(windowBackground, true)
+		.setMovable(true)
+
+		.add(std::move(gui::Button(gui::Icon(buttonTex, true))
+			.bindAction(gui::Button::Released, std::bind([](const int amount)
+			{
+				integer += amount;
+			}, -AMOUNT))
+			.setPredicates(gui::Button::PredicateArray{ std::bind(canChange, -LIMIT, true) })
+			.setPredicateMessage(gui::HoverMessage(gui::bind("Integer is less than ", sf::Color::White) + 
+				gui::bind(std::to_string(LIMIT), sf::Color::Yellow),
+				font, 15))
+			.setName(std::move(gui::TextArea("Decrease Int by " + 
+				std::to_string(AMOUNT), font, 18).setColor(sf::Color(175, 45, 65, 220))))
+			.setDelay(0.5f)
+			.setMessage(std::move(gui::HoverMessage(gui::bind("This button ", sf::Color(87, 87, 87, 230)) +
+				gui::bind("reduces ", sf::Color(160, 40, 60, 220)) + gui::bind("the integer", sf::Color(87, 87, 87, 230)) + []()
+					{
+						return integer == 0 ? gui::bind("", sf::Color()) : gui::bind(". It is ", sf::Color(87, 87, 87, 230))
+							+ gui::bind("\ncurrently at ", sf::Color(87, 87, 87, 230)) +
+							gui::bind(std::to_string(integer), integer > 0.0f ? sf::Color(40, 145, 60, 220) : sf::Color(160, 40, 60, 220));
+					} + gui::bind(".", sf::Color(87, 87, 87, 255)),
+				font)
+				.setBackgroundFill(sf::Color(240, 240, 242, 225))
+				.setBorderFill(sf::Color(118, 118, 118, 210))
+				.setBorderThickness(2.0f))
+				.setCharacterSize(13))
+			.setPosition(50, 130)))
+
+		.add(std::move(gui::TextArea("", font, 40)
+			.setMessage(std::move(gui::HoverMessage(gui::bind("This is the ", sf::Color::White) + 
+				gui::bind("current value ", sf::Color::Yellow) + gui::bind("of the ", sf::Color::White) +
+				gui::bind("integer.", sf::Color::Yellow) +
+				gui::bind("\nThis text gets updated automatically every 1 / 10 second.", sf::Color::Red), font, 15)
+				.setBackgroundFill(sf::Color::Black)
+				.setBorderFill(sf::Color::Yellow)
+				.setBorderThickness(2.0f)))
+			.setColor(sf::Color::Red)
+			.setUpdateFunction([]()
+				{
+					return gui::ColoredString(std::to_string(integer), integer > 0.0f ? sf::Color::Green : integer == 0.0f ? 
+						sf::Color::Yellow : sf::Color::Red);
+				})			
+			.setPosition(50, 30))), false);
 				
 	window.setVerticalSyncEnabled(true);
 
