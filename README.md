@@ -11,10 +11,10 @@ Currently, the library has the following GUI elements included:
   - Check Box
   - Progress Bar
   - Window
+  - Window Manager
   - Text Field (WIP)
   - Slider (WIP)
   - Scrollable List (WIP)
-  - Window Manager (WIP)
   - Audio Manager (WIP)
   
 Example code demonstrating the usage of those classes not marked as WIP can be found under example in the master branch,
