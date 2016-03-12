@@ -38,7 +38,8 @@ namespace gui
 	class TextField final : public Interactive
 	{
 	public:
-		TextField(const std::function<void(const std::string&)>& inputProcessFunction, const unsigned short fieldWidth, const sf::Font& font, const unsigned char characterSize = 13);
+		TextField(const std::function<void(const std::string&)>& inputProcessFunction, const unsigned short fieldWidth, 
+			const sf::Font& font, const unsigned char characterSize = 13);
 		TextField(const TextField& copy);
 		TextField(TextField&& temp) = default; 
 		TextField() = default;

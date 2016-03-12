@@ -59,6 +59,12 @@ namespace gui
 		return std::unique_ptr<ProgressBar>(new ProgressBar(std::move(*this)));
 	}
 
+	void gui::ProgressBar::lostFocus()
+	{
+		Icon::lostFocus();
+		fill.lostFocus();
+	}
+
 	const bool ProgressBar::input(const sf::Event& event)
 	{
 		if (fill.input(event))
@@ -68,6 +74,11 @@ namespace gui
 			return true;
 		}
 		else return Icon::input(event);
+	}
+
+	const bool gui::ProgressBar::contains(const float x, const float y) const
+	{
+		return Icon::contains(x, y) || fill.contains(x, y);
 	}
 
 	const float ProgressBar::getProgress()const

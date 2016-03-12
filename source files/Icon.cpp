@@ -50,12 +50,12 @@ namespace gui
 		return  std::unique_ptr<Icon>(new Icon(std::move(*this)));
 	}
 
-	const bool Icon::contains(const sf::Vector2f& pos)const
+	const bool Icon::contains(const float x, const float y)const
 	{
-		if (spr.getGlobalBounds().contains(pos))
+		if (spr.getGlobalBounds().contains(x, y))
 		{
 			if (!transparency) return true;
-			if (!(*transparency)[sf::Vector2i(pos.x - spr.getPosition().x, pos.y - spr.getPosition().y)]) return true;
+			if (!(*transparency)[sf::Vector2i(x - spr.getPosition().x, y - spr.getPosition().y)]) return true;
 		}
 		return false;
 	}

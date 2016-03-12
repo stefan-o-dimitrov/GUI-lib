@@ -70,17 +70,10 @@ namespace gui
 		return std::unique_ptr<TextPane>(new TextPane(std::move(*this)));
 	}
 
-	const bool TextPane::input(const sf::Event& event)
-	{
-		return (event.type == sf::Event::MouseMoved && contains(sf::Vector2f(event.mouseMove.x, event.mouseMove.y))) ||
-			((event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased) &&
-				contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)));
-	}
-
-	const bool TextPane::contains(const sf::Vector2f& pos) const
+	const bool TextPane::contains(const float x, const float y) const
 	{
 		for (auto it = text.begin(), end = text.end(); it != end; ++it)
-			if ((*it)->getGlobalBounds().contains(pos)) return true;
+			if ((*it)->getGlobalBounds().contains(x, y)) return true;
 		return false;
 	}
 

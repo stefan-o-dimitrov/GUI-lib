@@ -30,11 +30,18 @@ namespace gui
 	{
 		if (!dialogBoxes.empty())
 		{
-			if (dialogBoxes.front()->input(event)) return;
+			if (dialogBoxes.front()->input(event))
+			{
+				if(event.type == sf::Event::MouseMoved)
+					for (auto it = dialogBoxes.begin() + 1, end = dialogBoxes.end(); it != end; ++it)
+						(*it)->lostFocus();
+				return;
+			}
 
 			if (event.type == sf::Event::MouseMoved)
 				for (auto it = dialogBoxes.begin() + 1, end = dialogBoxes.end(); it != end; ++it)
-					(*it)->input(event);
+					if((*it)->input(event))
+						return;
 
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
@@ -42,7 +49,9 @@ namespace gui
 				for (auto it = dialogBoxes.begin() + 1, end = dialogBoxes.end(); it != end; ++it)
 					if ((*it)->contains(position))
 					{
+						dialogBoxes.front()->lostFocus();
 						dialogBoxes.front().swap(*it);
+						dialogBoxes.front()->input(event);
 						return;
 					}
 			}

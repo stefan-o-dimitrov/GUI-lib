@@ -51,8 +51,10 @@ namespace gui
 		std::unique_ptr<Interactive> copy()const override;
 		std::unique_ptr<Interactive> move()override;
 
+		using Hoverable::lostFocus;
 		using Hoverable::input;
-		const bool contains(const sf::Vector2f& point)const override;
+		const bool contains(const float x, const float y)const override;
+		using Interactive::contains;
 
 		const sf::FloatRect getGlobalBounds()const override;
 		const sf::Vector2f& getPosition()const override;

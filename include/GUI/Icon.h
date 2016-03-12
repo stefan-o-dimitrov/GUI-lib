@@ -50,9 +50,10 @@ namespace gui
 		virtual std::unique_ptr<Interactive> copy()const override;
 		virtual std::unique_ptr<Interactive> move()override;
 
+		using Hoverable::lostFocus;
 		using Hoverable::input;
-
-		virtual const bool contains(const sf::Vector2f& point)const override;
+		virtual const bool contains(const float x, const float y)const override;
+		using Interactive::contains;
 
 		virtual const sf::Vector2f& getPosition()const override;
 

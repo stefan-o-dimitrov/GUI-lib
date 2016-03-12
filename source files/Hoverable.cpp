@@ -27,6 +27,10 @@
 
 namespace gui
 {
+	void gui::Hoverable::lostFocus()
+	{
+		mouseLeft();
+	}
 
 	const bool Hoverable::input(const sf::Event& event)
 	{

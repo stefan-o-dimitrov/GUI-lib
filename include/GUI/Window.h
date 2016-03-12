@@ -47,6 +47,7 @@ namespace gui
 
 		const bool contains(const sf::Vector2f& point)const;
 		const bool input(const sf::Event& event);
+		void lostFocus();
 
 		const sf::Vector2f& getPosition()const;
 		const bool isMovable()const;

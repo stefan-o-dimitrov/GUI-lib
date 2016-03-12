@@ -48,7 +48,10 @@ namespace gui
 		std::unique_ptr<Interactive> copy()const override;
 		std::unique_ptr<Interactive> move()override;
 
+		void lostFocus()override;
 		const bool input(const sf::Event& event)override;
+		const bool contains(const float x, const float y)const override;
+		using Interactive::contains;
 
 		const float getProgress()const;
 		const sf::Texture& getFillTexture()const;

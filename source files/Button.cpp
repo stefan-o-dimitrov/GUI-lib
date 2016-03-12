@@ -72,6 +72,15 @@ namespace gui
 		return std::unique_ptr<Button>(new Button(std::move(*this)));
 	}
 
+	void gui::Button::lostFocus()
+	{
+		Icon::lostFocus();
+
+		if (predicatesFulfilled && state != Idle)
+			Icon::spr.setColor(sf::Color(0.85 * 255, 0.85 * 255, 0.85 * 255, 255));
+		state = Idle;
+	}
+
 	const bool Button::input(const sf::Event& event)
 	{
 		switch (event.type)
@@ -86,7 +95,7 @@ namespace gui
 				return true;
 			}
 			else
-			{			
+			{
 				if (predicatesFulfilled && state != Idle)
 					Icon::spr.setColor(sf::Color(0.85 * 255, 0.85 * 255, 0.85 * 255, 255));
 				state = Idle;

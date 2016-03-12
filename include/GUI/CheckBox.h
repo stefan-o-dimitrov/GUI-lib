@@ -42,8 +42,11 @@ namespace gui
 		std::unique_ptr<Interactive> copy()const override;
 		std::unique_ptr<Interactive> move()override;
 
+		void lostFocus()override;
 		const bool input(const sf::Event& event)override;
-		const bool contains(const sf::Vector2f& point)const;
+		const bool contains(const float x, const float y)const override;
+		using Interactive::contains;
+
 		void toggle();
 
 		const State getState()const override;

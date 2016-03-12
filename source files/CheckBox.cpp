@@ -52,24 +52,31 @@ namespace gui
 		return std::unique_ptr<CheckBox>(new CheckBox(std::move(*this)));
 	}
 
+	void gui::CheckBox::lostFocus()
+	{
+		checked ? trueState.lostFocus() : Button::lostFocus();
+	}
+
 	const bool CheckBox::input(const sf::Event& event)
 	{
 		if (checked)
 		{
-			if (event.type == sf::Event::MouseButtonReleased && trueState.getState() == PressedDown) checked = false;
+			if (event.type == sf::Event::MouseButtonReleased && trueState.getState() == PressedDown) 
+				checked = false;
 			return trueState.input(event);
 		}
 		else
 		{
-			if (event.type == sf::Event::MouseButtonReleased && Button::getState() == PressedDown) checked = true;
+			if (event.type == sf::Event::MouseButtonReleased && Button::getState() == PressedDown) 
+				checked = true;
 			return Button::input(event);
 		}
 	}
 
-	const bool CheckBox::contains(const sf::Vector2f& pos)const
+	const bool CheckBox::contains(const float x, const float y)const
 	{
-		if (checked) return trueState.contains(pos);
-		else return Button::contains(pos);
+		if (checked) return trueState.contains(x, y);
+		else return Button::contains(x, y);
 	}
 
 	const Button::State CheckBox::getState()const

@@ -45,9 +45,9 @@ namespace gui
 		return std::unique_ptr<TextArea>(new TextArea(std::move(*this)));
 	}
 
-	const bool TextArea::contains(const sf::Vector2f& pos) const
+	const bool TextArea::contains(const float x, const float y) const
 	{
-		return text.getGlobalBounds().contains(pos);
+		return text.getGlobalBounds().contains(x, y);
 	}
 
 	const sf::FloatRect TextArea::getGlobalBounds()const

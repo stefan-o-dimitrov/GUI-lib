@@ -43,8 +43,9 @@ namespace gui
 		Hoverable& operator=(const Hoverable& copy);
 		Hoverable& operator=(Hoverable&& temp) = default;
 
+		virtual void lostFocus()override;
 		virtual const bool input(const sf::Event& event)override;
-		virtual const bool contains(const sf::Vector2f& point)const = 0;
+		using Interactive::contains;
 
 		virtual const std::shared_ptr<const HoverMessage> getMessage()const;
 

@@ -37,18 +37,22 @@ namespace gui
 	class Interactive : public virtual sf::Drawable
 	{
 	public:
-		virtual ~Interactive() {};
+		virtual ~Interactive();
 
 		virtual std::unique_ptr<Interactive> copy()const = 0;
 		virtual std::unique_ptr<Interactive> move() = 0;
 
-		virtual const bool input(const sf::Event& event) = 0;
+		virtual void lostFocus();
+		virtual const bool input(const sf::Event& event);
+
+		virtual const bool contains(const float x, const float y)const;
+		const bool contains(const sf::Vector2f& point)const;
 
 		virtual const sf::FloatRect getGlobalBounds() const = 0;
 		virtual const sf::Vector2f& getPosition() const = 0;
 
 		virtual Interactive& setPosition(const float x, const float y) = 0;
-		virtual Interactive& setPosition(const sf::Vector2f& position) = 0;
+		virtual Interactive& setPosition(const sf::Vector2f& position);
 
 	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const = 0;

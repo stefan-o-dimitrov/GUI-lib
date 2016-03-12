@@ -68,7 +68,9 @@ namespace gui
 		virtual std::unique_ptr<Interactive> copy()const override;
 		virtual std::unique_ptr<Interactive> move()override;
 
+		virtual void lostFocus()override;
 		virtual const bool input(const sf::Event& event)override;
+		using Icon::contains;
 		
 		const std::shared_ptr<const HoverMessage> getMessage()const override;
 

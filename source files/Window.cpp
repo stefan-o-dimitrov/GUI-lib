@@ -25,6 +25,7 @@
 #include <SFML/Window/Event.hpp>
 
 #include "../include/GUI/Window.h"
+#include "../include//GUI/Hoverable.h"
 
 namespace gui
 {
@@ -145,20 +146,36 @@ namespace gui
 			switch (event.type)
 			{
 			case sf::Event::MouseMoved:
+			{
 				if (mouseDragOffset)
+				{
 					setPosition(sf::Vector2f(event.mouseMove.x - mouseDragOffset->x, event.mouseMove.y - mouseDragOffset->y));
-				return true;
+					return true;
+				}
+				return contains(sf::Vector2f(event.mouseMove.x, event.mouseMove.y));
+			}
 			case sf::Event::MouseButtonPressed:
+			{	
 				if (contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)))
+				{
 					mouseDragOffset.reset(new sf::Vector2f(event.mouseButton.x - getPosition().x,
 						event.mouseButton.y - getPosition().y));
-				return true;
+					return true;
+				}
+				return false;
+			}
 			case sf::Event::MouseButtonReleased:
 				mouseDragOffset.reset();
-				return true;
+				return contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
 			}
 
 		return false;
+	}
+	
+	void Window::lostFocus()
+	{
+		for (auto it = elements.begin(), end = elements.end(); it != end; ++it)
+			(*it)->lostFocus();
 	}
 
 	const sf::Vector2f& Window::getPosition() const
