@@ -51,7 +51,6 @@ namespace gui
 					{
 						dialogBoxes.front()->lostFocus();
 						dialogBoxes.front().swap(*it);
-						dialogBoxes.front()->input(event);
 						return;
 					}
 			}

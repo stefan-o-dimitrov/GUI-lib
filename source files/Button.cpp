@@ -216,6 +216,7 @@ namespace gui
 	{
 		predicates.reset();
 		checkPredicates();
+		return *this;
 	}
 
 	Button& Button::setPosition(const float x, const float y)

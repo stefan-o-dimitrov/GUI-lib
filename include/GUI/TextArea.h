@@ -80,7 +80,7 @@ namespace gui
 
 		mutable sf::Text text;
 		mutable TimePoint timeOfLastUpdate;
-		std::unique_ptr<std::function<ColoredString()>> updateFunction = nullptr;
+		std::shared_ptr<const std::function<ColoredString()>> updateFunction;
 	};
 }
 

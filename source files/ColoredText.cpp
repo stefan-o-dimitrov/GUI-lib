@@ -31,6 +31,11 @@ namespace gui
 {
 	const float ColoredText::LINE_SPACING = 5.0f;
 
+	gui::ColoredText::operator ColoredString()
+	{
+		return ColoredString(text.empty() ? "" : text.front()->first, text.empty() ? sf::Color() : text.front()->second);
+	}
+
 	void ColoredText::stringToArrangedText(unique_ptr_vector<sf::Text>& target,
 		const ColoredString& str, const sf::Font& font,
 		const unsigned char characterSize, sf::Vector2f& addPosition,
@@ -77,15 +82,20 @@ namespace gui
 	void ColoredText::getText(unique_ptr_vector<sf::Text>& target, const sf::Font& font, const unsigned char characterSize, const float TEXT_HEIGHT, sf::Vector2f& addPosition)const
 	{
 		if (!text.empty())
+		{
 			for (unsigned short it = 0, end = text.size(); it < end; it++)
 			{
 				for (auto it1 = volatileText.equal_range(it); it1.first != it1.second; ++it1.first)
 					it1.first->second().getText(target, font, characterSize, TEXT_HEIGHT, addPosition);
 				stringToArrangedText(target, *text.at(it), font, characterSize, addPosition, TEXT_HEIGHT);
 			}
+			for (auto it = volatileText.equal_range(text.size()); it.first != it.second; ++it.first)
+				it.first->second().getText(target, font, characterSize, TEXT_HEIGHT, addPosition);
+		}
 		else if (!volatileText.empty())
 			for (auto it = volatileText.begin(), end = volatileText.end(); it != end; ++it)
 				it->second().getText(target, font, characterSize, TEXT_HEIGHT, addPosition);
+
 	}
 
 	void ColoredText::arrangeText(unique_ptr_vector<sf::Text>& target)

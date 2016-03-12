@@ -33,7 +33,8 @@ namespace gui
 		: text(newText, newFont, newCharacterSize) {}
 
 	TextArea::TextArea(const TextArea& copy)
-		: Hoverable(copy), text(copy.text) {}
+		: Hoverable(copy), text(copy.text),
+		updateFunction(copy.updateFunction) {}
 
 	std::unique_ptr<Interactive> TextArea::copy() const
 	{

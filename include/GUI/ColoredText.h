@@ -51,6 +51,8 @@ namespace gui
 		ColoredText& operator=(const ColoredText& copy) = default;
 		ColoredText& operator=(ColoredText&& temp) = default;
 
+		operator ColoredString();
+
 		const bool isVolatile()const;
 		void getText(unique_ptr_vector<sf::Text>& target, const sf::Font& font, const unsigned char characterSize = 13)const;
 
