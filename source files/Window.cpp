@@ -38,6 +38,10 @@ namespace gui
 		elements.reserve(copy.elements.size());
 		for (auto it = copy.elements.begin(), end = copy.elements.end(); it != end; ++it)
 			elements.emplace_back(std::move((*it)->copy()));
+
+		elementOrder.reserve(copy.elementOrder.size());
+		for (auto it = copy.elementOrder.begin(), end = copy.elementOrder.end(); it != end; ++it)
+			elementOrder.emplace_back(std::move((*it)->copy()));
 	}
 
 	Window& Window::add(Interactive&& element)
@@ -45,6 +49,7 @@ namespace gui
 		elements.emplace_back(element.move());
 		elements.back()->setPosition(elements.back()->getPosition().x + background.getPosition().x,
 			elements.back()->getPosition().y + background.getPosition().y);
+		elementOrder.push_back(elements.back());
 		return *this;
 	}
 
@@ -53,18 +58,28 @@ namespace gui
 		elements.emplace_back(element.copy());
 		elements.back()->setPosition(elements.back()->getPosition().x + background.getPosition().x,
 			elements.back()->getPosition().y + background.getPosition().y);
+		elementOrder.push_back(elements.back());
 		return *this;
 	}
 
 	void Window::clear()
 	{
 		elements.clear();
+		elementOrder.clear();
 	}
 
 	const bool Window::erase(const unsigned short index)
 	{
 		if (index >= elements.size()) return false;
-		elements.erase(elements.begin() + index);
+
+		auto element(elements.begin() + index);
+		for (auto it = elementOrder.begin(), end = elementOrder.end(); it != end; ++it)
+			if (*it == *element)
+			{
+				elementOrder.erase(it);
+				break;
+			}
+		elements.erase(element);
 		return true;
 	}
 
@@ -135,10 +150,10 @@ namespace gui
 
 	const bool Window::input(const sf::Event& event)
 	{
-		for (auto it = elements.begin(), end = elements.end(); it != end; ++it)
+		for (auto it = elementOrder.begin(), end = elementOrder.end(); it != end; ++it)
 			if ((*it)->input(event)) 
 			{
-				elements.begin()->swap(*it);
+				elementOrder.begin()->swap(*it);
 				return true;
 			}
 
@@ -191,7 +206,7 @@ namespace gui
 	void Window::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		target.draw(background, states);
-		for (auto it = elements.rbegin(), end = elements.rend(); it != end; ++it)
+		for (auto it = elementOrder.rbegin(), end = elementOrder.rend(); it != end; ++it)
 			if(*it) target.draw(**it, states);
 	}
 }

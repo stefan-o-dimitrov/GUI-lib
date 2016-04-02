@@ -76,7 +76,7 @@ namespace gui
 		std::unique_ptr<TransparencyMap> transparency = nullptr;
 		bool movable = false;
 		std::unique_ptr<sf::Vector2f> mouseDragOffset = nullptr;
-		std::vector<std::unique_ptr<Interactive>> elements;
+		std::vector<std::shared_ptr<Interactive>> elements, elementOrder;
 	};
 }
 

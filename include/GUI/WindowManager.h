@@ -49,7 +49,7 @@ namespace gui
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const;
 
-		std::vector<std::unique_ptr<Window>> windows, dialogBoxes;
+		std::vector<std::shared_ptr<Window>> windows, windowOrder, dialogBoxes, dialogBoxOrder;
 	};
 }
 
