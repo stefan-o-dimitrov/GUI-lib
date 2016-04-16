@@ -39,7 +39,6 @@ namespace gui
 	class AudioSystem
 	{
 	public:
-
 		const bool loadMusicFile(const unsigned short key, const std::string& path);
 		const bool loadSoundFile(const unsigned short key, const std::string& path);
 
@@ -59,7 +58,6 @@ namespace gui
 		static const bool isMuted();
 
 	private:
-
 		static Volume                                                                    musicVolume, soundVolume, masterVolume;
 		static bool                                                                      muted;
 		static unsigned short                                                            currentSong;

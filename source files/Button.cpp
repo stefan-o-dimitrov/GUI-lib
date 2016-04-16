@@ -198,6 +198,15 @@ namespace gui
 		return *this;
 	}
 
+	Button& Button::setTexture(const sf::Texture& texture, const bool transparencyCheck)
+	{
+		Icon::setTexture(texture, transparencyCheck);
+		if (name)
+			name->setPosition(getPosition().x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2,
+				getPosition().y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
+		return *this;
+	}
+
 	Button& Button::setPredicateMessage(const HoverMessage& newMessage)
 	{
 		predicatesFulfilled ? messageBuffer.reset(new HoverMessage(newMessage))

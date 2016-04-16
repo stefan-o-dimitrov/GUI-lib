@@ -42,12 +42,12 @@ namespace gui
 
 	std::unique_ptr<Interactive> Icon::copy() const
 	{ 
-		return  std::unique_ptr<Icon>(new Icon(*this));
+		return std::unique_ptr<Icon>(new Icon(*this));
 	}
 
 	std::unique_ptr<Interactive> Icon::move()
 	{ 
-		return  std::unique_ptr<Icon>(new Icon(std::move(*this)));
+		return std::unique_ptr<Icon>(new Icon(std::move(*this)));
 	}
 
 	const bool Icon::contains(const float x, const float y)const
