@@ -39,8 +39,8 @@ namespace gui
 	class AudioSystem
 	{
 	public:
-		const bool loadMusicFile(const unsigned short key, const std::string& path);
-		const bool loadSoundFile(const unsigned short key, const std::string& path);
+		static const bool loadMusicFile(const unsigned short key, const std::string& path);
+		static const bool loadSoundFile(const unsigned short key, const std::string& path);
 
 		static void playSound(const unsigned short key);
 		static void playSong(const unsigned short key);

@@ -66,7 +66,7 @@ namespace gui
 	{
 		if (sound.count(soundKey))
 		{
-			sound.at(soundKey).first.setVolume(muted ? 0 : (soundVolume * masterVolume) / 10000);
+			sound.at(soundKey).first.setVolume(muted ? 0 : (soundVolume * masterVolume) / 100);
 			sound.at(soundKey).first.play();
 		}
 	}
@@ -80,7 +80,7 @@ namespace gui
 				if (!music.at(currentSong)) music.erase(currentSong);
 				else if (music.at(currentSong)->getStatus() != sf::Music::Stopped) music.at(currentSong)->stop();
 			}
-			music.at(key)->setVolume(muted ? 0 : (musicVolume * masterVolume) / 10000);
+			music.at(key)->setVolume(muted ? 0 : (musicVolume * masterVolume) / 100);
 			music.at(key)->play();
 			currentSong = key;
 		}
@@ -88,6 +88,8 @@ namespace gui
 
 	void AudioSystem::playRandomSong()
 	{
+		if (music.empty()) return;
+
 		std::random_device randomDevice;
 		std::mt19937 mt(randomDevice());
 		std::uniform_int_distribution<int> dist(0, music.size() - 1);
@@ -110,23 +112,30 @@ namespace gui
 		}
 
 		currentSong = it->first;
-		music.at(currentSong)->setVolume(muted ? 0 : (musicVolume * masterVolume) / 10000);
+		music.at(currentSong)->setVolume(muted ? 0 : (musicVolume * masterVolume) / 100);
 		music.at(currentSong)->play();
 	}
 
 	void AudioSystem::setMusicVolume(const Volume newVolume)
 	{
 		newVolume < 100 ? musicVolume = newVolume : musicVolume = 100;
+		if (music.count(currentSong))
+			music.at(currentSong)->setVolume(muted ? 0 : (musicVolume * masterVolume) / 100);
 	}
 
 	void AudioSystem::setSoundVolume(const Volume newVolume)
 	{
 		newVolume < 100 ? soundVolume = newVolume : soundVolume = 100;
+		for (auto it = sound.begin(), end = sound.end(); it != end; ++it)
+			if (it->second.first.getStatus() == sf::Sound::Playing)
+				it->second.first.setVolume(muted ? 0 : (masterVolume * soundVolume) / 100);
 	}
 
 	void AudioSystem::setMasterVolume(const Volume newVolume)
 	{
 		newVolume < 100 ? masterVolume = newVolume : masterVolume = 100;
+		if (music.count(currentSong))
+			music.at(currentSong)->setVolume(muted ? 0 : (musicVolume * masterVolume) / 100);
 	}
 
 	void AudioSystem::mute(const bool value)
@@ -135,7 +144,7 @@ namespace gui
 
 		for (auto it = sound.begin(), end = sound.end(); it != end; ++it)
 			if (it->second.first.getStatus() == sf::Sound::Playing)
-				it->second.first.setVolume(muted ? 0 : (masterVolume * soundVolume) / 10000);
+				it->second.first.setVolume(muted ? 0 : (masterVolume * soundVolume) / 100);
 
 		if (music.count(currentSong))
 		{
@@ -145,7 +154,7 @@ namespace gui
 				return;
 			}
 			if (music.at(currentSong)->getStatus() == sf::Music::Playing)
-				music.at(currentSong)->setVolume(muted ? 0 : (masterVolume * musicVolume) / 10000);
+				music.at(currentSong)->setVolume(muted ? 0 : (musicVolume * masterVolume) / 100);
 		}
 	}
 
