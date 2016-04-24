@@ -61,6 +61,7 @@ namespace gui
 
 		const sf::Font& getFont()const;
 		const unsigned char getCharacterSize()const;
+		const sf::Color& getColor()const;
 
 		TextArea& clearMessage()override;
 		TextArea& setMessage(const HoverMessage& message)override;

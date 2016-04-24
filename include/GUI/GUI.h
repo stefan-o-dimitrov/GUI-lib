@@ -29,6 +29,7 @@
 #include "Button.h"
 #include "CheckBox.h"
 #include "ColoredText.h"
+#include "FPSMeter.h"
 #include "Hoverable.h"
 #include "HoverMessage.h"
 #include "Icon.h"

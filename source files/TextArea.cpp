@@ -71,6 +71,11 @@ namespace gui
 		return text.getCharacterSize();
 	}
 
+	const sf::Color& TextArea::getColor() const
+	{
+		return text.getColor();
+	}
+
 	TextArea& TextArea::clearMessage()
 	{
 		Hoverable::clearMessage();
