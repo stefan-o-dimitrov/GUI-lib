@@ -37,7 +37,7 @@
 
 namespace gui
 {
-	class Window final : public sf::Drawable
+	class Window : public sf::Drawable
 	{
 	public:
 		Window(const Window& copy);
@@ -46,7 +46,7 @@ namespace gui
 		~Window() = default;
 
 		const bool contains(const sf::Vector2f& point)const;
-		const bool input(const sf::Event& event);
+		virtual const bool input(const sf::Event& event);
 		void lostFocus();
 
 		const sf::Vector2f& getPosition()const;
@@ -57,26 +57,29 @@ namespace gui
 		Window& setBackgroundTexture(const sf::Texture& texture, const bool transparencyCheck = false);
 		Window& setTransparencyCheck(const bool transparencyCheck);
 		Window& setBackgroundTextureRect(const sf::IntRect& textureRect);
+		Window& setBackgroundColor(const sf::Color& color);
 		Window& setMovable(const bool isMovable);
 
 		Window& add(Interactive&& element);
 		Window& add(const Interactive& element);
 
 		void clear();
-		const bool erase(const unsigned short index);
-		const size_t size()const;
 
-		Interactive& at(const unsigned short index);
-		const Interactive& at(const unsigned short index)const;
+		Window& setActive(const bool active);
+		const bool isActive();
+		const bool isClosed();
+		void close();
+
+	protected:
+		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
+		const sf::Sprite& background()const;
 
 	private:
-		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
-		
-		sf::Sprite background;
-		std::unique_ptr<TransparencyMap> transparency = nullptr;
-		bool movable = false;
-		std::unique_ptr<sf::Vector2f> mouseDragOffset = nullptr;
-		std::vector<std::shared_ptr<Interactive>> elements, elementOrder;
+		sf::Sprite                                m_background;
+		std::unique_ptr<TransparencyMap>          m_transparency = nullptr;
+		bool                                      m_movable = false, m_active = true, m_closed = false;
+		std::unique_ptr<sf::Vector2f>             m_mouseDragOffset = nullptr;
+		std::vector<std::unique_ptr<Interactive>> m_elements;
 	};
 }
 

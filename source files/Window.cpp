@@ -30,72 +30,56 @@
 namespace gui
 {
 	Window::Window(const Window& copy)
-		: background(copy.background), movable(copy.movable)
+		: m_background(copy.m_background), m_movable(copy.m_movable), m_active(copy.m_active), m_closed(copy.m_closed)
 	{
-		copy.transparency ? transparency.reset(new TransparencyMap(*copy.transparency)) : 0;
-		copy.mouseDragOffset ? mouseDragOffset.reset(new sf::Vector2f(*copy.mouseDragOffset)) : 0;
+		copy.m_transparency ? m_transparency.reset(new TransparencyMap(*copy.m_transparency)) : 0;
+		copy.m_mouseDragOffset ? m_mouseDragOffset.reset(new sf::Vector2f(*copy.m_mouseDragOffset)) : 0;
 
-		elements.reserve(copy.elements.size());
-		for (auto it = copy.elements.begin(), end = copy.elements.end(); it != end; ++it)
-			elements.emplace_back(std::move((*it)->copy()));
-
-		elementOrder.reserve(copy.elementOrder.size());
-		for (auto it = copy.elementOrder.begin(), end = copy.elementOrder.end(); it != end; ++it)
-			elementOrder.emplace_back(std::move((*it)->copy()));
+		m_elements.reserve(copy.m_elements.size());
+		for (auto it = copy.m_elements.begin(), end = copy.m_elements.end(); it != end; ++it)
+			m_elements.emplace_back(std::move((*it)->copy()));
 	}
 
 	Window& Window::add(Interactive&& element)
 	{
-		elements.emplace_back(element.move());
-		elements.back()->setPosition(elements.back()->getPosition().x + background.getPosition().x,
-			elements.back()->getPosition().y + background.getPosition().y);
-		elementOrder.push_back(elements.back());
+		m_elements.emplace_back(element.move());
+		m_elements.back()->setPosition(m_elements.back()->getPosition().x + m_background.getPosition().x,
+			m_elements.back()->getPosition().y + m_background.getPosition().y);
 		return *this;
 	}
 
 	Window& Window::add(const Interactive& element)
 	{
-		elements.emplace_back(element.copy());
-		elements.back()->setPosition(elements.back()->getPosition().x + background.getPosition().x,
-			elements.back()->getPosition().y + background.getPosition().y);
-		elementOrder.push_back(elements.back());
+		m_elements.emplace_back(element.copy());
+		m_elements.back()->setPosition(m_elements.back()->getPosition().x + m_background.getPosition().x,
+			m_elements.back()->getPosition().y + m_background.getPosition().y);
 		return *this;
 	}
 
 	void Window::clear()
 	{
-		elements.clear();
-		elementOrder.clear();
+		m_elements.clear();
 	}
 
-	const bool Window::erase(const unsigned short index)
+	Window& Window::setActive(const bool active)
 	{
-		if (index >= elements.size()) return false;
-
-		auto element(elements.begin() + index);
-		for (auto it = elementOrder.begin(), end = elementOrder.end(); it != end; ++it)
-			if (*it == *element)
-			{
-				elementOrder.erase(it);
-				break;
-			}
-		elements.erase(element);
-		return true;
+		m_active = active;
+		return *this;
 	}
 
-	const size_t Window::size() const
+	const bool Window::isActive()
 	{
-		return elements.size();
+		return m_active;
 	}
 
-	Interactive& Window::at(const unsigned short index)
+	const bool Window::isClosed()
 	{
-		return *elements.at(index);
+		return m_closed;
 	}
 
-	const Interactive& Window::at(const unsigned short index) const
+	void Window::close()
 	{
-		return *elements.at(index);
+		m_closed = true;
 	}
 
 	Window& Window::setPosition(const sf::Vector2f& position)
@@ -105,10 +89,10 @@ namespace gui
 
 	Window& Window::setPosition(const float x, const float y)
 	{
-		const sf::Vector2f moveAmount(x - background.getPosition().x, y - background.getPosition().y);
-		background.setPosition(x, y);
+		const sf::Vector2f moveAmount(x - m_background.getPosition().x, y - m_background.getPosition().y);
+		m_background.setPosition(x, y);
 
-		for (auto it = elements.begin(), end = elements.end(); it != end; ++it)
+		for (auto it = m_elements.begin(), end = m_elements.end(); it != end; ++it)
 			(*it)->setPosition((*it)->getPosition().x + moveAmount.x,
 				(*it)->getPosition().y + moveAmount.y);
 		return *this;
@@ -116,55 +100,63 @@ namespace gui
 
 	Window& Window::setBackgroundTexture(const sf::Texture& texture, const bool transparencyCheck)
 	{
-		background.setTexture(texture);
+		m_background.setTexture(texture);
 		return *this;
 	}
 
 	Window& Window::setTransparencyCheck(const bool transparencyCheck)
 	{
-		transparencyCheck ? transparency.reset(new TransparencyMap(*background.getTexture())) : transparency.reset();
+		transparencyCheck ? m_transparency.reset(new TransparencyMap(*m_background.getTexture())) : m_transparency.reset();
 		return *this;
 	}
 
 	Window& Window::setBackgroundTextureRect(const sf::IntRect& textureRect)
 	{
-		background.setTextureRect(textureRect);
+		m_background.setTextureRect(textureRect);
+		return *this;
+	}
+
+	Window& Window::setBackgroundColor(const sf::Color& color)
+	{
+		m_background.setColor(color);
 		return *this;
 	}
 
 	Window& Window::setMovable(const bool isMovable)
 	{
-		movable = isMovable;
+		m_movable = isMovable;
 		return *this;
 	}
 	
 	const bool Window::contains(const sf::Vector2f& point) const
 	{
-		if (background.getGlobalBounds().contains(point))
+		if (m_background.getGlobalBounds().contains(point))
 		{
-			if (!transparency) return true;
-			if (!(*transparency)[sf::Vector2i(point.x - background.getPosition().x, point.y - background.getPosition().y)]) return true;
+			if (!m_transparency) return true;
+			if (!(*m_transparency)[sf::Vector2i(point.x - m_background.getPosition().x, point.y - m_background.getPosition().y)]) return true;
 		}
 		return false;
 	}
 
 	const bool Window::input(const sf::Event& event)
 	{
-		for (auto it = elementOrder.begin(), end = elementOrder.end(); it != end; ++it)
+		if (!m_active) return false;
+
+		for (auto it = m_elements.begin(), end = m_elements.end(); it != end; ++it)
 			if ((*it)->input(event)) 
 			{
-				elementOrder.begin()->swap(*it);
+				m_elements.begin()->swap(*it);
 				return true;
 			}
 
-		if (movable)
+		if (m_movable)
 			switch (event.type)
 			{
 			case sf::Event::MouseMoved:
 			{
-				if (mouseDragOffset)
+				if (m_mouseDragOffset)
 				{
-					setPosition(sf::Vector2f(event.mouseMove.x - mouseDragOffset->x, event.mouseMove.y - mouseDragOffset->y));
+					setPosition(sf::Vector2f(event.mouseMove.x - m_mouseDragOffset->x, event.mouseMove.y - m_mouseDragOffset->y));
 					return true;
 				}
 				return contains(sf::Vector2f(event.mouseMove.x, event.mouseMove.y));
@@ -173,14 +165,14 @@ namespace gui
 			{	
 				if (contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)))
 				{
-					mouseDragOffset.reset(new sf::Vector2f(event.mouseButton.x - getPosition().x,
+					m_mouseDragOffset.reset(new sf::Vector2f(event.mouseButton.x - getPosition().x,
 						event.mouseButton.y - getPosition().y));
 					return true;
 				}
 				return false;
 			}
 			case sf::Event::MouseButtonReleased:
-				mouseDragOffset.reset();
+				m_mouseDragOffset.reset();
 				return contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
 			}
 
@@ -189,24 +181,31 @@ namespace gui
 	
 	void Window::lostFocus()
 	{
-		for (auto it = elements.begin(), end = elements.end(); it != end; ++it)
+		for (auto it = m_elements.begin(), end = m_elements.end(); it != end; ++it)
 			(*it)->lostFocus();
 	}
 
 	const sf::Vector2f& Window::getPosition() const
 	{
-		return background.getPosition();
+		return m_background.getPosition();
 	}
 
 	const bool Window::isMovable() const
 	{
-		return movable;
+		return m_movable;
 	}
 
 	void Window::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
-		target.draw(background, states);
-		for (auto it = elementOrder.rbegin(), end = elementOrder.rend(); it != end; ++it)
-			if(*it) target.draw(**it, states);
+		if (!m_active) return;
+
+		target.draw(m_background, states);
+		for (auto it = m_elements.rbegin(), end = m_elements.rend(); it != end; ++it)
+			target.draw(**it, states);
+	}
+
+	const sf::Sprite& Window::background() const
+	{
+		return m_background;
 	}
 }

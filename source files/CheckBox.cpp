@@ -27,18 +27,18 @@
 namespace gui
 {
 	CheckBox::CheckBox(const Button& fState, const Button& tState, const sf::Vector2f& pos, const bool state)
-		: Button(fState), trueState(tState), checked(state)
+		: Button(fState), m_trueState(tState), m_checked(state)
 	{
-		if (name) name.reset();
-		if (trueState.name) trueState.name.reset();
+		if (m_name) m_name.reset();
+		if (m_trueState.m_name) m_trueState.m_name.reset();
 		setPosition(pos);
 	}
 
 	CheckBox::CheckBox(Button&& fState, Button&& tState, const sf::Vector2f& pos, const bool state)
-		: Button(std::move(fState)), trueState(std::move(tState)), checked(state)
+		: Button(std::move(fState)), m_trueState(std::move(tState)), m_checked(state)
 	{
-		if (name) name.reset();
-		if (trueState.name) trueState.name.reset();
+		if (m_name) m_name.reset();
+		if (m_trueState.m_name) m_trueState.m_name.reset();
 		setPosition(pos);
 	}
 
@@ -54,89 +54,89 @@ namespace gui
 
 	void gui::CheckBox::lostFocus()
 	{
-		checked ? trueState.lostFocus() : Button::lostFocus();
+		m_checked ? m_trueState.lostFocus() : Button::lostFocus();
 	}
 
 	const bool CheckBox::input(const sf::Event& event)
 	{
-		if (checked)
+		if (m_checked)
 		{
-			if (event.type == sf::Event::MouseButtonReleased && trueState.getState() == PressedDown) 
-				checked = false;
-			return trueState.input(event);
+			if (event.type == sf::Event::MouseButtonReleased && m_trueState.getState() == PressedDown) 
+				m_checked = false;
+			return m_trueState.input(event);
 		}
 		else
 		{
 			if (event.type == sf::Event::MouseButtonReleased && Button::getState() == PressedDown) 
-				checked = true;
+				m_checked = true;
 			return Button::input(event);
 		}
 	}
 
 	const bool CheckBox::contains(const float x, const float y)const
 	{
-		if (checked) return trueState.contains(x, y);
+		if (m_checked) return m_trueState.contains(x, y);
 		else return Button::contains(x, y);
 	}
 
 	const Button::State CheckBox::getState()const
 	{
-		if (checked) return trueState.getState();
+		if (m_checked) return m_trueState.getState();
 		else return Button::getState();
 	}
 
 	const bool CheckBox::isChecked()const
 	{
-		return checked;
+		return m_checked;
 	}
 
 	const sf::FloatRect CheckBox::getTrueStateGlobalBounds()const
 	{
-		return trueState.getGlobalBounds();
+		return m_trueState.getGlobalBounds();
 	}
 
 	const sf::Texture& CheckBox::getTrueStateTexture()const
 	{
-		return trueState.getTexture();
+		return m_trueState.getTexture();
 	}
 
 	const bool CheckBox::getTrueStateTransparencyCheck()const
 	{
-		return trueState.getTransparencyCheck();
+		return m_trueState.getTransparencyCheck();
 	}
 
 	const sf::IntRect& CheckBox::getTrueStateTextureRect()const
 	{
-		return trueState.getTextureRect();
+		return m_trueState.getTextureRect();
 	}
 
 	const std::shared_ptr<const HoverMessage> CheckBox::getTrueStateMessage()const
 	{
-		return trueState.getMessage();
+		return m_trueState.getMessage();
 	}
 
 	const std::shared_ptr<const HoverMessage> CheckBox::getTrueStatePredicateMessage()const
 	{
-		return trueState.getPredicateMessage();
+		return m_trueState.getPredicateMessage();
 	}
 
 	void CheckBox::toggle()
 	{
-		if (checked)
+		if (m_checked)
 		{
-			checked = false;
-			if(trueState.onEvent.count(Released)) trueState.onEvent.at(Released)();
+			m_checked = false;
+			if(m_trueState.m_onEvent.count(Released)) m_trueState.m_onEvent.at(Released)();
 		}
 		else
 		{
-			checked = true;
-			if(Button::onEvent.count(Released)) Button::onEvent.at(Released)();
+			m_checked = true;
+			if(Button::m_onEvent.count(Released)) Button::m_onEvent.at(Released)();
 		}
 	}
 
 	CheckBox& CheckBox::setIsChecked(const bool state)
 	{
-		if (checked != state)
+		if (m_checked != state)
 			toggle();
 		return *this;
 	}
@@ -144,7 +144,7 @@ namespace gui
 	CheckBox& CheckBox::setPosition(const float x, const float y)
 	{
 		Button::setPosition(x, y);
-		trueState.setPosition(x + getGlobalBounds().width / 2.0f - trueState.getGlobalBounds().width / 2.0f, y + getGlobalBounds().height / 2.0f - trueState.getGlobalBounds().height / 2.0f);
+		m_trueState.setPosition(x + getGlobalBounds().width / 2.0f - m_trueState.getGlobalBounds().width / 2.0f, y + getGlobalBounds().height / 2.0f - m_trueState.getGlobalBounds().height / 2.0f);
 		return *this;
 	}
 
@@ -155,61 +155,61 @@ namespace gui
 
 	CheckBox& CheckBox::setTrueStateTexture(const sf::Texture& tex, const bool transpCheck)
 	{
-		trueState.setTexture(tex, transpCheck);
+		m_trueState.setTexture(tex, transpCheck);
 		return *this;
 	}
 
 	CheckBox& CheckBox::setTrueStateTransparencyCheck(const bool transpCheck)
 	{
-		trueState.setTransparencyCheck(transpCheck);
+		m_trueState.setTransparencyCheck(transpCheck);
 		return *this;
 	}
 
 	CheckBox& CheckBox::setTrueStateTextureRect(const sf::IntRect& rect)
 	{
-		trueState.setTextureRect(rect);
+		m_trueState.setTextureRect(rect);
 		return *this;
 	}
 
 	CheckBox& CheckBox::setTrueStateMessage(const HoverMessage& newMessage)
 	{
-		trueState.setMessage(newMessage);
+		m_trueState.setMessage(newMessage);
 		return *this;
 	}
 
 	CheckBox& CheckBox::setTrueStateMessage(HoverMessage&& tempMessage)
 	{
-		trueState.setMessage(std::move(tempMessage));
+		m_trueState.setMessage(std::move(tempMessage));
 		return *this;
 	}
 
 	CheckBox& CheckBox::setTrueStatePredicateMessage(const HoverMessage& newMessage)
 	{
-		trueState.setPredicateMessage(newMessage);
+		m_trueState.setPredicateMessage(newMessage);
 		return *this;
 	}
 
 	CheckBox& CheckBox::setTrueStatePredicateMessage(HoverMessage&& tempMessage)
 	{
-		trueState.setPredicateMessage(std::move(tempMessage));
+		m_trueState.setPredicateMessage(std::move(tempMessage));
 		return *this;
 	}
 
 	CheckBox& CheckBox::setTrueStatePredicates(const PredicateArray& newPredicates)
 	{
-		trueState.setPredicates(newPredicates);
+		m_trueState.setPredicates(newPredicates);
 		return *this;
 	}
 
 	CheckBox& CheckBox::setTrueStatePredicates(PredicateArray&& predicates)
 	{
-		trueState.setPredicates(std::move(predicates));
+		m_trueState.setPredicates(std::move(predicates));
 		return *this;
 	}
 
 	void CheckBox::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
-		if (checked) target.draw(trueState, states);
+		if (m_checked) target.draw(m_trueState, states);
 		else Button::draw(target, states);
 	}
 }

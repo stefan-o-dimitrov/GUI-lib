@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #include "../include/GUI/Button.h"
+#include "../include/GUI/Window.h"
 
 #include <sstream>
 
@@ -41,25 +42,25 @@ namespace gui
 	const bool Button::shaderLoadSuccessful = Button::loadShader();
 
 	Button::Button(const Icon& visual)
-		: Icon(visual), state(Idle)
+		: Icon(visual), m_state(Idle)
 	{
-		Icon::spr.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
+		Icon::m_icon.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
 	}
 
 	Button::Button(Icon&& visual)
 		: Icon(std::move(visual))
 	{
-		Icon::spr.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
+		Icon::m_icon.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
 	}
 
 	Button::Button(const Button& copy)
-		: Icon(copy), onEvent(copy.onEvent), state(Idle)
+		: Icon(copy), m_onEvent(copy.m_onEvent), m_state(Idle)
 	{
-		Icon::spr.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
+		Icon::m_icon.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
 
-		if (copy.messageBuffer) messageBuffer.reset(new HoverMessage(*copy.messageBuffer));
-		if (copy.name) name.reset(new TextArea(*copy.name));
-		if (copy.predicates) predicates.reset(new PredicateArray(*copy.predicates));
+		if (copy.m_messageBuffer) m_messageBuffer.reset(new HoverMessage(*copy.m_messageBuffer));
+		if (copy.m_name) m_name.reset(new TextArea(*copy.m_name));
+		if (copy.m_predicates) m_predicates.reset(new PredicateArray(*copy.m_predicates));
 	}
 
 	std::unique_ptr<Interactive> Button::copy() const
@@ -76,9 +77,9 @@ namespace gui
 	{
 		Icon::lostFocus();
 
-		if (predicatesFulfilled && state != Idle)
-			Icon::spr.setColor(sf::Color(0.85 * 255, 0.85 * 255, 0.85 * 255, 255));
-		state = Idle;
+		if (m_predicatesFulfilled && m_state != Idle)
+			Icon::m_icon.setColor(sf::Color(0.85 * 255, 0.85 * 255, 0.85 * 255, 255));
+		m_state = Idle;
 	}
 
 	const bool Button::input(const sf::Event& event)
@@ -88,40 +89,40 @@ namespace gui
 		case sf::Event::MouseMoved:
 			if (Icon::input(event))
 			{
-				if (state == PressedDown) return true;
-				if (predicatesFulfilled && state != Hot)
-					Icon::spr.setColor(sf::Color(255, 255, 255, 255));
-				state = Hot;
+				if (m_state == PressedDown) return true;
+				if (m_predicatesFulfilled && m_state != Hot)
+					Icon::m_icon.setColor(sf::Color(255, 255, 255, 255));
+				m_state = Hot;
 				return true;
 			}
 			else
 			{
-				if (predicatesFulfilled && state != Idle)
-					Icon::spr.setColor(sf::Color(0.85 * 255, 0.85 * 255, 0.85 * 255, 255));
-				state = Idle;
+				if (m_predicatesFulfilled && m_state != Idle)
+					Icon::m_icon.setColor(sf::Color(0.85 * 255, 0.85 * 255, 0.85 * 255, 255));
+				m_state = Idle;
 				return false;
 			}
 		case sf::Event::MouseButtonPressed:
 			if (Icon::input(event))
 			{
-				if (onEvent.count(Pressed))
-					onEvent.at(Pressed)();
-				if (predicatesFulfilled && state != PressedDown)
-					Icon::spr.setColor(sf::Color(0.7 * 255, 0.7 * 255, 0.7 * 255, 255));
-				state = PressedDown;
+				if (m_onEvent.count(Pressed))
+					m_onEvent.at(Pressed)();
+				if (m_predicatesFulfilled && m_state != PressedDown)
+					Icon::m_icon.setColor(sf::Color(0.7 * 255, 0.7 * 255, 0.7 * 255, 255));
+				m_state = PressedDown;
 				return true;
 			}
 			else return false;
 		case sf::Event::MouseButtonReleased:
 			if (Icon::input(event))
 			{
-				if (predicatesFulfilled)
+				if (m_predicatesFulfilled)
 				{
-					if (state == PressedDown && onEvent.count(Released))
-						onEvent.at(Released)();
-					if (state != Hot)
-						Icon::spr.setColor(sf::Color(255, 255, 255, 255));
-					state = Hot;
+					if (m_state == PressedDown && m_onEvent.count(Released))
+						m_onEvent.at(Released)();
+					if (m_state != Hot)
+						Icon::m_icon.setColor(sf::Color(255, 255, 255, 255));
+					m_state = Hot;
 				}
 				return true;
 			}
@@ -133,97 +134,97 @@ namespace gui
 
 	const Button::State Button::getState()const
 	{
-		return state;
+		return m_state;
 	}
 
 	const std::shared_ptr<const HoverMessage> Button::getPredicateMessage()const
 	{
-		return predicatesFulfilled ? messageBuffer : message;
+		return m_predicatesFulfilled ? m_messageBuffer : m_message;
 	}
 
 	const std::shared_ptr<const HoverMessage> Button::getMessage()const
 	{
-		return predicatesFulfilled ? message : messageBuffer;
+		return m_predicatesFulfilled ? m_message : m_messageBuffer;
 	}
 
 	const std::shared_ptr<const TextArea> Button::getName()const
 	{
-		return name;
+		return m_name;
 	}
 
 	Button& Button::setName(const TextArea& newName)
 	{
-		name.reset(new TextArea(newName));
-		name->message.reset();
-		name->setPosition(getPosition().x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2,
-			getPosition().y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
+		m_name.reset(new TextArea(newName));
+		m_name->m_message.reset();
+		m_name->setPosition(getPosition().x + getGlobalBounds().width / 2 - m_name->getGlobalBounds().width / 2,
+			getPosition().y + getGlobalBounds().height / 2 - m_name->getGlobalBounds().height / 2);
 		return *this;
 	}
 
 	Button& Button::setName(TextArea&& tempName)
 	{
-		name.reset(new TextArea(std::move(tempName)));
-		name->message.reset();
-		name->updateFunction.reset();
-		name->setPosition(getPosition().x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2,
-			getPosition().y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
+		m_name.reset(new TextArea(std::move(tempName)));
+		m_name->m_message.reset();
+		m_name->m_updateFunction.reset();
+		m_name->setPosition(getPosition().x + getGlobalBounds().width / 2 - m_name->getGlobalBounds().width / 2,
+			getPosition().y + getGlobalBounds().height / 2 - m_name->getGlobalBounds().height / 2);
 		return *this;
 	}
 
 	Button& Button::clearPredicateMessage()
 	{
-		if (predicatesFulfilled) messageBuffer.reset();
+		if (m_predicatesFulfilled) m_messageBuffer.reset();
 		else Hoverable::clearMessage();
 		return *this;
 	}
 
 	Button& Button::clearMessage()
 	{
-		if (predicatesFulfilled) Hoverable::clearMessage();
-		else messageBuffer.reset();
+		if (m_predicatesFulfilled) Hoverable::clearMessage();
+		else m_messageBuffer.reset();
 		return *this;
 	}
 
 	Button& Button::setMessage(const HoverMessage& newMessage)
 	{
-		predicatesFulfilled ? message.reset(new HoverMessage(newMessage)) :
-			messageBuffer.reset(new HoverMessage(newMessage));
+		m_predicatesFulfilled ? m_message.reset(new HoverMessage(newMessage)) :
+			m_messageBuffer.reset(new HoverMessage(newMessage));
 		return *this;
 	}
 
 	Button& Button::setMessage(HoverMessage&& tempMessage)
 	{
-		predicatesFulfilled ? message.reset(new HoverMessage(std::move(tempMessage))) :
-			messageBuffer.reset(new HoverMessage(std::move(tempMessage)));
+		m_predicatesFulfilled ? m_message.reset(new HoverMessage(std::move(tempMessage))) :
+			m_messageBuffer.reset(new HoverMessage(std::move(tempMessage)));
 		return *this;
 	}
 
 	Button& Button::setTexture(const sf::Texture& texture, const bool transparencyCheck)
 	{
 		Icon::setTexture(texture, transparencyCheck);
-		if (name)
-			name->setPosition(getPosition().x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2,
-				getPosition().y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
+		if (m_name)
+			m_name->setPosition(getPosition().x + getGlobalBounds().width / 2 - m_name->getGlobalBounds().width / 2,
+				getPosition().y + getGlobalBounds().height / 2 - m_name->getGlobalBounds().height / 2);
 		return *this;
 	}
 
 	Button& Button::setPredicateMessage(const HoverMessage& newMessage)
 	{
-		predicatesFulfilled ? messageBuffer.reset(new HoverMessage(newMessage))
-			: message.reset(new HoverMessage(newMessage));
+		m_predicatesFulfilled ? m_messageBuffer.reset(new HoverMessage(newMessage))
+			: m_message.reset(new HoverMessage(newMessage));
 		return *this;
 	}
 
 	Button& Button::setPredicateMessage(HoverMessage&& tempMessage)
 	{
-		predicatesFulfilled ? messageBuffer.reset(new HoverMessage(std::move(tempMessage)))
-			: message.reset(new HoverMessage(std::move(tempMessage)));
+		m_predicatesFulfilled ? m_messageBuffer.reset(new HoverMessage(std::move(tempMessage)))
+			: m_message.reset(new HoverMessage(std::move(tempMessage)));
 		return *this;
 	}
 
 	Button& Button::clearPredicates()
 	{
-		predicates.reset();
+		m_predicates.reset();
 		checkPredicates();
 		return *this;
 	}
@@ -231,8 +232,8 @@ namespace gui
 	Button& Button::setPosition(const float x, const float y)
 	{
 		Icon::setPosition(x, y);
-		if (name) name->setPosition(x + getGlobalBounds().width / 2 - name->getGlobalBounds().width / 2,
-			y + getGlobalBounds().height / 2 - name->getGlobalBounds().height / 2);
+		if (m_name) m_name->setPosition(x + getGlobalBounds().width / 2 - m_name->getGlobalBounds().width / 2,
+			y + getGlobalBounds().height / 2 - m_name->getGlobalBounds().height / 2);
 		return *this;
 	}
 
@@ -243,75 +244,75 @@ namespace gui
 
 	Button& Button::setPredicates(const PredicateArray& newPredicates)
 	{
-		predicates.reset(new PredicateArray(newPredicates));
+		m_predicates.reset(new PredicateArray(newPredicates));
 		return *this;
 	}
 
 	Button& Button::setPredicates(PredicateArray&& tempPredicates)
 	{
-		predicates.reset(new PredicateArray(std::move(tempPredicates)));
+		m_predicates.reset(new PredicateArray(std::move(tempPredicates)));
 		return *this;
 	}
 
 	Button& Button::bindAction(const Event event, const std::function<void()>& action)
 	{
-		if (onEvent.count(event)) onEvent.at(event) = action;
-		else onEvent.emplace(event, action);
+		if (m_onEvent.count(event)) m_onEvent.at(event) = action;
+		else m_onEvent.emplace(event, action);
 		return *this;
 	}
 
 	Button& Button::bindAction(const Event event, std::function<void()>&& action)
 	{
-		if (onEvent.count(event)) onEvent.at(event) = std::move(action);
-		else onEvent.emplace(event, std::move(action));
+		if (m_onEvent.count(event)) m_onEvent.at(event) = std::move(action);
+		else m_onEvent.emplace(event, std::move(action));
 		return *this;
 	}
 
 	void Button::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
-		if (predicates && Duration(Internals::timeSinceStart() - timeOfLastPredicateCheck).count() > 1.0f / Internals::getUPS())
+		if (m_predicates && Duration(Internals::timeSinceStart() - m_timeOfLastPredicateCheck).count() > 1.0f / Internals::getUPS())
 			checkPredicates();
 
-		states.shader = !predicatesFulfilled && shaderLoadSuccessful ?
+		states.shader = !m_predicatesFulfilled && shaderLoadSuccessful ?
 			&grayscaleShader : nullptr;
 
-		target.draw(spr, states);
-		if (name) target.draw(*name, states);
+		target.draw(m_icon, states);
+		if (m_name) target.draw(*m_name, states);
 		Hoverable::draw(target, states);
 	}
 
 	void Button::checkPredicates()const
 	{
-		if (!predicates)
+		if (!m_predicates)
 		{
-			if (!predicatesFulfilled)
+			if (!m_predicatesFulfilled)
 			{
-				message.swap(messageBuffer);
-				spr.setColor(sf::Color((1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, 255));
-				predicatesFulfilled = true;
+				m_message.swap(m_messageBuffer);
+				m_icon.setColor(sf::Color((1.0f - 0.15f * m_state) * 255, (1.0f - 0.15f * m_state) * 255, (1.0f - 0.15f * m_state) * 255, 255));
+				m_predicatesFulfilled = true;
 			}
 			return;
 		}
 
-		for (auto it = predicates->begin(), end = predicates->end(); it != end; ++it)
+		for (auto it = m_predicates->begin(), end = m_predicates->end(); it != end; ++it)
 			if (!(*it)())
 			{
-				if (predicatesFulfilled)
+				if (m_predicatesFulfilled)
 				{
-					if (onEvent.count(PredicatesUnfulfilled)) onEvent.at(PredicatesUnfulfilled)();
-					message.swap(messageBuffer);
-					spr.setColor(sf::Color(255, 255, 255, 255));
-					predicatesFulfilled = false;
+					if (m_onEvent.count(PredicatesUnfulfilled)) m_onEvent.at(PredicatesUnfulfilled)();
+					m_message.swap(m_messageBuffer);
+					m_icon.setColor(sf::Color(255, 255, 255, 255));
+					m_predicatesFulfilled = false;
 				}
 				return;
 			}
 
-		if (!predicatesFulfilled)
+		if (!m_predicatesFulfilled)
 		{
-			if (onEvent.count(PredicatesFulfilled)) onEvent.at(PredicatesFulfilled)();
-			message.swap(messageBuffer);
-			spr.setColor(sf::Color((1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, (1.0f - 0.15f * state) * 255, 255));
-			predicatesFulfilled = true;
+			if (m_onEvent.count(PredicatesFulfilled)) m_onEvent.at(PredicatesFulfilled)();
+			m_message.swap(m_messageBuffer);
+			m_icon.setColor(sf::Color((1.0f - 0.15f * m_state) * 255, (1.0f - 0.15f * m_state) * 255, (1.0f - 0.15f * m_state) * 255, 255));
+			m_predicatesFulfilled = true;
 		}
 	}
 

@@ -58,14 +58,13 @@ namespace gui
 
 		static void arrangeText(unique_ptr_vector<sf::Text>& target);
 		
-	private:
-		
+	private:		
 		ColoredText() = default;
 
 		void getText(unique_ptr_vector<sf::Text>& target, const sf::Font& font, const unsigned char characterSize, const float TEXT_HEIGHT, sf::Vector2f& addPosition)const;
 
-		shared_ptr_vector<ColoredString> text;
-		std::unordered_multimap<size_t, std::function<ColoredText()>> volatileText;
+		shared_ptr_vector<ColoredString>                              m_text;
+		std::unordered_multimap<size_t, std::function<ColoredText()>> m_volatileText;
 
 		static void stringToArrangedText(unique_ptr_vector<sf::Text>& target,
 			const ColoredString& string, const sf::Font& font,

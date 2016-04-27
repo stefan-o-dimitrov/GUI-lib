@@ -74,14 +74,14 @@ namespace gui
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 		virtual void update()const;
 
-		sf::Vector2f position = sf::Vector2f(0, 0);
+		sf::Vector2f m_position = sf::Vector2f(0, 0);
 
 	private:
-		mutable unique_ptr_vector<sf::Text> text;
-		const sf::Font* font;
-		unsigned char characterSize = 13;
-		ColoredText string;
-		mutable TimePoint timeOfLastUpdate;
+		mutable unique_ptr_vector<sf::Text> m_text;
+		const sf::Font*                     m_font = nullptr;
+		unsigned char                       m_characterSize = 13;
+		ColoredText                         m_string;
+		mutable TimePoint                   m_timeOfLastUpdate;
 	};
 }
 

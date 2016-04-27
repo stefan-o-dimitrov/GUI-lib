@@ -37,7 +37,6 @@
 
 namespace gui 
 {
-
 	class Button : public Icon
 	{
 	public:
@@ -104,14 +103,13 @@ namespace gui
 
 		void checkPredicates()const;
 
-		mutable std::shared_ptr<HoverMessage>   messageBuffer = nullptr;
-		mutable std::unique_ptr<PredicateArray> predicates = nullptr;
-		std::shared_ptr<TextArea>               name = nullptr;
-		EventMap                                onEvent;
-
-		TimePoint    timeOfLastPredicateCheck;
-		State        state = Idle;
-		mutable bool predicatesFulfilled = true;
+		mutable std::shared_ptr<HoverMessage>   m_messageBuffer = nullptr;
+		mutable std::unique_ptr<PredicateArray> m_predicates = nullptr;
+		std::shared_ptr<TextArea>               m_name = nullptr;
+		EventMap                                m_onEvent;
+		TimePoint                               m_timeOfLastPredicateCheck;
+		State                                   m_state = Idle;
+		mutable bool                            m_predicatesFulfilled = true;
 
 		static const bool loadShader();
 

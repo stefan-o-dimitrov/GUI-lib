@@ -79,9 +79,9 @@ namespace gui
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 
-		mutable sf::Text text;
-		mutable TimePoint timeOfLastUpdate;
-		std::shared_ptr<const std::function<ColoredString()>> updateFunction;
+		mutable sf::Text                                      m_text;
+		mutable TimePoint                                     m_timeOfLastUpdate;
+		std::shared_ptr<const std::function<ColoredString()>> m_updateFunction;
 	};
 }
 

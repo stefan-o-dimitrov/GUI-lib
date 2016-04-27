@@ -75,10 +75,10 @@ namespace gui
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-		std::unique_ptr<std::function<const float()>> updateFunction;
-		mutable TimePoint timeOfLastUpdate;
-		mutable float progress = 0.0f;
-		mutable Icon fill;
+		std::unique_ptr<std::function<const float()>> m_updateFunction;
+		mutable TimePoint                             m_timeOfLastUpdate;
+		mutable float                                 m_progress = 0.0f;
+		mutable Icon                                  m_fill;
 	};
 }
 

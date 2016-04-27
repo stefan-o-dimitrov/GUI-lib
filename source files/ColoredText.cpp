@@ -33,7 +33,7 @@ namespace gui
 
 	gui::ColoredText::operator ColoredString()
 	{
-		return ColoredString(text.empty() ? "" : text.front()->first, text.empty() ? sf::Color() : text.front()->second);
+		return ColoredString(m_text.empty() ? "" : m_text.front()->first, m_text.empty() ? sf::Color() : m_text.front()->second);
 	}
 
 	void ColoredText::stringToArrangedText(unique_ptr_vector<sf::Text>& target,
@@ -67,7 +67,7 @@ namespace gui
 
 	const bool ColoredText::isVolatile() const
 	{
-		return volatileText.size();
+		return m_volatileText.size();
 	}
 
 	void ColoredText::getText(unique_ptr_vector<sf::Text>& target, const sf::Font& font, const unsigned char characterSize)const
@@ -81,19 +81,19 @@ namespace gui
 
 	void ColoredText::getText(unique_ptr_vector<sf::Text>& target, const sf::Font& font, const unsigned char characterSize, const float TEXT_HEIGHT, sf::Vector2f& addPosition)const
 	{
-		if (!text.empty())
+		if (!m_text.empty())
 		{
-			for (unsigned short it = 0, end = text.size(); it < end; it++)
+			for (unsigned short it = 0, end = m_text.size(); it < end; it++)
 			{
-				for (auto it1 = volatileText.equal_range(it); it1.first != it1.second; ++it1.first)
+				for (auto it1 = m_volatileText.equal_range(it); it1.first != it1.second; ++it1.first)
 					it1.first->second().getText(target, font, characterSize, TEXT_HEIGHT, addPosition);
-				stringToArrangedText(target, *text.at(it), font, characterSize, addPosition, TEXT_HEIGHT);
+				stringToArrangedText(target, *m_text.at(it), font, characterSize, addPosition, TEXT_HEIGHT);
 			}
-			for (auto it = volatileText.equal_range(text.size()); it.first != it.second; ++it.first)
+			for (auto it = m_volatileText.equal_range(m_text.size()); it.first != it.second; ++it.first)
 				it.first->second().getText(target, font, characterSize, TEXT_HEIGHT, addPosition);
 		}
-		else if (!volatileText.empty())
-			for (auto it = volatileText.begin(), end = volatileText.end(); it != end; ++it)
+		else if (!m_volatileText.empty())
+			for (auto it = m_volatileText.begin(), end = m_volatileText.end(); it != end; ++it)
 				it->second().getText(target, font, characterSize, TEXT_HEIGHT, addPosition);
 
 	}
@@ -113,49 +113,49 @@ namespace gui
 	ColoredText bind(const std::string& string, const sf::Color& color)
 	{
 		ColoredText returnValue;
-		if (!string.empty()) returnValue.text.emplace_back(new ColoredString(string, color));
+		if (!string.empty()) returnValue.m_text.emplace_back(new ColoredString(string, color));
 		return returnValue;
 	}
 
 	ColoredText& operator+(ColoredText& lhs, const ColoredText& rhs)
 	{
-		for (auto it = rhs.volatileText.begin(), end = rhs.volatileText.end(); it != end; ++it)
-			lhs.volatileText.emplace(std::move(std::make_pair(it->first + lhs.text.size(), it->second)));
-		for (auto it = rhs.text.begin(), end = rhs.text.end(); it != end; ++it)
-			lhs.text.emplace_back(*it);
+		for (auto it = rhs.m_volatileText.begin(), end = rhs.m_volatileText.end(); it != end; ++it)
+			lhs.m_volatileText.emplace(std::move(std::make_pair(it->first + lhs.m_text.size(), it->second)));
+		for (auto it = rhs.m_text.begin(), end = rhs.m_text.end(); it != end; ++it)
+			lhs.m_text.emplace_back(*it);
 		return lhs;
 	}
 
 	ColoredText& operator+(ColoredText& lhs, ColoredText&& rhs)
 	{
-		for (auto it = rhs.volatileText.begin(), end = rhs.volatileText.end(); it != end; ++it)
-			lhs.volatileText.emplace(std::move(std::make_pair(it->first + lhs.text.size(), std::move(it->second))));
-		for (auto it = rhs.text.begin(), end = rhs.text.end(); it != end; ++it)
-			lhs.text.emplace_back(std::move(*it));
+		for (auto it = rhs.m_volatileText.begin(), end = rhs.m_volatileText.end(); it != end; ++it)
+			lhs.m_volatileText.emplace(std::move(std::make_pair(it->first + lhs.m_text.size(), std::move(it->second))));
+		for (auto it = rhs.m_text.begin(), end = rhs.m_text.end(); it != end; ++it)
+			lhs.m_text.emplace_back(std::move(*it));
 		return lhs;
 	}
 
 	ColoredText& operator+(ColoredText& lhs, const ColoredString& rhs)
 	{
-		lhs.text.emplace_back(new ColoredString(rhs));
+		lhs.m_text.emplace_back(new ColoredString(rhs));
 		return lhs;
 	}
 
 	ColoredText& operator+(ColoredText& lhs, ColoredString&& rhs)
 	{
-		lhs.text.emplace_back(new ColoredString(std::move(rhs)));
+		lhs.m_text.emplace_back(new ColoredString(std::move(rhs)));
 		return lhs;
 	}
 
 	ColoredText& operator+(ColoredText& lhs, const std::function<ColoredText()>& rhs)
 	{
-		lhs.volatileText.insert(std::make_pair(lhs.text.size(), rhs));
+		lhs.m_volatileText.insert(std::make_pair(lhs.m_text.size(), rhs));
 		return lhs;
 	}
 
 	ColoredText& operator+(ColoredText& lhs, std::function<ColoredText()>&& rhs)
 	{
-		lhs.volatileText.emplace(std::move(std::make_pair(lhs.text.size(), std::move(rhs))));
+		lhs.m_volatileText.emplace(std::move(std::make_pair(lhs.m_text.size(), std::move(rhs))));
 		return lhs;
 	}
 }

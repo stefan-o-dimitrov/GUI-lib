@@ -28,131 +28,104 @@ namespace gui
 {
 	void WindowManager::input(const sf::Event& event)
 	{
-		if (!dialogBoxes.empty())
+		if (!m_dialogBoxOrder.empty())
 		{
-			if (dialogBoxOrder.front()->input(event))
+			if (m_dialogBoxOrder.front()->input(event))
 			{
+				if (m_dialogBoxOrder.front()->isClosed())
+				{
+					for (auto it(m_dialogBoxes.begin()), end(m_dialogBoxes.end()); it != end; ++it)
+						if (it->second == &*m_dialogBoxOrder.front())
+						{
+							m_windows.erase(it);
+							break;
+						}
+					m_dialogBoxOrder.erase(m_dialogBoxOrder.begin());
+				}
+				else if (!m_dialogBoxOrder.front()->isActive())
+					m_dialogBoxOrder.front().swap(m_dialogBoxOrder.back());
+
 				if(event.type == sf::Event::MouseMoved)
-					for (auto it = dialogBoxOrder.begin() + 1, end = dialogBoxOrder.end(); it != end; ++it)
+					for (auto it = m_dialogBoxOrder.begin() + 1, end = m_dialogBoxOrder.end(); it != end; ++it)
 						(*it)->lostFocus();
 				return;
 			}
 
 			if (event.type == sf::Event::MouseMoved)
-				for (auto it = dialogBoxOrder.begin() + 1, end = dialogBoxOrder.end(); it != end; ++it)
+				for (auto it = m_dialogBoxOrder.begin() + 1, end = m_dialogBoxOrder.end(); it != end; ++it)
 					if((*it)->input(event))
 						return;
 
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
 				const sf::Vector2f position(event.mouseButton.x, event.mouseButton.y);
-				for (auto it = dialogBoxOrder.begin() + 1, end = dialogBoxOrder.end(); it != end; ++it)
+				for (auto it = m_dialogBoxOrder.begin() + 1, end = m_dialogBoxOrder.end(); it != end; ++it)
 					if ((*it)->contains(position))
 					{
-						dialogBoxOrder.front()->lostFocus();
-						dialogBoxOrder.front().swap(*it);
+						m_dialogBoxOrder.front()->lostFocus();
+						m_dialogBoxOrder.front().swap(*it);
 						return;
 					}
 			}
 		}
 
-		for (auto it = windowOrder.begin(), end = windowOrder.end(); it != end; ++it)
-			if ((*it)->input(event)) break;
+		for (auto it = m_windowOrder.begin(), end = m_windowOrder.end(); it != end; ++it)
+			if ((*it)->input(event))
+			{
+				if ((*it)->isClosed())
+				{
+					for (auto it(m_windows.begin()), end(m_windows.end()); it != end; ++it)
+						if (it->second == &*m_windowOrder.front())
+						{
+							m_windows.erase(it);
+							break;
+						}
+					m_windowOrder.erase(it);
+				}
+				m_windowOrder.front().swap(*it);
+				break;
+			}
 	}
 
-	WindowManager& WindowManager::pushBack(const Window& window, const bool fullscreen)
+	WindowManager& WindowManager::emplace(const std::string& key, const Window& window, const bool fullscreen)
 	{
-		fullscreen ? windows.emplace_back(new Window(window)) : dialogBoxes.emplace_back(new Window(window));
-
-		auto& target = fullscreen ? windowOrder : dialogBoxOrder;
-
-		std::vector<std::shared_ptr<Window>> buffer;
-		buffer.reserve(target.size() + 1);
-		buffer.push_back(fullscreen ? windows.back() : dialogBoxes.back());
-
-		for (auto it = target.begin(), end = target.end(); it != end; ++it)
-			buffer.emplace_back(std::move(*it));
-
-		target = std::move(buffer);
-
+		(fullscreen ? m_windows : m_dialogBoxes).emplace(key, new Window(window));
+		(fullscreen ? m_windowOrder : m_dialogBoxOrder).emplace_back(&*(fullscreen ? m_windows : m_dialogBoxes).at(key));
 		return *this;
 	}
 
-	WindowManager& WindowManager::pushBack(Window&& window, const bool fullscreen)
+	WindowManager& WindowManager::emplace(const std::string& key, Window&& window, const bool fullscreen)
 	{
-		fullscreen ? windows.emplace_back(new Window(std::move(window))) :
-			dialogBoxes.emplace_back(new Window(std::move(window)));
-
-		auto& target = fullscreen ? windowOrder : dialogBoxOrder;
-
-		std::vector<std::shared_ptr<Window>> buffer;
-		buffer.reserve(target.size() + 1);
-		buffer.push_back(fullscreen ? windows.back() : dialogBoxes.back());
-
-		for (auto it = target.begin(), end = target.end(); it != end; ++it)
-			buffer.emplace_back(std::move(*it));
-
-		target = std::move(buffer);
-
-		return *this;
-	}
-
-	WindowManager& WindowManager::pushFront(const Window& window, const bool fullscreen)
-	{
-		fullscreen ? windows.emplace_back(new Window(window)) : dialogBoxes.emplace_back(new Window(window));
-		fullscreen ? windowOrder.push_back(windows.back()) : dialogBoxOrder.push_back(dialogBoxes.back());
-		return *this;
-	}
-
-	WindowManager& WindowManager::pushFront(Window&& window, const bool fullscreen)
-	{
-		fullscreen ? windows.emplace_back(new Window(std::move(window))) : dialogBoxes.emplace_back(new Window(std::move(window)));
-		fullscreen ? windowOrder.push_back(windows.back()) : dialogBoxOrder.push_back(dialogBoxes.back());
+		(fullscreen ? m_windows : m_dialogBoxes).emplace(key, new Window(std::move(window)));
+		(fullscreen ? m_windowOrder : m_dialogBoxOrder).emplace_back(&*(fullscreen ? m_windows : m_dialogBoxes).at(key));
 		return *this;
 	}
 
 	void WindowManager::clear(const bool fullscreen)
 	{
-		fullscreen ? windows.clear() : dialogBoxes.clear();
-		fullscreen ? windowOrder.clear() : dialogBoxOrder.clear();
+		fullscreen ? m_windows.clear() : m_dialogBoxes.clear();
 	}
-
-	const bool WindowManager::erase(const unsigned short index, const bool fullscreen)
-	{
-		auto& target = fullscreen ? windows : dialogBoxes;
-		if (index >= target.size()) return false;
-
-		auto element(target.begin() + index);
-		for (auto it = (fullscreen ? windowOrder : dialogBoxOrder).begin(), end = (fullscreen ? windowOrder : dialogBoxOrder).end(); it != end; ++it)
-			if (*it = *element)
-			{
-				(fullscreen ? windowOrder : dialogBoxOrder).erase(it);
-				break;
-			}
-		target.erase(element);
-		return true;
-	}
-
+	
 	const size_t WindowManager::size(const bool fullscreen) const
 	{
-		return fullscreen ? windows.size() : dialogBoxes.size();
+		return fullscreen ? m_windows.size() : m_dialogBoxes.size();
 	}
 
-	Window& WindowManager::at(const unsigned short index, const bool fullscreen)
+	Window& WindowManager::at(const std::string& key, const bool fullscreen)
 	{
-		return fullscreen ? *windows.at(index) : *dialogBoxes.at(index);
+		return fullscreen ? *m_windows.at(key) : *m_dialogBoxes.at(key);
 	}
 
-	const Window& WindowManager::at(const unsigned short index, const bool fullscreen) const
+	const Window& WindowManager::at(const std::string& key, const bool fullscreen) const
 	{
-		return fullscreen ? *windows.at(index) : *dialogBoxes.at(index);
+		return fullscreen ? *m_windows.at(key) : *m_dialogBoxes.at(key);
 	}
 
 	void WindowManager::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
-		for (auto it = windowOrder.rbegin(), end = windowOrder.rend(); it != end; ++it)
+		for (auto it = m_windowOrder.rbegin(), end = m_windowOrder.rend(); it != end; ++it)
 			target.draw(**it, states);
-		for (auto it = dialogBoxOrder.rbegin(), end = dialogBoxOrder.rend(); it != end; ++it)
+		for (auto it = m_dialogBoxOrder.rbegin(), end = m_dialogBoxOrder.rend(); it != end; ++it)
 			target.draw(**it, states);
 	}
 }

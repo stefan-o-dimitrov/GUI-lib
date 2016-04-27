@@ -29,15 +29,15 @@
 namespace gui
 {
 	ProgressBar::ProgressBar(const Icon& newBackground, const Icon& newFill,
-		const unsigned char newProgress) : Icon(newBackground), fill(newFill)
+		const unsigned char newProgress) : Icon(newBackground), m_fill(newFill)
 	{
-		fill.clearMessage();
+		m_fill.clearMessage();
 		setProgress(newProgress);
 		setPosition(0, 0);
 	}
 
 	ProgressBar::ProgressBar(Icon&& newBackground, Icon&& newFill, const unsigned char newProgress)
-		: Icon(std::move(newBackground)), fill(newFill)
+		: Icon(std::move(newBackground)), m_fill(newFill)
 	{
 		setProgress(newProgress);
 		setPosition(0, 0);
@@ -45,9 +45,9 @@ namespace gui
 
 	ProgressBar::ProgressBar(const ProgressBar& copy)
 		: Icon(copy),
-		fill(copy.fill),
-		updateFunction(copy.updateFunction ? new std::function<const float()>(*copy.updateFunction) : nullptr),
-		progress(copy.progress) {}
+		m_fill(copy.m_fill),
+		m_updateFunction(copy.m_updateFunction ? new std::function<const float()>(*copy.m_updateFunction) : nullptr),
+		m_progress(copy.m_progress) {}
 
 	std::unique_ptr<Interactive> ProgressBar::copy() const
 	{ 
@@ -62,14 +62,14 @@ namespace gui
 	void gui::ProgressBar::lostFocus()
 	{
 		Icon::lostFocus();
-		fill.lostFocus();
+		m_fill.lostFocus();
 	}
 
 	const bool ProgressBar::input(const sf::Event& event)
 	{
-		if (fill.input(event))
+		if (m_fill.input(event))
 		{
-			if (!fill.getMessage()) Icon::input(event);
+			if (!m_fill.getMessage()) Icon::input(event);
 			else mouseLeft();
 			return true;
 		}
@@ -78,33 +78,33 @@ namespace gui
 
 	const bool gui::ProgressBar::contains(const float x, const float y) const
 	{
-		return Icon::contains(x, y) || fill.contains(x, y);
+		return Icon::contains(x, y) || m_fill.contains(x, y);
 	}
 
 	const float ProgressBar::getProgress()const
 	{
-		return progress;
+		return m_progress;
 	}
 
 	const sf::Texture& ProgressBar::getFillTexture()const
 	{
-		return fill.getTexture();
+		return m_fill.getTexture();
 	}
 
 	const bool ProgressBar::getFillTransparencyCheck()const
 	{
-		return fill.getTransparencyCheck();
+		return m_fill.getTransparencyCheck();
 	}
 
 	ProgressBar& ProgressBar::setUpdateFunction(const std::function<const float()>& function)
 	{
-		updateFunction ? *updateFunction = function : updateFunction.reset(new std::function<const float()>(function));
+		m_updateFunction ? *m_updateFunction = function : m_updateFunction.reset(new std::function<const float()>(function));
 		return *this;
 	}
 
 	ProgressBar& ProgressBar::setUpdateFunction(std::function<const float()>&& function)
 	{
-		updateFunction ? *updateFunction = std::move(function) : updateFunction.reset(new std::function<const float()>(std::move(function)));
+		m_updateFunction ? *m_updateFunction = std::move(function) : m_updateFunction.reset(new std::function<const float()>(std::move(function)));
 		return *this;
 	}
 
@@ -113,30 +113,30 @@ namespace gui
 		if (newProgress > 1.0f) newProgress = 1.0f;
 		if (newProgress < 0.0f) newProgress = 0.0f;
 
-		progress = newProgress;
-		fill.setTextureRect(sf::IntRect(0, 0,
-			fill.getTexture().getSize().x * progress,
-			fill.getTexture().getSize().y));
+		m_progress = newProgress;
+		m_fill.setTextureRect(sf::IntRect(0, 0,
+			m_fill.getTexture().getSize().x * m_progress,
+			m_fill.getTexture().getSize().y));
 		return (ProgressBar&)*this;
 	}
 
 	ProgressBar& ProgressBar::setFillTexture(const sf::Texture& newTexture, const bool transparencyCheck)
 	{
-		fill.setTexture(newTexture, transparencyCheck);
+		m_fill.setTexture(newTexture, transparencyCheck);
 		return *this;
 	}
 
 	ProgressBar& ProgressBar::setFillTransparencyCheck(const bool transparencyCheck)
 	{
-		fill.setTransparencyCheck(transparencyCheck);
+		m_fill.setTransparencyCheck(transparencyCheck);
 		return *this;
 	}
 
 	ProgressBar& ProgressBar::setPosition(const float x, const float y)
 	{
 		Icon::setPosition(x, y);
-		fill.setPosition(x + (Icon::getTexture().getSize().x - fill.getTexture().getSize().x) / 2.0f,
-			y + (Icon::getTexture().getSize().y - fill.getTexture().getSize().y) / 2.0f);
+		m_fill.setPosition(x + (Icon::getTexture().getSize().x - m_fill.getTexture().getSize().x) / 2.0f,
+			y + (Icon::getTexture().getSize().y - m_fill.getTexture().getSize().y) / 2.0f);
 		return *this;
 	}
 
@@ -147,43 +147,43 @@ namespace gui
 	
 	const std::shared_ptr<const HoverMessage> ProgressBar::getFillMessage() const
 	{
-		return fill.getMessage();
+		return m_fill.getMessage();
 	}
 
 	ProgressBar& ProgressBar::clearFillMessage()
 	{
-		fill.clearMessage();
+		m_fill.clearMessage();
 		return *this;
 	}
 
 	ProgressBar& ProgressBar::setFillMessage(const HoverMessage& message)
 	{
-		fill.setMessage(message);
+		m_fill.setMessage(message);
 		return *this;
 	}
 
 	ProgressBar& ProgressBar::setFillMessage(HoverMessage&& messageTemp)
 	{
-		fill.setMessage(std::move(messageTemp));
+		m_fill.setMessage(std::move(messageTemp));
 		return *this;
 	}
 
 	ProgressBar& ProgressBar::setFillDelay(const float delaySeconds)
 	{
-		fill.setDelay(delaySeconds);
+		m_fill.setDelay(delaySeconds);
 		return *this;
 	}
 
 	void ProgressBar::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
-		if (updateFunction && Duration(Internals::timeSinceStart() - timeOfLastUpdate).count() > 1.0f / Internals::getUPS())
+		if (m_updateFunction && Duration(Internals::timeSinceStart() - m_timeOfLastUpdate).count() > 1.0f / Internals::getUPS())
 		{
-			setProgress((*updateFunction)());
-			timeOfLastUpdate = Internals::timeSinceStart();
+			setProgress((*m_updateFunction)());
+			m_timeOfLastUpdate = Internals::timeSinceStart();
 		}
 
-		target.draw(Icon::spr, states);
-		target.draw(fill, states);
+		target.draw(Icon::m_icon, states);
+		target.draw(m_fill, states);
 		Hoverable::draw(target, states);
 	}
 }

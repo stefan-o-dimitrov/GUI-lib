@@ -18,8 +18,8 @@ namespace gui
 		void generateTransparencyMap(const sf::Texture& texture);
 
 	private:
-		std::unique_ptr<std::unique_ptr<bool[]>[]> transparency = nullptr;
-		sf::Vector2i mapSize = sf::Vector2i(0, 0);
+		std::unique_ptr<std::unique_ptr<bool[]>[]> m_transparency = nullptr;
+		sf::Vector2i                               m_mapSize = sf::Vector2i(0, 0);
 	};
 }
 

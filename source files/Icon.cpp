@@ -32,13 +32,13 @@ namespace gui
 	}
 
 	Icon::Icon(const Icon& copy)
-		: Hoverable(copy), spr(copy.spr)
+		: Hoverable(copy), m_icon(copy.m_icon)
 	{
-		if (copy.transparency) transparency.reset(new TransparencyMap(*copy.transparency));
+		if (copy.m_transparency) m_transparency.reset(new TransparencyMap(*copy.m_transparency));
 	}
 
 	Icon::Icon(Icon&& temp)
-		: Hoverable(std::move(temp)), transparency(std::move(temp.transparency)), spr(temp.spr) {}
+		: Hoverable(std::move(temp)), m_transparency(std::move(temp.m_transparency)), m_icon(temp.m_icon) {}
 
 	std::unique_ptr<Interactive> Icon::copy() const
 	{ 
@@ -52,42 +52,42 @@ namespace gui
 
 	const bool Icon::contains(const float x, const float y)const
 	{
-		if (spr.getGlobalBounds().contains(x, y))
+		if (m_icon.getGlobalBounds().contains(x, y))
 		{
-			if (!transparency) return true;
-			if (!(*transparency)[sf::Vector2i(x - spr.getPosition().x, y - spr.getPosition().y)]) return true;
+			if (!m_transparency) return true;
+			if (!(*m_transparency)[sf::Vector2i(x - m_icon.getPosition().x, y - m_icon.getPosition().y)]) return true;
 		}
 		return false;
 	}
 
 	const sf::FloatRect Icon::getGlobalBounds()const
 	{
-		return spr.getGlobalBounds();
+		return m_icon.getGlobalBounds();
 	}
 
 	const sf::Vector2f&  Icon::getPosition()const
 	{
-		return spr.getPosition();
+		return m_icon.getPosition();
 	}
 
 	const sf::Texture& Icon::getTexture()const
 	{
-		return *spr.getTexture();
+		return *m_icon.getTexture();
 	}
 
 	const bool Icon::getTransparencyCheck()const
 	{
-		return transparency != nullptr;
+		return m_transparency != nullptr;
 	}
 
 	const sf::IntRect& Icon::getTextureRect()const
 	{
-		return spr.getTextureRect();
+		return m_icon.getTextureRect();
 	}
 
 	Icon& Icon::setPosition(const float x, const float y)
 	{
-		spr.setPosition(x, y);
+		m_icon.setPosition(x, y);
 		return *this;
 	}
 
@@ -98,20 +98,20 @@ namespace gui
 
 	Icon& Icon::setTexture(const sf::Texture& tex, const bool transparencyCheck)
 	{
-		spr.setTexture(tex);
+		m_icon.setTexture(tex);
 		setTransparencyCheck(transparencyCheck);
 		return *this;
 	}
 
 	Icon& Icon::setTransparencyCheck(const bool newTransparencyCheck)
 	{
-		newTransparencyCheck ? transparency.reset(new TransparencyMap(*spr.getTexture())) : transparency.reset();
+		newTransparencyCheck ? m_transparency.reset(new TransparencyMap(*m_icon.getTexture())) : m_transparency.reset();
 		return *this;
 	}
 
 	Icon& Icon::setTextureRect(const sf::IntRect& rect)
 	{
-		spr.setTextureRect(rect);
+		m_icon.setTextureRect(rect);
 		return *this;
 	}
 
@@ -135,7 +135,7 @@ namespace gui
 
 	void Icon::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
-		target.draw(spr, states);
+		target.draw(m_icon, states);
 		Hoverable::draw(target, states);
 	}
 }

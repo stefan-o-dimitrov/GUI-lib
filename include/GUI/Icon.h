@@ -75,10 +75,10 @@ namespace gui
 	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const;
 
-		mutable sf::Sprite spr;
+		mutable sf::Sprite m_icon;
 				
 	private:
-		std::unique_ptr<TransparencyMap> transparency = nullptr;
+		std::unique_ptr<TransparencyMap> m_transparency = nullptr;
 	};
 };
 

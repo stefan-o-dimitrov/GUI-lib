@@ -79,8 +79,8 @@ namespace gui
 		using Button::getName;
 		using Button::setName;
 
-		Button trueState;
-		bool checked = false;
+		Button m_trueState;
+		bool   m_checked = false;
 	};
 };
 

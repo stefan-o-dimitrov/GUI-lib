@@ -34,10 +34,11 @@
 
 namespace gui 
 {
+	class Window;
 	class Interactive : public virtual sf::Drawable
 	{
 	public:
-		virtual ~Interactive();
+		virtual ~Interactive() = default;
 
 		virtual std::unique_ptr<Interactive> copy()const = 0;
 		virtual std::unique_ptr<Interactive> move() = 0;

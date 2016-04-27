@@ -29,16 +29,15 @@
 #include <vector>
 #include <memory>
 
-#include <SFML/Graphics/Shader.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 
 #include "ColoredText.h"
-#include "Internals.h"
 #include "TextPane.h"
+#include "FadeAnimation.h"
 
 namespace gui 
 {
-	class HoverMessage final : private TextPane, public virtual sf::Drawable
+	class HoverMessage final : private TextPane, public FadeAnimation
 	{
 	public:
 		HoverMessage(const ColoredText& string, const sf::Font& font, const unsigned char characterSize = 13);
@@ -57,7 +56,6 @@ namespace gui
 		const sf::Color& getBackgroundFill()const;
 		const sf::Color& getBorderFill()const;
 		const char getBorderThickness()const;
-		const float getFadeAmount()const;
 		
 		HoverMessage& setPosition(const float x, const float y)override;
 		HoverMessage& setPosition(const sf::Vector2f& position)override;
@@ -65,30 +63,23 @@ namespace gui
 		HoverMessage& setText(ColoredText&& text)override;
 		HoverMessage& setFont(const sf::Font& font)override;
 		HoverMessage& setCharacterSize(const unsigned char characterSize)override;
+		HoverMessage& setFadeDirection(const bool direction)override;
+		HoverMessage& setAnimationDuration(const float duration)override;
+		HoverMessage& updateFadeAmount()const override;
 
 		HoverMessage& setBackgroundFill(const sf::Color& color);
 		HoverMessage& setBorderFill(const sf::Color& color);
 		HoverMessage& setBorderThickness(const char thickness);
-		HoverMessage& setFadeDirection(const bool direction);
 
 	private:
 		void update()const override;
-		void updateFadeAmount()const;
 		void updateBox()const;
 
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 
-		mutable TimePoint timeOfLastAnimationStep;
-		mutable float fadeAmount = 0.0f;
-		mutable bool fadeDirection = false;
-		mutable sf::RectangleShape textBox;
+		mutable sf::RectangleShape m_textBox;
 
-		static const bool loadShader();
-
-		static sf::Shader fadeShaderTextured, fadeShaderNoTexture;
-		static const bool shaderLoadSuccessful;
-		static const float FADE_ANIMATION_DURATION;
-		static const unsigned char TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING, FADE_ANIMATION_FPS;
+		static const unsigned char TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING;
 	};
 };
 

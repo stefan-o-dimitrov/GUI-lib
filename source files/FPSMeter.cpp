@@ -43,17 +43,17 @@ namespace gui
 
 	const sf::FloatRect FPSMeter::getGlobalBounds() const
 	{
-		return text.getGlobalBounds();
+		return m_text.getGlobalBounds();
 	}
 
 	const sf::Vector2f& FPSMeter::getPosition() const
 	{
-		return text.getPosition();
+		return m_text.getPosition();
 	}
 
 	FPSMeter& FPSMeter::setPosition(const float x, const float y)
 	{
-		text.setPosition(x, y);
+		m_text.setPosition(x, y);
 		return *this;
 	}
 
@@ -64,47 +64,47 @@ namespace gui
 
 	const sf::Font& FPSMeter::getFont() const
 	{
-		return *text.getFont();
+		return *m_text.getFont();
 	}
 
 	const unsigned char FPSMeter::getCharacterSize() const
 	{
-		return text.getCharacterSize();
+		return m_text.getCharacterSize();
 	}
 
 	const sf::Color& FPSMeter::getColor() const
 	{
-		return text.getColor();
+		return m_text.getColor();
 	}
 
 	FPSMeter& FPSMeter::setFont(const sf::Font& font)
 	{
-		text.setFont(font);
+		m_text.setFont(font);
 		return *this;
 	}
 
 	FPSMeter& FPSMeter::setCharacterSize(const unsigned char characterSize)
 	{
-		text.setCharacterSize(characterSize);
+		m_text.setCharacterSize(characterSize);
 		return *this;
 	}
 
 	FPSMeter& FPSMeter::setColor(const sf::Color& color)
 	{
-		text.setColor(color);
+		m_text.setColor(color);
 		return *this;
 	}
 
 	void FPSMeter::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
-		if (Duration(Internals::timeSinceStart() - timeOfLastUpdate) >= Duration(1.0f))
+		if (Duration(Internals::timeSinceStart() - m_timeOfLastUpdate) >= Duration(1.0f))
 		{
-			previousFrames = frames;
-			text.setString(std::to_string(previousFrames));
-			frames = 0;
-			timeOfLastUpdate = Internals::timeSinceStart();
+			m_previousFrames = m_frames;
+			m_text.setString(std::to_string(m_previousFrames));
+			m_frames = 0;
+			m_timeOfLastUpdate = Internals::timeSinceStart();
 		}
-		target.draw(text, states);
-		frames++;
+		target.draw(m_text, states);
+		m_frames++;
 	}
 }

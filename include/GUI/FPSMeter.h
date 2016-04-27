@@ -64,9 +64,9 @@ namespace gui
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-		mutable unsigned short frames, previousFrames;
-		mutable sf::Text text;
-		mutable TimePoint timeOfLastUpdate;
+		mutable unsigned short m_frames, m_previousFrames;
+		mutable sf::Text       m_text;
+		mutable TimePoint      m_timeOfLastUpdate;
 	};
 }
 

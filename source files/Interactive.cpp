@@ -2,8 +2,6 @@
 
 namespace gui
 {
-	Interactive::~Interactive() {}
-
 	void gui::Interactive::lostFocus() {}
 
 	const bool gui::Interactive::input(const sf::Event& event)

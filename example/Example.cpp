@@ -1,4 +1,4 @@
-#include "../include/GUI/GUI.h"
+#include <GUI\GUI.h>
 
 #include <sstream>
 
@@ -40,7 +40,7 @@ void main()
 	gui::WindowManager main;
 	sf::RenderWindow window(sf::VideoMode(1600, 800), "Example", sf::Style::None);
 
-	main.pushFront(std::move(gui::Window()
+	main.emplace("First Window", std::move(gui::Window()
 			.setPosition(250, 250)
 			.setBackgroundTexture(windowBackground, true)
 			.setMovable(true)
@@ -123,19 +123,21 @@ void main()
 					+ gui::bind(std::to_string(LIMIT), sf::Color::White), font).setBackgroundFill(sf::Color(20, 30, 40, 210))))
 					
 			.add(gui::Button(gui::Icon(closeButtonTex, true))
-				.bindAction(gui::Button::Released, []()
+				.bindAction(gui::Button::Released, [&]()
 					{
-						running = false;
+						main.at("First Window").setActive(false);
 					})
-				.setPosition(window.getSize().x - closeButtonTex.getSize().x, 0))
+				.setPosition(windowBackground.getSize().x - closeButtonTex.getSize().x, 0))
 					
 			.add(gui::TextPane(gui::bind("This is a simple program demonstrating ", sf::Color::White) +
 				gui::bind("\nSHT Games", sf::Color::Yellow) + 
 				gui::bind("' GUI Library. If you encounter\nany issues, please contact us at:\n", sf::Color::White) +
 				gui::bind("shtgamessts@gmail.com", sf::Color::Yellow), font, 15)
-				.setPosition(120, 20))), false)
+				.setPosition(120, 20)))
+			.add(gui::FPSMeter().setFont(font).setPosition(600, 20).setColor(sf::Color::White)), false)
 		
-		.pushBack(std::move(gui::Window()
+		.emplace("Second Window", std::move(gui::Window()
+			.setBackgroundColor(sf::Color(255, 255, 100))
 			.setBackgroundTexture(windowBackground)
 			.setMovable(true)
 			.setPosition(20, 20)
@@ -156,6 +158,10 @@ void main()
 				{
 					integer += amount;
 				}, -AMOUNT))
+				.bindAction(gui::Button::PredicatesUnfulfilled, [&]()
+				{
+					main.at("First Window").setActive(true);
+				})
 				.setPredicates(gui::Button::PredicateArray{ std::bind(canChange, -LIMIT, true) })
 				.setPredicateMessage(gui::HoverMessage(gui::bind("Integer is less than ", sf::Color::White) + 
 					gui::bind(std::to_string(LIMIT), sf::Color::Yellow),

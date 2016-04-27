@@ -25,6 +25,8 @@
 #ifndef GUI_WINDOW_MANAGER
 #define GUI_WINDOW_MANAGER
 
+#include <unordered_map>
+
 #include "Window.h"
 
 namespace gui
@@ -34,22 +36,20 @@ namespace gui
 	public:
 		void input(const sf::Event& event);
 
-		WindowManager& pushBack(const Window& window, const bool fullscreen = false);
-		WindowManager& pushBack(Window&& window, const bool fullscreen = false);
-		WindowManager& pushFront(const Window& window, const bool fullscreen = false);
-		WindowManager& pushFront(Window&& window, const bool fullscreen = false);
+		WindowManager& emplace(const std::string& key, const Window& window, const bool fullscreen = false);
+		WindowManager& emplace(const std::string& key, Window&& window, const bool fullscreen = false);
 
 		void clear(const bool fullscreen = false);
-		const bool erase(const unsigned short index, const bool fullscreen = false);
 		const size_t size(const bool fullscreen = false)const;
 
-		Window& at(const unsigned short index, const bool fullscreen = false);
-		const Window& at(const unsigned short index, const bool fullscreen = false)const;
+		Window& at(const std::string& key, const bool fullscreen = false);
+		const Window& at(const std::string& key, const bool fullscreen = false)const;
 
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const;
 
-		std::vector<std::shared_ptr<Window>> windows, windowOrder, dialogBoxes, dialogBoxOrder;
+		std::unordered_map<std::string, Window* const> m_windows, m_dialogBoxes;
+		std::vector<std::shared_ptr<Window>>           m_windowOrder, m_dialogBoxOrder;
 	};
 }
 

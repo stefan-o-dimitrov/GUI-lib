@@ -60,12 +60,13 @@ namespace gui
 		void mouseEntered(const sf::Vector2f& position);
 		void mouseLeft();
 		const bool hasMessageDelayPassed()const;
-		mutable std::shared_ptr<HoverMessage> message = nullptr;
+
+		mutable std::shared_ptr<HoverMessage> m_message = nullptr;
 		
 	private:
-		float delay = 0.75f;
-		bool hasBeenPressed = false;
-		std::unique_ptr<TimePoint> timeMouseEntered = nullptr;
+		float                          m_delay = 0.75f;
+		bool                           m_hasBeenPressed = false;
+		std::unique_ptr<TimePoint>     m_timeMouseEntered = nullptr;
 	};
 }
 

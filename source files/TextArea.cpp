@@ -30,11 +30,11 @@
 namespace gui
 {
 	TextArea::TextArea(const std::string& newText, const sf::Font& newFont, const unsigned char newCharacterSize)
-		: text(newText, newFont, newCharacterSize) {}
+		: m_text(newText, newFont, newCharacterSize) {}
 
 	TextArea::TextArea(const TextArea& copy)
-		: Hoverable(copy), text(copy.text),
-		updateFunction(copy.updateFunction) {}
+		: Hoverable(copy), m_text(copy.m_text),
+		m_updateFunction(copy.m_updateFunction) {}
 
 	std::unique_ptr<Interactive> TextArea::copy() const
 	{
@@ -48,32 +48,32 @@ namespace gui
 
 	const bool TextArea::contains(const float x, const float y) const
 	{
-		return text.getGlobalBounds().contains(x, y);
+		return m_text.getGlobalBounds().contains(x, y);
 	}
 
 	const sf::FloatRect TextArea::getGlobalBounds()const
 	{
-		return text.getGlobalBounds();
+		return m_text.getGlobalBounds();
 	}
 
 	const sf::Vector2f& TextArea::getPosition()const
 	{
-		return text.getPosition();
+		return m_text.getPosition();
 	}
 
 	const sf::Font& TextArea::getFont()const
 	{
-		return *text.getFont();
+		return *m_text.getFont();
 	}
 
 	const unsigned char TextArea::getCharacterSize()const
 	{
-		return text.getCharacterSize();
+		return m_text.getCharacterSize();
 	}
 
 	const sf::Color& TextArea::getColor() const
 	{
-		return text.getColor();
+		return m_text.getColor();
 	}
 
 	TextArea& TextArea::clearMessage()
@@ -96,7 +96,7 @@ namespace gui
 
 	TextArea& TextArea::setPosition(const float x, const float y)
 	{
-		text.setPosition(x, y);
+		m_text.setPosition(x, y);
 		return *this;
 	}
 
@@ -107,49 +107,49 @@ namespace gui
 
 	TextArea& TextArea::setText(const ColoredString& newText)const
 	{
-		text.setString(newText.first);
-		text.setColor(newText.second);
+		m_text.setString(newText.first);
+		m_text.setColor(newText.second);
 		return (TextArea&)*this;
 	}
 
 	TextArea& TextArea::setFont(const sf::Font& newFont)
 	{
-		text.setFont(newFont);
+		m_text.setFont(newFont);
 		return *this;
 	}
 
 	TextArea& TextArea::setCharacterSize(const unsigned char newCharacterSize)
 	{
-		text.setCharacterSize(newCharacterSize);
+		m_text.setCharacterSize(newCharacterSize);
 		return *this;
 	}
 
 	TextArea& TextArea::setColor(const sf::Color& color)
 	{ 
-		text.setColor(color);
+		m_text.setColor(color);
 		return *this;
 	}
 
 	TextArea& TextArea::setUpdateFunction(const std::function<ColoredString()>& func)
 	{
-		updateFunction.reset(new std::function<ColoredString()>(func));
+		m_updateFunction.reset(new std::function<ColoredString()>(func));
 		return *this;
 	}
 
 	TextArea& TextArea::setUpdateFunction(std::function<ColoredString()>&& func)
 	{ 
-		updateFunction.reset(new std::function<ColoredString()>(std::move(func)));
+		m_updateFunction.reset(new std::function<ColoredString()>(std::move(func)));
 		return *this;
 	}
 
 	void TextArea::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
-		if (updateFunction && Duration(Internals::timeSinceStart() - timeOfLastUpdate).count() > 1.0f / Internals::getUPS())
+		if (m_updateFunction && Duration(Internals::timeSinceStart() - m_timeOfLastUpdate).count() > 1.0f / Internals::getUPS())
 		{
-			setText((*updateFunction)());
-			timeOfLastUpdate = Internals::timeSinceStart();
+			setText((*m_updateFunction)());
+			m_timeOfLastUpdate = Internals::timeSinceStart();
 		}
-		target.draw(text, states);
+		target.draw(m_text, states);
 		Hoverable::draw(target, states);
 	}
 }
