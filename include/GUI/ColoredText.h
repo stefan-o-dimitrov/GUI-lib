@@ -71,7 +71,7 @@ namespace gui
 			const unsigned char characterSize, sf::Vector2f& addPosition,
 			const float TEXT_HEIGHT);
 
-		static const float LINE_SPACING;
+		static constexpr unsigned char LINE_SPACING = 2;
 
 		friend ColoredText bind(const std::string& string, const sf::Color& color);
 		friend ColoredText& operator+(ColoredText& text, const ColoredText& newText);

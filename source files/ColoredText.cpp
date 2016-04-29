@@ -29,8 +29,6 @@
 
 namespace gui
 {
-	const float ColoredText::LINE_SPACING = 5.0f;
-
 	gui::ColoredText::operator ColoredString()
 	{
 		return ColoredString(m_text.empty() ? "" : m_text.front()->first, m_text.empty() ? sf::Color() : m_text.front()->second);

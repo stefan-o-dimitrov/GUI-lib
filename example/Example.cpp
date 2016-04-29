@@ -45,7 +45,7 @@ void main()
 			.setBackgroundTexture(windowBackground, true)
 			.setMovable(true)
 
-			.add(std::move(gui::Button(gui::Icon(buttonTex, true))
+			.add("1st Button", std::move(gui::Button(gui::Icon(buttonTex, true))
 				.bindAction(gui::Button::Released, std::bind([](const int amount)
 				{
 					integer += amount;
@@ -71,7 +71,7 @@ void main()
 					.setCharacterSize(13))
 				.setPosition(50, 130)))
 
-			.add(gui::Button(gui::Icon(buttonTex, false))
+			.add("2nd Button", gui::Button(gui::Icon(buttonTex, false))
 				.bindAction(gui::Button::Released, std::bind([](const int amount) 
 					{
 						integer += amount;
@@ -92,7 +92,7 @@ void main()
 					.setCharacterSize(15)))
 				.setPosition(50 + buttonTex.getSize().x, 130))
 
-			.add(std::move(gui::TextArea("0", font, 40)
+			.add("Txt Area", std::move(gui::TextArea("0", font, 40)
 				.setMessage(std::move(gui::HoverMessage(gui::bind("This is the ", sf::Color::White) + 
 					gui::bind("current value ", sf::Color::Yellow) + gui::bind("of the ", sf::Color::White) +
 					gui::bind("integer.", sf::Color::Yellow) +
@@ -108,7 +108,7 @@ void main()
 					})
 				.setPosition(50, 30)))
 
-			.add(gui::ProgressBar(gui::Icon(barBackgroundTex, true), gui::Icon(barFillTex, true))
+			.add("Int Progress", gui::ProgressBar(gui::Icon(barBackgroundTex, true), gui::Icon(barFillTex, true))
 				.setUpdateFunction(std::bind(getProgress, LIMIT))
 				.setPosition(50, 175 + buttonTex.getSize().y)
 				.setFillMessage(gui::HoverMessage(gui::bind("This message is superfluous", sf::Color::Yellow), font)
@@ -116,25 +116,25 @@ void main()
 				.setMessage(gui::HoverMessage(gui::bind("This progress bar represents the integer's progress toward ", sf::Color::White)
 					+ gui::bind(std::to_string(LIMIT), sf::Color::White), font).setBackgroundFill(sf::Color::Black)))
 
-			.add(gui::ProgressBar(gui::Icon(barBackgroundTex, true), gui::Icon(barFillTex, true))
+			.add("Int Progress 2", gui::ProgressBar(gui::Icon(barBackgroundTex, true), gui::Icon(barFillTex, true))
 				.setUpdateFunction(std::bind(getProgress, -LIMIT))
 				.setPosition(50, 200 + buttonTex.getSize().y + barBackgroundTex.getSize().y)
 				.setMessage(gui::HoverMessage(gui::bind("This progress bar represents the integer's progress toward -", sf::Color::White)
 					+ gui::bind(std::to_string(LIMIT), sf::Color::White), font).setBackgroundFill(sf::Color(20, 30, 40, 210))))
 					
-			.add(gui::Button(gui::Icon(closeButtonTex, true))
+			.add("Close Btn", gui::Button(gui::Icon(closeButtonTex, true))
 				.bindAction(gui::Button::Released, [&]()
 					{
 						main.at("First Window").setActive(false);
 					})
 				.setPosition(windowBackground.getSize().x - closeButtonTex.getSize().x, 0))
 					
-			.add(gui::TextPane(gui::bind("This is a simple program demonstrating ", sf::Color::White) +
+			.add("Txt Pane", gui::TextPane(gui::bind("This is a simple program demonstrating ", sf::Color::White) +
 				gui::bind("\nSHT Games", sf::Color::Yellow) + 
 				gui::bind("' GUI Library. If you encounter\nany issues, please contact us at:\n", sf::Color::White) +
 				gui::bind("shtgamessts@gmail.com", sf::Color::Yellow), font, 15)
 				.setPosition(120, 20)))
-			.add(gui::FPSMeter().setFont(font).setPosition(600, 20).setColor(sf::Color::White)), false)
+			.add("FPS", gui::FPSMeter().setFont(font).setPosition(600, 20).setColor(sf::Color::White)), false)
 		
 		.emplace("Second Window", std::move(gui::Window()
 			.setBackgroundColor(sf::Color(255, 255, 100))
@@ -143,7 +143,7 @@ void main()
 			.setPosition(20, 20)
 			.setBackgroundTextureRect(sf::IntRect(0, 0, 400, 200))
 
-			.add(gui::TextArea()
+			.add("Txt Area", gui::TextArea()
 				.setFont(font)
 				.setText(gui::ColoredString("0", sf::Color()))
 				.setUpdateFunction([]()
@@ -153,7 +153,7 @@ void main()
 				.setPosition(30, 30)
 				.setCharacterSize(30))
 
-			.add(gui::Button(gui::Icon(buttonTex, true))
+			.add("Btn", gui::Button(gui::Icon(buttonTex, true))
 				.bindAction(gui::Button::Released, std::bind([](const int amount)
 				{
 					integer += amount;

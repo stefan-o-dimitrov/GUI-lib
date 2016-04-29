@@ -196,7 +196,7 @@ namespace gui
 		states.shader = &FadeAnimation::getShaderNonTextured();
 		target.draw(m_textBox, states);
 
-		states.transform.translate(TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING);
+		states.transform.translate(TEXT_BOX_X_SPACING, TEXT_BOX_Y_SPACING * 0.8f);
 		states.shader = &FadeAnimation::getShaderTextured();
 		TextPane::draw(target, states);
 	}

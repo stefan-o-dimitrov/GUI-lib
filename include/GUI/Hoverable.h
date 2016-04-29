@@ -32,7 +32,7 @@
 
 namespace gui
 {
-	class Hoverable : public virtual Interactive
+	class Hoverable : public Interactive
 	{
 	public:
 		Hoverable(const HoverMessage& message, const float delay = 0.75f);

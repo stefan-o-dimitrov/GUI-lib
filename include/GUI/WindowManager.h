@@ -48,8 +48,7 @@ namespace gui
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const;
 
-		std::unordered_map<std::string, Window* const> m_windows, m_dialogBoxes;
-		std::vector<std::shared_ptr<Window>>           m_windowOrder, m_dialogBoxOrder;
+		ordered_map<Window> m_windows, m_dialogBoxes;
 	};
 }
 

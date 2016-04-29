@@ -27,6 +27,7 @@
 
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -37,6 +38,48 @@
 
 namespace gui
 {
+	template <typename StorageType>
+	struct ordered_map
+	{
+		ordered_map(const ordered_map& copy)
+		{
+			for (const auto& it : copy.m_map)
+				emplace(it.first, *it.second);
+		}
+		ordered_map(ordered_map&& temp) = default;
+		ordered_map() = default;
+		~ordered_map() = default;
+
+		ordered_map& emplace(const std::string& key, const StorageType& element)
+		{
+			m_elements.emplace_back(std::move(element.copy()));
+			m_map.emplace(key, &*m_elements.back());
+
+			return *this;
+		}
+		ordered_map& emplace(const std::string& key, StorageType&& element)
+		{
+			m_elements.emplace_back(std::move(element.move()));
+			m_map.emplace(key, &*m_elements.back());
+
+			return *this;
+		}
+
+		void reserve(const size_t amount)
+		{
+			m_map.reserve(amount);
+			m_elements.reserve(amount);
+		}
+		void clear()
+		{
+			m_map.clear();
+			m_elements.clear();
+		}
+		
+		std::unordered_map<std::string, StorageType* const> m_map;
+		std::vector<std::unique_ptr<StorageType>>           m_elements;
+	};
+
 	class Window : public sf::Drawable
 	{
 	public:
@@ -44,6 +87,9 @@ namespace gui
 		Window(Window&& temp) = default;
 		Window() = default;
 		~Window() = default;
+
+		virtual std::unique_ptr<Window> copy()const;
+		virtual std::unique_ptr<Window> move();
 
 		const bool contains(const sf::Vector2f& point)const;
 		virtual const bool input(const sf::Event& event);
@@ -60,26 +106,32 @@ namespace gui
 		Window& setBackgroundColor(const sf::Color& color);
 		Window& setMovable(const bool isMovable);
 
-		Window& add(Interactive&& element);
-		Window& add(const Interactive& element);
+		Window& add(const std::string& key, Interactive&& element);
+		Window& add(const std::string& key, const Interactive& element);
 
 		void clear();
 
 		Window& setActive(const bool active);
 		const bool isActive();
-		const bool isClosed();
 		void close();
+		const bool isClosed();
+
+		const bool exists(const std::string& key);
+
+		Interactive& at(const std::string& key);
+		const Interactive& at(std::string& key)const;
 
 	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
+
 		const sf::Sprite& background()const;
 
 	private:
-		sf::Sprite                                m_background;
-		std::unique_ptr<TransparencyMap>          m_transparency = nullptr;
-		bool                                      m_movable = false, m_active = true, m_closed = false;
-		std::unique_ptr<sf::Vector2f>             m_mouseDragOffset = nullptr;
-		std::vector<std::unique_ptr<Interactive>> m_elements;
+		sf::Sprite                                          m_background;
+		ordered_map<Interactive>                            m_elements;
+		std::unique_ptr<TransparencyMap>                    m_transparency = nullptr;
+		bool                                                m_movable = false, m_active = true, m_closed = false;
+		std::unique_ptr<sf::Vector2f>                       m_mouseDragOffset = nullptr;
 	};
 }
 

@@ -30,29 +30,25 @@
 namespace gui
 {
 	Window::Window(const Window& copy)
-		: m_background(copy.m_background), m_movable(copy.m_movable), m_active(copy.m_active), m_closed(copy.m_closed)
+		: m_background(copy.m_background), m_movable(copy.m_movable), m_active(copy.m_active), m_closed(copy.m_closed), m_elements(copy.m_elements)
 	{
 		copy.m_transparency ? m_transparency.reset(new TransparencyMap(*copy.m_transparency)) : 0;
 		copy.m_mouseDragOffset ? m_mouseDragOffset.reset(new sf::Vector2f(*copy.m_mouseDragOffset)) : 0;
-
-		m_elements.reserve(copy.m_elements.size());
-		for (auto it = copy.m_elements.begin(), end = copy.m_elements.end(); it != end; ++it)
-			m_elements.emplace_back(std::move((*it)->copy()));
 	}
 
-	Window& Window::add(Interactive&& element)
+	Window& Window::add(const std::string& key, Interactive&& element)
 	{
-		m_elements.emplace_back(element.move());
-		m_elements.back()->setPosition(m_elements.back()->getPosition().x + m_background.getPosition().x,
-			m_elements.back()->getPosition().y + m_background.getPosition().y);
+		m_elements.emplace(key, std::move(element));
+		m_elements.m_elements.back()->setPosition(m_elements.m_elements.back()->getPosition().x + m_background.getPosition().x,
+			m_elements.m_elements.back()->getPosition().y + m_background.getPosition().y);
 		return *this;
 	}
 
-	Window& Window::add(const Interactive& element)
+	Window& Window::add(const std::string& key, const Interactive& element)
 	{
-		m_elements.emplace_back(element.copy());
-		m_elements.back()->setPosition(m_elements.back()->getPosition().x + m_background.getPosition().x,
-			m_elements.back()->getPosition().y + m_background.getPosition().y);
+		m_elements.emplace(key, element);
+		m_elements.m_elements.back()->setPosition(m_elements.m_elements.back()->getPosition().x + m_background.getPosition().x,
+			m_elements.m_elements.back()->getPosition().y + m_background.getPosition().y);
 		return *this;
 	}
 
@@ -77,6 +73,21 @@ namespace gui
 		return m_closed;
 	}
 
+	const bool Window::exists(const std::string& key)
+	{
+		return m_elements.m_map.count(key);
+	}
+
+	Interactive& Window::at(const std::string& key)
+	{
+		return *m_elements.m_map.at(key);
+	}
+
+	const Interactive& Window::at(std::string& key) const
+	{
+		return *m_elements.m_map.at(key);
+	}
+
 	void Window::close()
 	{
 		m_closed = true;
@@ -92,9 +103,9 @@ namespace gui
 		const sf::Vector2f moveAmount(x - m_background.getPosition().x, y - m_background.getPosition().y);
 		m_background.setPosition(x, y);
 
-		for (auto it = m_elements.begin(), end = m_elements.end(); it != end; ++it)
-			(*it)->setPosition((*it)->getPosition().x + moveAmount.x,
-				(*it)->getPosition().y + moveAmount.y);
+		for (const auto& it : m_elements.m_elements)
+			it->setPosition(it->getPosition().x + moveAmount.x,
+				it->getPosition().y + moveAmount.y);
 		return *this;
 	}
 
@@ -128,6 +139,16 @@ namespace gui
 		return *this;
 	}
 	
+	std::unique_ptr<Window> Window::copy() const
+	{
+		return std::unique_ptr<Window>(new Window(*this));
+	}
+
+	std::unique_ptr<Window> Window::move()
+	{
+		return std::unique_ptr<Window>(new Window(std::move(*this)));
+	}
+
 	const bool Window::contains(const sf::Vector2f& point) const
 	{
 		if (m_background.getGlobalBounds().contains(point))
@@ -142,10 +163,10 @@ namespace gui
 	{
 		if (!m_active) return false;
 
-		for (auto it = m_elements.begin(), end = m_elements.end(); it != end; ++it)
-			if ((*it)->input(event)) 
+		for (auto& it : m_elements.m_elements)
+			if (it->input(event)) 
 			{
-				m_elements.begin()->swap(*it);
+				m_elements.m_elements.begin()->swap(it);
 				return true;
 			}
 
@@ -181,8 +202,8 @@ namespace gui
 	
 	void Window::lostFocus()
 	{
-		for (auto it = m_elements.begin(), end = m_elements.end(); it != end; ++it)
-			(*it)->lostFocus();
+		for (const auto& it : m_elements.m_elements)
+			it->lostFocus();
 	}
 
 	const sf::Vector2f& Window::getPosition() const
@@ -200,7 +221,7 @@ namespace gui
 		if (!m_active) return;
 
 		target.draw(m_background, states);
-		for (auto it = m_elements.rbegin(), end = m_elements.rend(); it != end; ++it)
+		for (auto it = m_elements.m_elements.rbegin(), end = m_elements.m_elements.rend(); it != end; ++it)
 			target.draw(**it, states);
 	}
 
