@@ -13,6 +13,6 @@ Open the Project Settings by right-clicking on the Project, then selecting Prope
 
 Navigate to C/C++ -> General -> Additional Include Directories and add the path to the include folder (eg. "D:\GUI-lib-master\include")
 
-Then navigate to Linker -> General -> Additional Library Directories and add path to one of the two folders in the lib folder, depending on what architecture you are compiling for (eg. "D:\GUI-lib-master\lib\x86")
+Then navigate to Linker -> General -> Additional Library Directories and add the path to one of the two folders under lib (either x86 or x64), depending on what architecture you are compiling for (eg. "D:\GUI-lib-master\lib\x86")
 
-Lastly, after navigating to Linker -> Input -> Additional Dependencies add a new line and insert "GUI.lib", below SFML's .lib files.
+Lastly, after navigating to Linker -> Input -> Additional Dependencies add a new line and insert "GUI.lib" below SFML's .lib files.
