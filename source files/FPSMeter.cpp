@@ -97,7 +97,7 @@ namespace gui
 
 	void FPSMeter::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
-		if (Duration(Internals::timeSinceStart() - m_timeOfLastUpdate) >= Duration(1.0f))
+		if (Duration(Internals::timeSinceStart() - m_timeOfLastUpdate).count() >= 1.0f)
 		{
 			m_previousFrames = m_frames;
 			m_text.setString(std::to_string(m_previousFrames));

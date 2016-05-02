@@ -62,14 +62,15 @@ namespace gui
 
 	FadeAnimation& FadeAnimation::updateFadeAmount() const
 	{
-		if ((m_fadeAmount < 1.0f && m_fadeDirection) || (m_fadeAmount > 0.0f && !m_fadeDirection) &&
+		if (((m_fadeAmount < 1.0f && m_fadeDirection) || (m_fadeAmount > 0.0f && !m_fadeDirection)) &&
 			Duration(Internals::timeSinceStart() - m_timeOfLastAnimationStep).count() > 1.0f / ANIMATION_FPS)
 		{
-			m_fadeAmount += (m_fadeDirection ? 1.0f : -1.0f) / (ANIMATION_FPS * m_animationDuration);
-			m_timeOfLastAnimationStep = Internals::timeSinceStart();
+			m_fadeAmount += (m_fadeDirection ? 1 : -1) / (ANIMATION_FPS * m_animationDuration);
 			if (m_fadeAmount > 1.0f) m_fadeAmount = 1.0f;
 			else if (m_fadeAmount < 0.0f) m_fadeAmount = 0.0f;
+			m_timeOfLastAnimationStep = Internals::timeSinceStart();
 		}
+
 		return (FadeAnimation&)*this;
 	}
 
@@ -101,7 +102,6 @@ namespace gui
 	void FadeAnimation::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		updateFadeAmount();
-		if (m_fadeAmount == 0.0f) return;
 
 		if (shaderLoadSuccessful)
 		{
