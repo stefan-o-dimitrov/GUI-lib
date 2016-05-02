@@ -12,10 +12,12 @@ Currently, the library has the following GUI elements included:
   - Progress Bar
   - Window
   - Window Manager
+  - Transparency Map (intended for Icon but can be used on any texture)
+  - Fade Animation (implemented with an sf::Shader)
+  - Audio Manager
   - Text Field (WIP)
   - Slider (WIP)
   - Scrollable List (WIP)
-  - Audio Manager (WIP)
   
 Example code demonstrating the usage of those classes not marked as WIP can be found under example in the master branch,
 compileable and including the image and font resources used.
