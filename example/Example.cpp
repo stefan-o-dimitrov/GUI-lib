@@ -125,7 +125,7 @@ void main()
 			.add("Close Btn", gui::Button(gui::Icon(closeButtonTex, true))
 				.bindAction(gui::Button::Released, [&]()
 					{
-						main.at("First Window").setActive(false);
+						main.at("First Window", false).setActive(false);
 					})
 				.setPosition(windowBackground.getSize().x - closeButtonTex.getSize().x, 0))
 					
@@ -137,7 +137,7 @@ void main()
 			.add("FPS", gui::FPSMeter().setFont(font).setPosition(600, 20).setColor(sf::Color::White)), false)
 		
 		.emplace("Second Window", std::move(gui::Window()
-			.setBackgroundColor(sf::Color(255, 255, 100))
+			.setBackgroundColor(sf::Color(255, 255, 150))
 			.setBackgroundTexture(windowBackground)
 			.setMovable(true)
 			.setPosition(20, 20)
@@ -160,7 +160,7 @@ void main()
 				}, -AMOUNT))
 				.bindAction(gui::Button::PredicatesUnfulfilled, [&]()
 				{
-					main.at("First Window").setActive(true);
+					main.at("First Window", false).setActive(true);
 				})
 				.setPredicates(gui::Button::PredicateArray{ std::bind(canChange, -LIMIT, true) })
 				.setPredicateMessage(gui::HoverMessage(gui::bind("Integer is less than ", sf::Color::White) + 
@@ -168,7 +168,9 @@ void main()
 					font, 15))
 				.setName(std::move(gui::TextArea("int -= " + 
 					std::to_string(AMOUNT), font, 18).setColor(sf::Color(175, 45, 65, 220))))
-				.setPosition(30, 100))), false);
+				.setPosition(30, 100))), true);
+
+	main.emplace("Third Window", gui::Window(main.at("Second Window", true)).setBackgroundColor(sf::Color(255, 255, 200)).setPosition(20, 20), false);
 
 	window.setVerticalSyncEnabled(true);
 

@@ -54,7 +54,7 @@ namespace gui
 	}
 
 
-	const std::shared_ptr<const HoverMessage> Hoverable::getMessage() const
+	const std::shared_ptr<HoverMessage> Hoverable::getMessage() const
 	{
 		return m_message;
 	}

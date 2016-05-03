@@ -58,6 +58,8 @@ namespace gui
 		using Interactive::contains;
 		
 		const sf::FloatRect getGlobalBounds()const;
+		const ColoredText& getText()const;
+		ColoredText& getText();
 		virtual const sf::Vector2f& getPosition()const;
 		virtual const sf::Font& getFont()const;
 		virtual const unsigned char getCharacterSize()const;

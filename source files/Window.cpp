@@ -161,13 +161,15 @@ namespace gui
 
 	const bool Window::input(const sf::Event& event)
 	{
-		if (!m_active) return false;
+		bool returnValue(false);
+
+		if (!m_active) return returnValue;
 
 		for (auto& it : m_elements.m_elements)
 			if (it->input(event)) 
 			{
 				m_elements.m_elements.begin()->swap(it);
-				return true;
+				returnValue = true;
 			}
 
 		if (m_movable)
@@ -190,14 +192,14 @@ namespace gui
 						event.mouseButton.y - getPosition().y));
 					return true;
 				}
-				return false;
+				return returnValue;
 			}
 			case sf::Event::MouseButtonReleased:
 				m_mouseDragOffset.reset();
 				return contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
 			}
 
-		return false;
+		return returnValue;
 	}
 	
 	void Window::lostFocus()
@@ -214,6 +216,11 @@ namespace gui
 	const bool Window::isMovable() const
 	{
 		return m_movable;
+	}
+
+	const bool Window::isBeingMoved() const
+	{
+		return bool(m_mouseDragOffset);
 	}
 
 	void Window::draw(sf::RenderTarget& target, sf::RenderStates states) const

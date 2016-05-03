@@ -97,6 +97,7 @@ namespace gui
 
 		const sf::Vector2f& getPosition()const;
 		const bool isMovable()const;
+		const bool isBeingMoved()const;
 
 		Window& setPosition(const sf::Vector2f& position);
 		Window& setPosition(const float x, const float y);

@@ -142,7 +142,7 @@ namespace gui
 		return m_predicatesFulfilled ? m_messageBuffer : m_message;
 	}
 
-	const std::shared_ptr<const HoverMessage> Button::getMessage()const
+	const std::shared_ptr<HoverMessage> Button::getMessage()const
 	{
 		return m_predicatesFulfilled ? m_message : m_messageBuffer;
 	}

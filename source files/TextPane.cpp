@@ -93,6 +93,16 @@ namespace gui
 		return returnValue;
 	}
 
+	const ColoredText& TextPane::getText() const
+	{
+		return m_string;
+	}
+
+	ColoredText& TextPane::getText()
+	{
+		return m_string;
+	}
+
 	const sf::Vector2f& TextPane::getPosition()const
 	{
 		return m_position;

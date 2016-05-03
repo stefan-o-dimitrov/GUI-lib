@@ -42,13 +42,16 @@ namespace gui
 		void clear(const bool fullscreen = false);
 		const size_t size(const bool fullscreen = false)const;
 
-		Window& at(const std::string& key, const bool fullscreen = false);
-		const Window& at(const std::string& key, const bool fullscreen = false)const;
+		Window& at(const std::string& key, const bool fullscreen);
+		const Window& at(const std::string& key, const bool fullscreen)const;
 
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const;
 
+		const bool fullscreenWindowInput(decltype(ordered_map<Window>::m_elements.begin())& window, const sf::Event& event);
+
 		ordered_map<Window> m_windows, m_dialogBoxes;
+		std::unique_ptr<decltype(m_windows.m_elements.begin())> m_currentlyDraggedFullscreenWindow = nullptr;
 	};
 }
 

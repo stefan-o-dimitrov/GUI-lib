@@ -47,7 +47,7 @@ namespace gui
 		virtual const bool input(const sf::Event& event)override;
 		using Interactive::contains;
 
-		virtual const std::shared_ptr<const HoverMessage> getMessage()const;
+		virtual const std::shared_ptr<HoverMessage> getMessage()const;
 
 		virtual Hoverable& clearMessage();
 		virtual Hoverable& setMessage(const HoverMessage& message);

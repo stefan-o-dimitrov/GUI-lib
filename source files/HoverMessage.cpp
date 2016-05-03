@@ -82,6 +82,16 @@ namespace gui
 	{
 		return m_textBox.getOutlineThickness();
 	}
+
+	const ColoredText& HoverMessage::getText() const
+	{
+		return TextPane::getText();
+	}
+
+	ColoredText& HoverMessage::getText()
+	{
+		return TextPane::getText();
+	}
 	
 	void HoverMessage::updateBox()const
 	{

@@ -56,6 +56,8 @@ namespace gui
 		const sf::Color& getBackgroundFill()const;
 		const sf::Color& getBorderFill()const;
 		const char getBorderThickness()const;
+		const ColoredText& getText()const;
+		ColoredText& getText();
 		
 		HoverMessage& setPosition(const float x, const float y)override;
 		HoverMessage& setPosition(const sf::Vector2f& position)override;
