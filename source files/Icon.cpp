@@ -115,6 +115,12 @@ namespace gui
 		return *this;
 	}
 
+	Icon& Icon::setColor(const sf::Color& color)
+	{
+		m_icon.setColor(color);
+		return *this;
+	}
+
 	Icon& Icon::clearMessage()
 	{
 		Hoverable::clearMessage();

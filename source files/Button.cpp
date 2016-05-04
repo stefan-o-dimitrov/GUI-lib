@@ -208,6 +208,12 @@ namespace gui
 		return *this;
 	}
 
+	Button& Button::setColor(const sf::Color& color)
+	{
+		Icon::setColor(color);
+		return *this;
+	}
+
 	Button& Button::setPredicateMessage(const HoverMessage& newMessage)
 	{
 		m_predicatesFulfilled ? m_messageBuffer.reset(new HoverMessage(newMessage))

@@ -83,6 +83,7 @@ namespace gui
 		Button& setMessage(const HoverMessage& message)override;
 		Button& setMessage(HoverMessage&& tempMessage)override;
 		Button& setTexture(const sf::Texture& texture, const bool transparencyCheck = false)override;
+		Button& setColor(const sf::Color& color)override;
 
 		Button& setName(const TextArea& name);
 		Button& setName(TextArea&& nameTemp);

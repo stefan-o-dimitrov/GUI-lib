@@ -29,16 +29,12 @@ namespace gui
 	CheckBox::CheckBox(const Button& fState, const Button& tState, const sf::Vector2f& pos, const bool state)
 		: Button(fState), m_trueState(tState), m_checked(state)
 	{
-		if (m_name) m_name.reset();
-		if (m_trueState.m_name) m_trueState.m_name.reset();
 		setPosition(pos);
 	}
 
 	CheckBox::CheckBox(Button&& fState, Button&& tState, const sf::Vector2f& pos, const bool state)
 		: Button(std::move(fState)), m_trueState(std::move(tState)), m_checked(state)
 	{
-		if (m_name) m_name.reset();
-		if (m_trueState.m_name) m_trueState.m_name.reset();
 		setPosition(pos);
 	}
 
@@ -61,7 +57,7 @@ namespace gui
 	{
 		if (m_checked)
 		{
-			if (event.type == sf::Event::MouseButtonReleased && m_trueState.getState() == PressedDown) 
+			if (event.type == sf::Event::MouseButtonReleased && m_trueState.getState() == PressedDown)
 				m_checked = false;
 			return m_trueState.input(event);
 		}
