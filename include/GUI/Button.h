@@ -74,8 +74,8 @@ namespace gui
 		const std::shared_ptr<HoverMessage> getMessage()const override;
 
 		virtual const State getState()const;
-		const std::shared_ptr<const HoverMessage> getPredicateMessage()const;
-		const std::shared_ptr<const TextArea> getName()const;
+		const std::shared_ptr<HoverMessage> getPredicateMessage()const;
+		const std::shared_ptr<TextArea> getName()const;
 
 		virtual Button& setPosition(const float x, const float y)override;
 		virtual Button& setPosition(const sf::Vector2f& position)override;

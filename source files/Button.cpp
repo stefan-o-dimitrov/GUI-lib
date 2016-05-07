@@ -25,8 +25,6 @@
 #include "../include/GUI/Button.h"
 #include "../include/GUI/Window.h"
 
-#include <sstream>
-
 namespace gui
 {
 	const std::string GRAYSCALE_SHADER_CODE =
@@ -137,7 +135,7 @@ namespace gui
 		return m_state;
 	}
 
-	const std::shared_ptr<const HoverMessage> Button::getPredicateMessage()const
+	const std::shared_ptr<HoverMessage> Button::getPredicateMessage()const
 	{
 		return m_predicatesFulfilled ? m_messageBuffer : m_message;
 	}
@@ -147,7 +145,7 @@ namespace gui
 		return m_predicatesFulfilled ? m_message : m_messageBuffer;
 	}
 
-	const std::shared_ptr<const TextArea> Button::getName()const
+	const std::shared_ptr<TextArea> Button::getName()const
 	{
 		return m_name;
 	}
@@ -156,8 +154,8 @@ namespace gui
 	{
 		m_name.reset(new TextArea(newName));
 		m_name->m_message.reset();
-		m_name->setPosition(getPosition().x + getGlobalBounds().width / 2 - m_name->getGlobalBounds().width / 2,
-			getPosition().y + getGlobalBounds().height / 2 - m_name->getGlobalBounds().height / 2);
+		m_name->setPosition(getPosition().x + m_name->getPosition().x + (getGlobalBounds().width - m_name->getGlobalBounds().width) / 2,
+			getPosition().y + m_name->getPosition().y + (getGlobalBounds().height - m_name->getGlobalBounds().height) / 2);
 		return *this;
 	}
 
@@ -165,9 +163,8 @@ namespace gui
 	{
 		m_name.reset(new TextArea(std::move(tempName)));
 		m_name->m_message.reset();
-		m_name->m_updateFunction.reset();
-		m_name->setPosition(getPosition().x + getGlobalBounds().width / 2 - m_name->getGlobalBounds().width / 2,
-			getPosition().y + getGlobalBounds().height / 2 - m_name->getGlobalBounds().height / 2);
+		m_name->setPosition(getPosition().x + m_name->getPosition().x + (getGlobalBounds().width - m_name->getGlobalBounds().width) / 2,
+			getPosition().y + m_name->getPosition().y + (getGlobalBounds().height - m_name->getGlobalBounds().height) / 2);
 		return *this;
 	}
 
@@ -237,9 +234,8 @@ namespace gui
 
 	Button& Button::setPosition(const float x, const float y)
 	{
+		if (m_name) m_name->setPosition(x + m_name->getPosition().x - getPosition().x, y + m_name->getPosition().y - getPosition().y);
 		Icon::setPosition(x, y);
-		if (m_name) m_name->setPosition(x + getGlobalBounds().width / 2 - m_name->getGlobalBounds().width / 2,
-			y + getGlobalBounds().height / 2 - m_name->getGlobalBounds().height / 2);
 		return *this;
 	}
 

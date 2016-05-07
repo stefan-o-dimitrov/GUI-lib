@@ -32,8 +32,8 @@ namespace gui
 	class CheckBox final : public Button
 	{
 	public:
-		CheckBox(const Button& falseState, const Button& trueState, const sf::Vector2f& position = sf::Vector2f(0, 0), const bool state = false);
-		CheckBox(Button&& falseState, Button&& trueState, const sf::Vector2f& position = sf::Vector2f(0, 0), const bool state = false);
+		CheckBox(const Button& falseState, const Button& trueState, const bool state = false);
+		CheckBox(Button&& falseState, Button&& trueState, const bool state = false);
 		CheckBox(const CheckBox& copy) = default;
 		CheckBox(CheckBox&& temp) = default;
 		CheckBox() = default;
@@ -45,42 +45,22 @@ namespace gui
 		void lostFocus()override;
 		const bool input(const sf::Event& event)override;
 		const bool contains(const float x, const float y)const override;
-		using Interactive::contains;
 
 		void toggle();
 
 		const State getState()const override;
 		const bool isChecked()const;
-
-		const sf::FloatRect getTrueStateGlobalBounds()const;
-		const sf::Texture& getTrueStateTexture()const;
-		const bool getTrueStateTransparencyCheck()const;
-		const sf::IntRect& getTrueStateTextureRect()const;
-		const std::shared_ptr<const HoverMessage> getTrueStateMessage()const;
-		const std::shared_ptr<const HoverMessage> getTrueStatePredicateMessage()const;
 		
 		CheckBox& setPosition(const float x, const float y)override;
 		CheckBox& setPosition(const sf::Vector2f& position)override;
 		CheckBox& setIsChecked(const bool isChecked);
 
-		CheckBox& setTrueStateTexture(const sf::Texture& texture, const bool transparencyCheck = false);
-		CheckBox& setTrueStateTransparencyCheck(const bool transparencyCheck);
-		CheckBox& setTrueStateTextureRect(const sf::IntRect& textureRect);
-		CheckBox& setTrueStateMessage(const HoverMessage& message);
-		CheckBox& setTrueStateMessage(HoverMessage&& tempMessage);
-		CheckBox& setTrueStatePredicateMessage(const HoverMessage& message);
-		CheckBox& setTrueStatePredicateMessage(HoverMessage&& tempMessage);
-		CheckBox& setTrueStatePredicates(const PredicateArray& predicates);
-		CheckBox& setTrueStatePredicates(PredicateArray&& predicates);
+		Button trueState;
 
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 		
-		using Button::getName;
-		using Button::setName;
-
-		Button m_trueState;
-		bool   m_checked = false;
+		bool m_checked = false;
 	};
 };
 
