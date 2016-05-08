@@ -105,10 +105,15 @@ namespace gui
 		return setPosition(newPosition.x, newPosition.y);
 	}
 
-	TextArea& TextArea::setText(const ColoredString& newText)const
+	TextArea& TextArea::setStyle(const sf::Text::Style style)const
 	{
-		m_text.setString(newText.first);
-		m_text.setColor(newText.second);
+		m_text.setStyle(style);
+		return (TextArea&)*this;
+	}
+
+	TextArea& TextArea::setText(const std::string& newText)const
+	{
+		m_text.setString(newText);
 		return (TextArea&)*this;
 	}
 
@@ -124,10 +129,10 @@ namespace gui
 		return *this;
 	}
 
-	TextArea& TextArea::setColor(const sf::Color& color)
+	TextArea& TextArea::setColor(const sf::Color& color)const
 	{ 
 		m_text.setColor(color);
-		return *this;
+		return (TextArea&)*this;
 	}
 
 	TextArea& TextArea::setUpdateFunction(const std::function<ColoredString()>& func)
@@ -146,7 +151,10 @@ namespace gui
 	{
 		if (m_updateFunction && Duration(Internals::timeSinceStart() - m_timeOfLastUpdate).count() > 1.0f / Internals::getUPS())
 		{
-			setText((*m_updateFunction)());
+			const auto update((*m_updateFunction)());
+			setText(update.first);
+			setColor(update.second.first);
+			setStyle(update.second.second);
 			m_timeOfLastUpdate = Internals::timeSinceStart();
 		}
 		target.draw(m_text, states);

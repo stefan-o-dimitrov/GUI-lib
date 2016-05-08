@@ -69,10 +69,11 @@ namespace gui
 		TextArea& setPosition(const float x, const float y)override;
 		TextArea& setPosition(const sf::Vector2f& position)override;
 
-		TextArea& setText(const ColoredString& text)const;
+		TextArea& setStyle(const sf::Text::Style style)const;
+		TextArea& setText(const std::string& text)const;
 		TextArea& setFont(const sf::Font& font);
 		TextArea& setCharacterSize(const unsigned char characterSize);
-		TextArea& setColor(const sf::Color& color);
+		TextArea& setColor(const sf::Color& color)const;
 		TextArea& setUpdateFunction(const std::function<ColoredString()>& func);
 		TextArea& setUpdateFunction(std::function<ColoredString()>&& func);
 		

@@ -31,7 +31,8 @@ namespace gui
 {
 	gui::ColoredText::operator ColoredString()
 	{
-		return ColoredString(m_text.empty() ? "" : m_text.front()->first, m_text.empty() ? sf::Color() : m_text.front()->second);
+		return ColoredString(m_text.empty() ? "" : m_text.front()->first,
+			m_text.empty() ? std::make_pair(sf::Color(), sf::Text::Regular) : m_text.front()->second);
 	}
 
 	void ColoredText::stringToArrangedText(unique_ptr_vector<sf::Text>& target,
@@ -46,7 +47,8 @@ namespace gui
 			else
 			{
 				target.emplace_back(new sf::Text(buffer, font, characterSize));
-				target.back()->setColor(str.second);
+				target.back()->setColor(str.second.first);
+				target.back()->setStyle(str.second.second);
 				target.back()->setPosition(addPosition);
 				addPosition.x = 0;
 				addPosition.y += TEXT_HEIGHT + LINE_SPACING;
@@ -57,7 +59,8 @@ namespace gui
 		if (!buffer.empty())
 		{
 			target.emplace_back(new sf::Text(buffer, font, characterSize));
-			target.back()->setColor(str.second);
+			target.back()->setColor(str.second.first);
+			target.back()->setStyle(str.second.second);
 			target.back()->setPosition(addPosition);
 			addPosition.x += target.back()->getGlobalBounds().width + 1.0f;
 		}
@@ -108,10 +111,10 @@ namespace gui
 		}
 	}
 
-	ColoredText bind(const std::string& string, const sf::Color& color)
+	ColoredText bind(const std::string& string, const sf::Color& color, const sf::Text::Style style)
 	{
 		ColoredText returnValue;
-		if (!string.empty()) returnValue.m_text.emplace_back(new ColoredString(string, color));
+		if (!string.empty()) returnValue.m_text.emplace_back(new ColoredString(string, std::make_pair(color, style)));
 		return returnValue;
 	}
 

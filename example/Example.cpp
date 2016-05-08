@@ -96,14 +96,14 @@ void main()
 				.setMessage(std::move(gui::HoverMessage(gui::bind("This is the ", sf::Color::White) + 
 					gui::bind("current value ", sf::Color::Yellow) + gui::bind("of the ", sf::Color::White) +
 					gui::bind("integer.", sf::Color::Yellow) +
-					gui::bind("\nThis text gets updated automatically every 1 / 10 second.", sf::Color::Red), font, 15)
+					gui::bind("\nThis text gets updated automatically every 1 / 10 seconds.", sf::Color::Red), font, 15)
 					.setBackgroundFill(sf::Color::Black)
 					.setBorderFill(sf::Color::Yellow)
 					.setBorderThickness(2.0f)))
 				.setColor(sf::Color::Yellow)
 				.setUpdateFunction([]()
 					{
-						return gui::ColoredString(std::to_string(integer), integer > 0.0f ? sf::Color::Green : integer == 0.0f ? 
+						return gui::bind(std::to_string(integer), integer > 0.0f ? sf::Color::Green : integer == 0.0f ? 
 							sf::Color::Yellow : sf::Color::Red);
 					})
 				.setPosition(50, 30)))
@@ -130,9 +130,9 @@ void main()
 				.setPosition(windowBackground.getSize().x - closeButtonTex.getSize().x, 0))
 					
 			.add("Txt Pane", gui::TextPane(gui::bind("This is a simple program demonstrating ", sf::Color::White) +
-				gui::bind("\nSHT Games", sf::Color::Yellow) + 
+				gui::bind("\nSHT Games", sf::Color::Yellow, sf::Text::Italic) + 
 				gui::bind("' GUI Library. If you encounter\nany issues, please contact us at:\n", sf::Color::White) +
-				gui::bind("shtgamessts@gmail.com", sf::Color::Yellow), font, 15)
+				gui::bind("shtgamessts@gmail.com", sf::Color::Yellow, sf::Text::Bold), font, 15)
 				.setPosition(120, 20)))
 			.add("FPS", gui::FPSMeter().setFont(font).setPosition(600, 20).setColor(sf::Color::White)), false)
 		
@@ -145,7 +145,7 @@ void main()
 
 			.add("Txt Area", gui::TextArea()
 				.setFont(font)
-				.setText(gui::ColoredString("0", sf::Color()))
+				.setText("0")
 				.setUpdateFunction([]()
 				{
 					return gui::bind(std::to_string(integer), sf::Color());
@@ -171,9 +171,7 @@ void main()
 				.setPosition(30, 100))), true);
 
 	main.emplace("Third Window", gui::Window(main.at("Second Window", true)).setBackgroundColor(sf::Color(255, 255, 200)).setPosition(20, 20), false);
-
-	window.setVerticalSyncEnabled(true);
-
+	
 	while (running)
 	{
 		sf::Event event;

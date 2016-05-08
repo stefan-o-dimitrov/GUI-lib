@@ -38,7 +38,7 @@ namespace gui
 	using unique_ptr_vector = std::vector<std::unique_ptr<T>>;
 	template <typename T>
 	using shared_ptr_vector = std::vector<std::shared_ptr<T>>;
-	typedef std::pair<std::string, sf::Color>(ColoredString);
+	typedef std::pair<std::string, std::pair<sf::Color, sf::Text::Style>>(ColoredString);
 
 	class ColoredText final
 	{
@@ -73,7 +73,7 @@ namespace gui
 
 		static constexpr unsigned char LINE_SPACING = 2;
 
-		friend ColoredText bind(const std::string& string, const sf::Color& color);
+		friend ColoredText bind(const std::string& string, const sf::Color& color, const sf::Text::Style style);
 		friend ColoredText& operator+(ColoredText& text, const ColoredText& newText);
 		friend ColoredText& operator+(ColoredText& text, ColoredText&& newText);
 		friend ColoredText& operator+(ColoredText& text, const ColoredString& string);
@@ -82,7 +82,7 @@ namespace gui
 		friend ColoredText& operator+(ColoredText& text, std::function<ColoredText()>&& function);
 	};
 
-	ColoredText bind(const std::string& string, const sf::Color& color);
+	ColoredText bind(const std::string& string, const sf::Color& color = sf::Color::White, const sf::Text::Style style = sf::Text::Regular);
 }
 
 #endif
