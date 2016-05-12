@@ -120,7 +120,8 @@ namespace gui
 		for (auto it = m_dialogBoxes.m_elements.rbegin(), end = m_dialogBoxes.m_elements.rend(); it != end; ++it)
 			target.draw(**it, states);
 	}
-	const bool WindowManager::fullscreenWindowInput(decltype(ordered_map<Window>::m_elements.begin())& window, const sf::Event& event)
+
+	const bool WindowManager::fullscreenWindowInput(std::vector<std::unique_ptr<gui::Window>>::iterator& window, const sf::Event& event)
 	{
 		if ((*window)->input(event))
 		{

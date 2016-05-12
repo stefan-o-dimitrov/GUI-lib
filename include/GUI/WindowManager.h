@@ -48,10 +48,10 @@ namespace gui
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const;
 
-		const bool fullscreenWindowInput(decltype(ordered_map<Window>::m_elements.begin())& window, const sf::Event& event);
+		const bool fullscreenWindowInput(std::vector<std::unique_ptr<gui::Window>>::iterator& window, const sf::Event& event);
 
 		ordered_map<Window> m_windows, m_dialogBoxes;
-		std::unique_ptr<decltype(m_windows.m_elements.begin())> m_currentlyDraggedFullscreenWindow = nullptr;
+		std::unique_ptr<std::vector<std::unique_ptr<gui::Window>>::iterator> m_currentlyDraggedFullscreenWindow = nullptr;
 	};
 }
 
