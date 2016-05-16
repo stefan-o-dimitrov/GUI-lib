@@ -66,8 +66,7 @@ namespace gui
 		HoverMessage& setFont(const sf::Font& font)override;
 		HoverMessage& setCharacterSize(const unsigned char characterSize)override;
 		HoverMessage& setFadeDirection(const bool direction)override;
-		HoverMessage& setAnimationDuration(const float duration)override;
-		HoverMessage& updateFadeAmount()const override;
+		HoverMessage& setDuration(const float duration)override;
 
 		HoverMessage& setBackgroundFill(const sf::Color& color);
 		HoverMessage& setBorderFill(const sf::Color& color);

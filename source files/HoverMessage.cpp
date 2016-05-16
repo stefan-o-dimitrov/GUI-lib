@@ -163,16 +163,10 @@ namespace gui
 		return *this;
 	}
 
-	HoverMessage& HoverMessage::setAnimationDuration(const float duration)
+	HoverMessage& HoverMessage::setDuration(const float duration)
 	{
-		FadeAnimation::setAnimationDuration(duration);
+		FadeAnimation::setDuration(duration);
 		return *this;
-	}
-
-	HoverMessage& HoverMessage::updateFadeAmount() const
-	{
-		FadeAnimation::updateFadeAmount();
-		return (HoverMessage&)*this;
 	}
 		
 	HoverMessage& HoverMessage::setBackgroundFill(const sf::Color& color)

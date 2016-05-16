@@ -1,8 +1,8 @@
 #include <GUI\GUI.h>
 
-#include <sstream>
+#include <sstream> // Items needed only for this example start here.
 
-#define LIMIT 10
+#define LIMIT 10 
 #define AMOUNT 1
 
 int integer = 0;
@@ -23,11 +23,11 @@ std::string getInt()
 	std::stringstream ss;
 	ss << integer;
 	return ss.str();
-}
+} // Items needed only for this example end here.
 
 void main()
 {
-	sf::Texture buttonTex, closeButtonTex, barBackgroundTex, barFillTex, windowBackground;
+	sf::Texture buttonTex, closeButtonTex, barBackgroundTex, barFillTex, windowBackground; // Loading resources begins here.
 	sf::Font font;
 
 	barBackgroundTex.loadFromFile("resources/bar_background.png");
@@ -35,17 +35,18 @@ void main()
 	buttonTex.loadFromFile("resources/button.png");
 	closeButtonTex.loadFromFile("resources/close_button.png");
 	windowBackground.loadFromFile("resources/window_background.png");
-	font.loadFromFile("resources/font.ttf");
-	
-	gui::WindowManager main;
-	sf::RenderWindow window(sf::VideoMode(1600, 800), "Example", sf::Style::None);
+	font.loadFromFile("resources/font.ttf"); // Loading resources ends here.
 
-	main.emplace("First Window", std::move(gui::Window()
+	sf::RenderWindow window(sf::VideoMode(1600, 800), "Example", sf::Style::None); // Creating Render Window.
+
+	gui::WindowManager main; // Creating main Window Manager
+
+	main.emplace("First Window", std::move(gui::Window() // Populating main with windows.
 			.setPosition(250, 250)
 			.setBackgroundTexture(windowBackground, true)
 			.setMovable(true)
 
-			.add("1st Button", std::move(gui::Button(gui::Icon(buttonTex, true))
+			.add("1st Button", std::move(gui::Button(gui::Icon(buttonTex, true)) // Populating window with GUI elements.
 				.bindAction(gui::Button::Released, std::bind([](const int amount)
 				{
 					integer += amount;

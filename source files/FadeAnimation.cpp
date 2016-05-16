@@ -46,7 +46,18 @@ namespace gui
 
 	sf::Shader FadeAnimation::fadeShaderTextured, FadeAnimation::fadeShaderNoTexture;
 	const bool FadeAnimation::shaderLoadSuccessful = FadeAnimation::loadShader();
-	const float FadeAnimation::ANIMATION_FPS = 20;
+
+	FadeAnimation& FadeAnimation::setDuration(const float duration)
+	{
+		Animation::setDuration(duration);
+		return *this;
+	}
+
+	FadeAnimation& FadeAnimation::setFPS(const float fps)
+	{
+		Animation::setFPS(fps);
+		return *this;
+	}
 
 	FadeAnimation& FadeAnimation::setFadeDirection(const bool direction)
 	{
@@ -54,24 +65,23 @@ namespace gui
 		return *this;
 	}
 
-	FadeAnimation& FadeAnimation::setAnimationDuration(const float duration)
+	void FadeAnimation::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
-		m_animationDuration = duration;
-		return *this;
+		if (((m_fadeAmount < 1.0f && m_fadeDirection) || (m_fadeAmount > 0.0f && !m_fadeDirection)))
+			Animation::draw(target, states);
+
+		if (shaderLoadSuccessful)
+		{
+			fadeShaderNoTexture.setParameter("amount", m_fadeAmount);
+			fadeShaderTextured.setParameter("amount", m_fadeAmount);
+		}
 	}
 
-	FadeAnimation& FadeAnimation::updateFadeAmount() const
+	void FadeAnimation::step() const
 	{
-		if (((m_fadeAmount < 1.0f && m_fadeDirection) || (m_fadeAmount > 0.0f && !m_fadeDirection)) &&
-			Duration(Internals::timeSinceStart() - m_timeOfLastAnimationStep).count() > 1.0f / ANIMATION_FPS)
-		{
-			m_fadeAmount += (m_fadeDirection ? 1 : -1) / (ANIMATION_FPS * m_animationDuration);
-			if (m_fadeAmount > 1.0f) m_fadeAmount = 1.0f;
-			else if (m_fadeAmount < 0.0f) m_fadeAmount = 0.0f;
-			m_timeOfLastAnimationStep = Internals::timeSinceStart();
-		}
-
-		return (FadeAnimation&)*this;
+		m_fadeAmount += (m_fadeDirection ? 1 : -1) / (getAnimationFPS() * getAnimationDuration());
+		if (m_fadeAmount > 1.0f) m_fadeAmount = 1.0f;
+		else if (m_fadeAmount < 0.0f) m_fadeAmount = 0.0f;
 	}
 
 	const bool FadeAnimation::getFadeDirection() const
@@ -83,12 +93,7 @@ namespace gui
 	{
 		return m_fadeAmount;
 	}
-
-	const float FadeAnimation::getAnimationDuration() const
-	{
-		return m_animationDuration;
-	}
-
+	
 	const sf::Shader& FadeAnimation::getShaderNonTextured() const
 	{
 		return fadeShaderNoTexture;
@@ -98,18 +103,7 @@ namespace gui
 	{
 		return fadeShaderTextured;
 	}
-
-	void FadeAnimation::draw(sf::RenderTarget& target, sf::RenderStates states) const
-	{
-		updateFadeAmount();
-
-		if (shaderLoadSuccessful)
-		{
-			fadeShaderNoTexture.setParameter("amount", m_fadeAmount);
-			fadeShaderTextured.setParameter("amount", m_fadeAmount);
-		}
-	}
-
+	
 	const bool FadeAnimation::loadShader()
 	{
 		if (fadeShaderNoTexture.loadFromMemory(FADE_SHADER_NO_TEXTURE, sf::Shader::Fragment) &&

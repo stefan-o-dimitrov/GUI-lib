@@ -25,14 +25,13 @@
 #ifndef GUI_FADE_ANIMATION
 #define GUI_FADE_ANIMATION
 
-#include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Shader.hpp>
 
-#include "Internals.h"
+#include "Animation.h"
 
 namespace gui
 {
-	class FadeAnimation : public virtual sf::Drawable
+	class FadeAnimation : public Animation
 	{
 	public:
 		FadeAnimation(const FadeAnimation& copy) = default;
@@ -43,31 +42,28 @@ namespace gui
 		FadeAnimation& operator=(const FadeAnimation& copy) = default;
 		FadeAnimation& operator=(FadeAnimation&& temp) = default;
 
+		FadeAnimation& setDuration(const float duration)override;
+		FadeAnimation& setFPS(const float fps)override;
 		virtual FadeAnimation& setFadeDirection(const bool direction);
-		virtual FadeAnimation& setAnimationDuration(const float duration);
-		virtual FadeAnimation& updateFadeAmount()const;
 
 		const bool getFadeDirection()const;
 		const float getFadeAmount()const;
-		const float getAnimationDuration()const;
 
 		const sf::Shader& getShaderNonTextured()const;
 		const sf::Shader& getShaderTextured()const;
 
 	protected:
-		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
-
+		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
+		virtual void step()const override;
+	
 	private:
-		mutable TimePoint m_timeOfLastAnimationStep;
-		mutable float     m_fadeAmount = 0.0f;
-		float             m_animationDuration = 0.5f;
-		mutable bool      m_fadeDirection = false;
+		mutable float m_fadeAmount = 0.0f;
+		mutable bool  m_fadeDirection = false;
 
 		static const bool loadShader();
 
 		static sf::Shader fadeShaderTextured, fadeShaderNoTexture;
 		static const bool shaderLoadSuccessful;
-		static const float ANIMATION_FPS;
 	};
 }
 
