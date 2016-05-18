@@ -27,38 +27,47 @@
 
 namespace gui
 {
-	const std::string GRAYSCALE_SHADER_CODE =
-		"uniform sampler2D tex;\
+	const std::string DEFAULT_STATE_SHADER_CODE =
+		"uniform float state;\
+		uniform bool active;\
+		uniform sampler2D tex;\
 		\
 		void main()\
 		{\
-			vec4 color = texture2D( tex, gl_TexCoord[0].xy ) * gl_Color;\
-			float greyValue = color.r * 0.29 + color.g * 0.58 + color.b * 0.13;\
-			gl_FragColor = vec4(greyValue, greyValue, greyValue, color.a);\
+			vec4 color = texture2D(tex, gl_TexCoord[0].xy) * gl_Color;\
+			if (active)\
+				gl_FragColor = vec4(color.rgb * (1.0f - (state * 0.15f)), color.a);\
+			else\
+			{\
+				float greyValue = color.r * 0.29 + color.g * 0.58 + color.b * 0.13;\
+				gl_FragColor = vec4(greyValue, greyValue, greyValue, color.a);\
+			}\
 		}";
-	sf::Shader Button::grayscaleShader;
-	const bool Button::shaderLoadSuccessful = Button::loadShader();
 
 	Button::Button(const Icon& visual)
-		: Icon(visual), m_state(Idle)
+		: Icon(visual), m_state(Idle) 
 	{
-		Icon::m_icon.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
+		resetShader(DEFAULT_STATE_SHADER_CODE);
 	}
 
 	Button::Button(Icon&& visual)
-		: Icon(std::move(visual))
+		: Icon(std::move(visual)), m_state(Idle)
 	{
-		Icon::m_icon.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
+		resetShader(DEFAULT_STATE_SHADER_CODE);
 	}
 
 	Button::Button(const Button& copy)
-		: Icon(copy), m_onEvent(copy.m_onEvent), m_state(Idle)
+		: Icon(copy), m_onEvent(copy.m_onEvent), m_state(copy.m_state),
+		m_predicatesFulfilled(copy.m_predicatesFulfilled), m_stateShader(copy.m_stateShader)
 	{
-		Icon::m_icon.setColor(sf::Color(0.75 * 255, 0.75 * 255, 0.75 * 255, 255));
-
 		if (copy.m_messageBuffer) m_messageBuffer.reset(new HoverMessage(*copy.m_messageBuffer));
 		if (copy.m_name) m_name.reset(new TextArea(*copy.m_name));
 		if (copy.m_predicates) m_predicates.reset(new PredicateArray(*copy.m_predicates));
+	}
+
+	Button::Button()
+	{
+		resetShader(DEFAULT_STATE_SHADER_CODE);
 	}
 
 	std::unique_ptr<Interactive> Button::copy() const
@@ -74,9 +83,6 @@ namespace gui
 	void gui::Button::lostFocus()
 	{
 		Icon::lostFocus();
-
-		if (m_predicatesFulfilled && m_state != Idle)
-			Icon::m_icon.setColor(sf::Color(0.85 * 255, 0.85 * 255, 0.85 * 255, 255));
 		m_state = Idle;
 	}
 
@@ -88,15 +94,11 @@ namespace gui
 			if (Icon::input(event))
 			{
 				if (m_state == PressedDown) return true;
-				if (m_predicatesFulfilled && m_state != Hot)
-					Icon::m_icon.setColor(sf::Color(255, 255, 255, 255));
 				m_state = Hot;
 				return true;
 			}
 			else
 			{
-				if (m_predicatesFulfilled && m_state != Idle)
-					Icon::m_icon.setColor(sf::Color(0.85 * 255, 0.85 * 255, 0.85 * 255, 255));
 				m_state = Idle;
 				return false;
 			}
@@ -105,8 +107,6 @@ namespace gui
 			{
 				if (m_onEvent.count(Pressed))
 					m_onEvent.at(Pressed)();
-				if (m_predicatesFulfilled && m_state != PressedDown)
-					Icon::m_icon.setColor(sf::Color(0.7 * 255, 0.7 * 255, 0.7 * 255, 255));
 				m_state = PressedDown;
 				return true;
 			}
@@ -118,8 +118,6 @@ namespace gui
 				{
 					if (m_state == PressedDown && m_onEvent.count(Released))
 						m_onEvent.at(Released)();
-					if (m_state != Hot)
-						Icon::m_icon.setColor(sf::Color(255, 255, 255, 255));
 					m_state = Hot;
 				}
 				return true;
@@ -270,13 +268,37 @@ namespace gui
 		return *this;
 	}
 
+	Button& Button::resetShader(const std::string& GLSLCode)
+	{
+		m_stateShader.reset(new sf::Shader());
+		m_stateShader->loadFromMemory(GLSLCode, sf::Shader::Fragment);
+		m_stateShader->setParameter("tex", sf::Shader::CurrentTexture);
+
+		return *this;
+	}
+
+	Button& Button::resetShader()
+	{
+		m_stateShader.reset();
+		return *this;
+	}
+
+	const std::string& Button::getDefaultStateShader()
+	{
+		return DEFAULT_STATE_SHADER_CODE;
+	}
+
 	void Button::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
 		if (m_predicates && Duration(Internals::timeSinceStart() - m_timeOfLastPredicateCheck).count() > 1.0f / Internals::getUPS())
 			checkPredicates();
 
-		states.shader = !m_predicatesFulfilled && shaderLoadSuccessful ?
-			&grayscaleShader : nullptr;
+		if (m_stateShader)
+		{
+			m_stateShader->setParameter("state", m_state);
+			m_stateShader->setParameter("active", m_predicatesFulfilled);
+		}
+		states.shader = &*m_stateShader;
 
 		target.draw(m_icon, states);
 		if (m_name) target.draw(*m_name, states);
@@ -290,7 +312,6 @@ namespace gui
 			if (!m_predicatesFulfilled)
 			{
 				m_message.swap(m_messageBuffer);
-				m_icon.setColor(sf::Color((1.0f - 0.15f * m_state) * 255, (1.0f - 0.15f * m_state) * 255, (1.0f - 0.15f * m_state) * 255, 255));
 				m_predicatesFulfilled = true;
 			}
 			return;
@@ -303,7 +324,6 @@ namespace gui
 				{
 					if (m_onEvent.count(PredicatesUnfulfilled)) m_onEvent.at(PredicatesUnfulfilled)();
 					m_message.swap(m_messageBuffer);
-					m_icon.setColor(sf::Color(255, 255, 255, 255));
 					m_predicatesFulfilled = false;
 				}
 				return;
@@ -313,18 +333,7 @@ namespace gui
 		{
 			if (m_onEvent.count(PredicatesFulfilled)) m_onEvent.at(PredicatesFulfilled)();
 			m_message.swap(m_messageBuffer);
-			m_icon.setColor(sf::Color((1.0f - 0.15f * m_state) * 255, (1.0f - 0.15f * m_state) * 255, (1.0f - 0.15f * m_state) * 255, 255));
 			m_predicatesFulfilled = true;
 		}
-	}
-
-	const bool Button::loadShader()
-	{
-		if (grayscaleShader.loadFromMemory(GRAYSCALE_SHADER_CODE, sf::Shader::Fragment))
-		{
-			grayscaleShader.setParameter("tex", sf::Shader::CurrentTexture);
-			return true;
-		}
-		else return false;
 	}
 }

@@ -61,7 +61,7 @@ namespace gui
 		Button(Icon&& visual);
 		Button(const Button& copy);
 		Button(Button&& temp) = default;
-		Button() = default;
+		Button();
 		~Button() = default;
 
 		virtual std::unique_ptr<Interactive> copy()const override;
@@ -95,6 +95,10 @@ namespace gui
 		Button& setPredicates(PredicateArray&& predicates);
 		Button& bindAction(const Event event, const std::function<void()>& action);
 		Button& bindAction(const Event event, std::function<void()>&& action);
+		Button& resetShader(const std::string& GLSLCode);
+		Button& resetShader();
+
+		static const std::string& getDefaultStateShader();
 
 	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
@@ -111,11 +115,7 @@ namespace gui
 		TimePoint                               m_timeOfLastPredicateCheck;
 		State                                   m_state = Idle;
 		mutable bool                            m_predicatesFulfilled = true;
-
-		static const bool loadShader();
-
-		static const bool shaderLoadSuccessful;
-		static sf::Shader grayscaleShader;
+		std::shared_ptr<sf::Shader>             m_stateShader = nullptr;
 
 		friend class CheckBox;
 	};
