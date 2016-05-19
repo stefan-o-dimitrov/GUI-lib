@@ -26,16 +26,23 @@
 
 namespace gui
 {
-	TextField::TextField(const std::function<void(const std::string&)>& processTextInputFunction, const unsigned short fieldWidth, const sf::Font& font, const unsigned char characterSize)
-		: processingFunction(processTextInputFunction), currentInput("", font, characterSize)
+	TextField::TextField(const std::function<void(const sf::String&)>& processTextInputFunction, const unsigned short fieldWidth,
+		const sf::Font& font, const unsigned char characterSize)
+		: m_processingFunction(processTextInputFunction), m_input("", font, characterSize), m_cursor("|", font, characterSize)
 	{
-		box.reset(sf::FloatRect(0, 0, fieldWidth, sf::Text("I", font, characterSize).getGlobalBounds().height));
+		m_box.reset(sf::FloatRect(0, 0, fieldWidth, m_cursor.getGlobalBounds().height * 2));
 	}
 
 	TextField::TextField(const TextField& source)
-		: box(source.box), currentInput(source.currentInput), processingFunction(source.processingFunction), allowClipboard(source.allowClipboard)
+		: m_box(source.m_box), m_input(source.m_input), m_processingFunction(source.m_processingFunction),
+		m_allowClipboard(source.m_allowClipboard), m_position(source.m_position), m_cursor(source.m_cursor)
 	{
-		if (source.prompt) prompt.reset(new sf::Text(*source.prompt));
+		if (source.m_prompt) m_prompt.reset(new sf::Text(*source.m_prompt));
+	}
+
+	TextField::TextField()
+	{
+		m_cursor.setString("|");
 	}
 
 	std::unique_ptr<Interactive> TextField::copy() const
@@ -53,95 +60,169 @@ namespace gui
 		switch (event.type)
 		{
 		case sf::Event::MouseMoved:
-			break;
+			return getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y);
 		case sf::Event::MouseButtonPressed:
-			break;
+			return getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y) || m_active;
 		case sf::Event::MouseButtonReleased:
-			break;
-		case sf::Event::TextEntered:
-			break;
-		case sf::Event::KeyPressed:
-			break;
-		case sf::Event::LostFocus:
-			break;
-		default:
-			return false;
+		{	
+			if (getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y))
+			{
+				for (m_cursorPosition = 0; m_cursorPosition < m_input.getString().getSize() &&
+					event.mouseButton.x > m_input.findCharacterPos(m_cursorPosition).x + m_position.x; ++m_cursorPosition);
+				setCursorPosition(m_cursorPosition != 0 ? m_cursorPosition - 1 : m_cursorPosition);
+				return m_active = true;
+			}
+			else return !(m_active = false);
 		}
+		case sf::Event::TextEntered:
+		{
+			if (!m_active) return false;
+			if (event.text.unicode == '\b')
+			{
+				removeCharacter();
+				return true;
+			}
+			addCharacter(event.text.unicode);
+			return true;
+		}
+		case sf::Event::KeyPressed:
+		{
+			if (!m_active) return false;
+
+			if (event.key.code == sf::Keyboard::V)
+			{
+				if (m_allowClipboard && event.key.control)
+				{
+					// to do
+				}
+			}
+			else if (event.key.code == sf::Keyboard::C)
+			{
+				if (m_allowClipboard && event.key.control)
+				{
+					// to do
+				}
+			}
+			else if (event.key.code == sf::Keyboard::Return)
+				processCurrentInput();
+			else if (event.key.code == sf::Keyboard::Left)
+			{
+				if (m_cursorPosition != 0) setCursorPosition(m_cursorPosition - 1);
+			}
+			else if (event.key.code == sf::Keyboard::Right)
+				setCursorPosition(m_cursorPosition + 1);
+			else if (event.key.code == sf::Keyboard::Delete)
+				removeCharacter(false);
+			return true;
+		}
+		case sf::Event::LostFocus:
+			lostFocus();
+		}
+		return false;
 	}
 
 	void TextField::processCurrentInput()
 	{
-		processingFunction(currentInput.getString());
-		currentInput.setString("");
-		cursorPosition = 0;
-		active = false;
+		if(m_processingFunction) m_processingFunction(m_input.getString());
+		m_input.setString("");
+		m_input.setPosition(0, 0);
+		setCursorPosition(0);
+		m_active = false;
+	}
+
+	void TextField::setCursorPosition(size_t position)
+	{
+		auto pos(m_input.findCharacterPos(m_cursorPosition = (position > m_input.getString().getSize() ? m_input.getString().getSize() :
+			(m_cursorVisible = true) * position)));
+		if (pos.x < 0)
+		{
+			m_input.setPosition(m_input.getPosition().x - pos.x, 0);
+			pos.x = 0;
+		}
+		else if (pos.x + m_cursor.getGlobalBounds().width > m_box.getSize().x)
+		{
+			m_input.setPosition(m_input.getPosition().x  - pos.x + m_box.getSize().x - m_cursor.getGlobalBounds().width, 0);
+			pos.x = m_box.getSize().x - m_cursor.getGlobalBounds().width;
+		}
+		m_cursor.setPosition(pos.x - m_cursor.getGlobalBounds().width, pos.y);
 	}
 
 	const sf::Vector2f& TextField::getPosition() const
 	{
-		return sf::Vector2f();
+		return m_position;
 	}
 
 	const sf::FloatRect TextField::getGlobalBounds() const
 	{
-		return sf::FloatRect();
+		return sf::FloatRect(m_position, m_box.getSize());
 	}
 
-	const std::string& TextField::getCurrentInput()const
+	const sf::String& TextField::getCurrentInput()const
 	{
-		return currentInput.getString();
+		return m_input.getString();
 	}
 
 	const unsigned char TextField::getCharacterSize()const
 	{
-		return currentInput.getCharacterSize();
+		return m_input.getCharacterSize();
 	}
 
 	const sf::Color& TextField::getTextColor()const
 	{
-		return currentInput.getColor();
+		return m_input.getColor();
+	}
+
+	size_t TextField::getCursorPosition() const
+	{
+		return m_cursorPosition;
 	}
 
 	TextField& TextField::setCharacterSize(const unsigned char characterSize)
 	{
-		currentInput.setCharacterSize(characterSize);
-		box.setSize(box.getSize().x, sf::Text("|", *currentInput.getFont(), characterSize).getGlobalBounds().height);
+		m_input.setCharacterSize(characterSize);
+		m_cursor.setCharacterSize(characterSize);
+		m_prompt->setCharacterSize(characterSize);
+		m_box.setSize(m_box.getSize().x, m_cursor.getGlobalBounds().height * 2);
+
 		return *this;
 	}
 
-	TextField& TextField::setTextColor(const sf::Color& color)
+	TextField& TextField::setColor(const sf::Color& color)
 	{
-		currentInput.setColor(color);
+		m_input.setColor(color);
+		m_cursor.setColor(color);
 		return *this;
 	}
 
-	TextField& TextField::setPrompt(const std::string& str, const sf::Color& color)
+	TextField& TextField::setPrompt(const sf::String& str, const sf::Color& color)
 	{
-		if (!prompt) prompt.reset(new sf::Text(str, *currentInput.getFont(), currentInput.getCharacterSize()));
-		else prompt->setString(str);
-		prompt->setColor(color);
-		prompt->setPosition(position);
+		if (!m_prompt) m_prompt.reset(new sf::Text(str, *m_input.getFont(), m_input.getCharacterSize()));
+		else m_prompt->setString(str);
+		m_prompt->setColor(color);
+		m_prompt->setPosition(m_position);
+		m_prompt->setCharacterSize(m_input.getCharacterSize());
+
 		return *this;
 	}
 
 	TextField& TextField::setPromptColor(const sf::Color& color)
 	{
-		if (!prompt) prompt.reset(new sf::Text("", *currentInput.getFont(), currentInput.getCharacterSize()));
-		prompt->setColor(color);
+		if (!m_prompt) m_prompt.reset(new sf::Text("", *m_input.getFont(), m_input.getCharacterSize()));
+		m_prompt->setColor(color);
 		return *this;
 	}
 
 	TextField& TextField::clearPrompt()
 	{
-		prompt.reset();
+		m_prompt.reset();
 		return *this;
 	}
 
 	TextField& TextField::setPosition(const float x, const float y)
 	{
-		position.x = x;
-		position.y = y;
-		if (prompt) prompt->setPosition(x, y);
+		m_position.x = x;
+		m_position.y = y;
+		if (m_prompt) m_prompt->setPosition(x, y + m_prompt->getGlobalBounds().height * 0.25f);
 		return *this;
 	}
 
@@ -152,34 +233,60 @@ namespace gui
 
 	TextField& TextField::setFont(const sf::Font& font)
 	{
-		currentInput.setFont(font);
-		if (prompt) prompt->setFont(font);
+		m_input.setFont(font);
+		m_cursor.setFont(font);
+		if (m_prompt) m_prompt->setFont(font);
+		m_box.reset(sf::FloatRect(0, 0, m_box.getSize().x, m_cursor.getGlobalBounds().height * 2));
 		return *this;
 	}
 
-	TextField& TextField::setFieldWidth(const unsigned short width)
+	TextField& TextField::setWidth(const unsigned short width)
 	{
-		box.reset(sf::FloatRect(0, 0, width, box.getSize().y));
+		m_box.reset(sf::FloatRect(0, 0, width, m_box.getSize().y));
 		return *this;
 	}
 
 	TextField& TextField::setClipboardPermission(const bool permission)
 	{
-		allowClipboard = permission;
+		m_allowClipboard = permission;
 		return *this;
 	}
 
 	void TextField::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
-		if (prompt && currentInput.getString().isEmpty())
+		if (m_prompt && m_input.getString().isEmpty())
+			target.draw(*m_prompt, states);
+
+		if (!m_active) return;
+
+		if (Duration(gui::Internals::timeSinceStart() - m_timeOfLastCursorFlick).count() > 0.5f)
 		{
-			target.draw(*prompt, states);
-			return;
+			m_cursorVisible = !m_cursorVisible;
+			m_timeOfLastCursorFlick = gui::Internals::timeSinceStart();
 		}
-		box.setViewport(sf::FloatRect(position.x / target.getSize().x, position.y / target.getSize().y, box.getSize().x / target.getSize().x, box.getSize().y / target.getSize().y));
-		const sf::View buffer = target.getView();
-		target.setView(box);
-		target.draw(currentInput);
+
+		sf::FloatRect rect(m_position, m_box.getSize());
+		states.transform.transformRect(rect);
+		m_box.setViewport(sf::FloatRect(rect.left / target.getSize().x, rect.top / target.getSize().y, rect.width / target.getSize().x, rect.height / target.getSize().y));
+
+		const sf::View buffer(target.getView());
+		target.setView(m_box);
+		target.draw(m_input);
+		if (m_cursorVisible) target.draw(m_cursor);
 		target.setView(buffer);
+	}
+
+	void TextField::removeCharacter(const bool backspace)
+	{
+		if (m_input.getString().isEmpty() || m_cursorPosition == (backspace ? 0 : m_input.getString().getSize())) return;
+
+		m_input.setString(m_input.getString().substring(0, m_cursorPosition - backspace) + m_input.getString().substring(m_cursorPosition + !backspace));
+		setCursorPosition(m_cursorPosition - backspace);
+	}
+
+	void TextField::addCharacter(const sf::Uint32 character)
+	{
+		m_input.setString(m_input.getString().substring(0, m_cursorPosition) + character + m_input.getString().substring(m_cursorPosition));
+		setCursorPosition(m_cursorPosition + 1);
 	}
 }

@@ -40,10 +40,10 @@ namespace gui
 		const unsigned char characterSize, sf::Vector2f& addPosition,
 		const float TEXT_HEIGHT)
 	{
-		std::string buffer;
+		sf::String buffer;
 		for (auto it = str.first.begin(), end = str.first.end(); it != end; ++it)
 		{
-			if (*it != '\n') buffer.push_back(*it);
+			if (*it != '\n') buffer += *it;
 			else
 			{
 				target.emplace_back(new sf::Text(buffer, font, characterSize));
@@ -56,7 +56,7 @@ namespace gui
 			}
 		}
 
-		if (!buffer.empty())
+		if (!buffer.isEmpty())
 		{
 			target.emplace_back(new sf::Text(buffer, font, characterSize));
 			target.back()->setColor(str.second.first);
@@ -111,10 +111,10 @@ namespace gui
 		}
 	}
 
-	ColoredText bind(const std::string& string, const sf::Color& color, const sf::Text::Style style)
+	ColoredText bind(const sf::String& string, const sf::Color& color, const sf::Text::Style style)
 	{
 		ColoredText returnValue;
-		if (!string.empty()) returnValue.m_text.emplace_back(new ColoredString(string, std::make_pair(color, style)));
+		if (!string.isEmpty()) returnValue.m_text.emplace_back(new ColoredString(string, std::make_pair(color, style)));
 		return returnValue;
 	}
 

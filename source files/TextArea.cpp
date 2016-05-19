@@ -29,8 +29,8 @@
 
 namespace gui
 {
-	TextArea::TextArea(const std::string& newText, const sf::Font& newFont, const unsigned char newCharacterSize)
-		: m_text(newText, newFont, newCharacterSize) {}
+	TextArea::TextArea(const sf::String& text, const sf::Font & font, const unsigned char characterSize)
+		: m_text(text, font, characterSize) {}
 
 	TextArea::TextArea(const TextArea& copy)
 		: Hoverable(copy), m_text(copy.m_text),
@@ -76,6 +76,16 @@ namespace gui
 		return m_text.getColor();
 	}
 
+	const sf::String& TextArea::getText() const
+	{
+		return m_text.getString();
+	}
+
+	const sf::Text::Style TextArea::getStyle() const
+	{
+		return sf::Text::Style(m_text.getStyle());
+	}
+
 	TextArea& TextArea::clearMessage()
 	{
 		Hoverable::clearMessage();
@@ -111,7 +121,7 @@ namespace gui
 		return (TextArea&)*this;
 	}
 
-	TextArea& TextArea::setText(const std::string& newText)const
+	TextArea& TextArea::setText(const sf::String& newText)const
 	{
 		m_text.setString(newText);
 		return (TextArea&)*this;

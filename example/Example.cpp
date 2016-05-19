@@ -37,42 +37,18 @@ void main()
 	windowBackground.loadFromFile("resources/window_background.png");
 	font.loadFromFile("resources/font.ttf"); // Loading resources ends here.
 
-	sf::RenderWindow window(sf::VideoMode(1600, 800), "Example", sf::Style::None); // Creating Render Window.
+	sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Example", sf::Style::None); // Creating Render Window.
 
 	gui::WindowManager main; // Creating main Window Manager
-
+	
 	main.emplace("First Window", std::move(gui::Window() // Populating main with windows.
 			.setPosition(250, 250)
 			.setBackgroundTexture(windowBackground, true)
 			.setMovable(true)
 
-			.add("1st Button", std::move(gui::Button(gui::Icon(buttonTex, true)) // Populating window with GUI elements.
-				.bindAction(gui::Button::Released, std::bind([](const int amount)
-				{
-					integer += amount;
-				}, -AMOUNT))
-				.setPredicates(gui::Button::PredicateArray{ std::bind(canChange, -LIMIT, true) })
-				.setPredicateMessage(gui::HoverMessage(gui::bind("Integer is less than ", sf::Color::White) + 
-					gui::bind(std::to_string(LIMIT), sf::Color::Yellow),
-					font, 15))
-				.setName(std::move(gui::TextArea("Decrease Int by " + 
-					std::to_string(AMOUNT), font, 18).setColor(sf::Color(175, 45, 65, 220))))
-				.setDelay(0.5f)
-				.setMessage(std::move(gui::HoverMessage(gui::bind("This button ", sf::Color(87, 87, 87, 230)) +
-					gui::bind("reduces ", sf::Color(160, 40, 60, 220)) + gui::bind("the integer", sf::Color(87, 87, 87, 230)) + []()
-						{
-							return integer == 0 ? gui::bind("", sf::Color()) : gui::bind(". It is ", sf::Color(87, 87, 87, 230))
-								+ gui::bind("\ncurrently at ", sf::Color(87, 87, 87, 230)) +
-								gui::bind(std::to_string(integer), integer > 0.0f ? sf::Color(40, 145, 60, 220) : sf::Color(160, 40, 60, 220));
-						} + gui::bind(".", sf::Color(87, 87, 87, 255)),
-					font)
-					.setBackgroundFill(sf::Color(240, 240, 242, 225))
-					.setBorderFill(sf::Color(118, 118, 118, 210))
-					.setBorderThickness(2.0f))
-					.setCharacterSize(13))
-				.setPosition(50, 130)))
+			.add("Txt Field", gui::TextField().setPosition(50, 130).setPrompt("Click here to type.").setFont(font).setColor(sf::Color::Red).setCharacterSize(13).setWidth(100))
 
-			.add("2nd Button", gui::Button(gui::Icon(buttonTex, false))
+			.add("1st Button", gui::Button(gui::Icon(buttonTex, false))
 				.bindAction(gui::Button::Released, std::bind([](const int amount) 
 					{
 						integer += amount;
@@ -171,7 +147,7 @@ void main()
 					std::to_string(AMOUNT), font, 18).setColor(sf::Color(175, 45, 65, 220))))
 				.setPosition(30, 100))), true);
 
-	main.emplace("Third Window", gui::Window(main.at("Second Window", true)).setBackgroundColor(sf::Color(255, 255, 200)).setPosition(20, 20), false);
+	main.emplace("Third Window", gui::Window(main.at("Second Window", true)).setBackgroundColor(sf::Color(255, 255, 200)).setPosition(45, 80), false);
 	
 	while (running)
 	{

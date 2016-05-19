@@ -7,15 +7,15 @@ Currently, the library has the following GUI elements included:
   - Mouse-Hover Message
   - Text Area
   - Text Pane
+  - Text Field
   - Button
   - Check Box
   - Progress Bar
   - Window
   - Window Manager
   - Transparency Map (intended for Icon but can be used on any texture)
-  - Fade Animation (implemented with an sf::Shader)
+  - Animation base class and Fade Animation
   - Audio Manager
-  - Text Field (WIP)
   - Slider (WIP)
   - Scrollable List (WIP)
   
