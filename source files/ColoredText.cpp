@@ -118,45 +118,51 @@ namespace gui
 		return returnValue;
 	}
 
-	ColoredText& operator+(ColoredText& lhs, const ColoredText& rhs)
+	ColoredText operator+(const ColoredText& lhs, const ColoredText& rhs)
 	{
+		ColoredText returnValue(lhs);
 		for (auto it = rhs.m_volatileText.begin(), end = rhs.m_volatileText.end(); it != end; ++it)
-			lhs.m_volatileText.emplace(std::move(std::make_pair(it->first + lhs.m_text.size(), it->second)));
+			returnValue.m_volatileText.emplace(std::move(std::make_pair(it->first + returnValue.m_text.size(), it->second)));
 		for (auto it = rhs.m_text.begin(), end = rhs.m_text.end(); it != end; ++it)
-			lhs.m_text.emplace_back(*it);
-		return lhs;
+			returnValue.m_text.emplace_back(*it);
+		return returnValue;
 	}
 
-	ColoredText& operator+(ColoredText& lhs, ColoredText&& rhs)
+	ColoredText operator+(const ColoredText& lhs, ColoredText&& rhs)
 	{
+		ColoredText returnValue(lhs);
 		for (auto it = rhs.m_volatileText.begin(), end = rhs.m_volatileText.end(); it != end; ++it)
-			lhs.m_volatileText.emplace(std::move(std::make_pair(it->first + lhs.m_text.size(), std::move(it->second))));
+			returnValue.m_volatileText.emplace(std::move(std::make_pair(it->first + returnValue.m_text.size(), std::move(it->second))));
 		for (auto it = rhs.m_text.begin(), end = rhs.m_text.end(); it != end; ++it)
-			lhs.m_text.emplace_back(std::move(*it));
+			returnValue.m_text.emplace_back(std::move(*it));
+		return returnValue;
+	}
+
+	ColoredText operator+(const ColoredText& lhs, const ColoredString& rhs)
+	{
+		ColoredText returnValue(lhs);
+		returnValue.m_text.emplace_back(new ColoredString(rhs));
 		return lhs;
 	}
 
-	ColoredText& operator+(ColoredText& lhs, const ColoredString& rhs)
+	ColoredText operator+(const ColoredText& lhs, ColoredString&& rhs)
 	{
-		lhs.m_text.emplace_back(new ColoredString(rhs));
-		return lhs;
+		ColoredText returnValue(lhs);
+		returnValue.m_text.emplace_back(new ColoredString(std::move(rhs)));
+		return returnValue;
 	}
 
-	ColoredText& operator+(ColoredText& lhs, ColoredString&& rhs)
+	ColoredText operator+(const ColoredText& lhs, const std::function<ColoredText()>& rhs)
 	{
-		lhs.m_text.emplace_back(new ColoredString(std::move(rhs)));
-		return lhs;
+		ColoredText returnValue(lhs);
+		returnValue.m_volatileText.insert(std::make_pair(lhs.m_text.size(), rhs));
+		return returnValue;
 	}
 
-	ColoredText& operator+(ColoredText& lhs, const std::function<ColoredText()>& rhs)
+	ColoredText operator+(const ColoredText& lhs, std::function<ColoredText()>&& function)
 	{
-		lhs.m_volatileText.insert(std::make_pair(lhs.m_text.size(), rhs));
-		return lhs;
-	}
-
-	ColoredText& operator+(ColoredText& lhs, std::function<ColoredText()>&& rhs)
-	{
-		lhs.m_volatileText.emplace(std::move(std::make_pair(lhs.m_text.size(), std::move(rhs))));
-		return lhs;
+		ColoredText returnValue(lhs);
+		returnValue.m_volatileText.emplace(std::move(std::make_pair(lhs.m_text.size(), std::move(function))));
+		return returnValue;
 	}
 }

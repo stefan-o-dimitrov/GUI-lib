@@ -1,4 +1,4 @@
-#include <GUI\GUI.h>
+#include <GUI/GUI.h>
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <sstream> // Items needed only for this example start here.
@@ -26,7 +26,7 @@ std::string getInt()
 	return ss.str();
 } // Items needed only for this example end here.
 
-void main()
+int main()
 {
 	sf::Texture buttonTex, closeButtonTex, barBackgroundTex, barFillTex, windowBackground; // Loading resources begins here.
 	sf::Font font;

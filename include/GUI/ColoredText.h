@@ -74,12 +74,12 @@ namespace gui
 		static constexpr unsigned char LINE_SPACING = 2;
 
 		friend ColoredText bind(const sf::String& string, const sf::Color& color, const sf::Text::Style style);
-		friend ColoredText& operator+(ColoredText& text, const ColoredText& newText);
-		friend ColoredText& operator+(ColoredText& text, ColoredText&& newText);
-		friend ColoredText& operator+(ColoredText& text, const ColoredString& string);
-		friend ColoredText& operator+(ColoredText& text, ColoredString&& string);
-		friend ColoredText& operator+(ColoredText& text, const std::function<ColoredText()>& function);
-		friend ColoredText& operator+(ColoredText& text, std::function<ColoredText()>&& function);
+		friend ColoredText operator+(const ColoredText& text, const ColoredText& newText);
+		friend ColoredText operator+(const ColoredText& text, ColoredText&& newText);
+		friend ColoredText operator+(const ColoredText& text, const ColoredString& string);
+		friend ColoredText operator+(const ColoredText& text, ColoredString&& string);
+		friend ColoredText operator+(const ColoredText& text, const std::function<ColoredText()>& function);
+		friend ColoredText operator+(const ColoredText& text, std::function<ColoredText()>&& function);
 	};
 
 	ColoredText bind(const sf::String& string, const sf::Color& color = sf::Color::White, const sf::Text::Style style = sf::Text::Regular);
