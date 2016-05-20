@@ -25,10 +25,11 @@
 #ifndef GUI_SLIDER
 #define GUI_SLIDER
 
-#include <SFML/Graphics.hpp>
+#include <functional>
 
-#include "Interactive.h"
-#include "HoverMessage.h"
+#include <SFML/Graphics/RectangleShape.hpp>
+
+#include "Button.h"
 #include "Hoverable.h"
 
 namespace gui 
@@ -36,7 +37,17 @@ namespace gui
 	class Slider final : public Hoverable
 	{
 	public:
+		const bool input(const sf::Event& event)override;
 	private:
+		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
+		void setSliderPosition(float x);
+
+		std::function<void(const float)> m_valueSetter;
+		sf::Vector2f                     m_range;
+		sf::RectangleShape               m_sliderBar;
+		Button                           m_slider;
+		std::unique_ptr<float>           m_dragOffset;
+		std::unique_ptr<Button>          m_plus, m_minus;
 	};
 };
 

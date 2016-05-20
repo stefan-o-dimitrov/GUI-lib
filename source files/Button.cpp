@@ -128,6 +128,11 @@ namespace gui
 		}
 	}
 
+	const bool Button::isActive() const
+	{
+		return m_predicatesFulfilled;
+	}
+
 	const Button::State Button::getState()const
 	{
 		return m_state;

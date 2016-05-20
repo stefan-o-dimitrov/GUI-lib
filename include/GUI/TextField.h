@@ -31,9 +31,8 @@
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
 
-#include <SFML/Graphics.hpp>
-
 #include "Interactive.h"
+#include "ColoredText.h"
 #include "Internals.h"
 
 namespace gui 
@@ -41,8 +40,7 @@ namespace gui
 	class TextField final : public Interactive
 	{
 	public:
-		TextField(const std::function<void(const sf::String&)>& inputProcessFunction, const unsigned short fieldWidth, 
-			const sf::Font& font, const unsigned char characterSize = 13);
+		TextField(const sf::Font& font, const unsigned short fieldWidth, const unsigned char characterSize = 13);
 		TextField(const TextField& copy);
 		TextField(TextField&& temp) = default; 
 		TextField();
@@ -52,6 +50,9 @@ namespace gui
 		std::unique_ptr<Interactive> move()override;
 
 		const bool input(const sf::Event& event)override;
+		void lostFocus()override;
+		void setInactive();
+		void clear();
 		void processCurrentInput();
 		void setCursorPosition(size_t position);
 
@@ -66,24 +67,29 @@ namespace gui
 		TextField& setPosition(const float x, const float y)override;
 		TextField& setPosition(const sf::Vector2f& position)override;
 
+		TextField& setInputProcessingFunction(const std::function<void(const sf::String&)>& function);
+		TextField& setInputProcessingFunction(std::function<void(const sf::String&)>&& function);
 		TextField& setCharacterSize(const unsigned char characterSize);
 		TextField& setColor(const sf::Color& color);
-		TextField& setPrompt(const sf::String& prompt, const sf::Color& color = sf::Color::White);
+		TextField& setCursorColor(const sf::Color& color);
+		TextField& setPrompt(const ColoredString& prompt);
 		TextField& setPromptColor(const sf::Color& color);
+		TextField& setPromptStyle(const sf::Text::Style style);
 		TextField& clearPrompt();
 		TextField& setFont(const sf::Font& font);
 		TextField& setWidth(const unsigned short width);
-		TextField& setClipboardPermission(const bool allowClipboard);
+		TextField& clearAfterInputIsProcessed(const bool shoudlClear);
 
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 		void removeCharacter(const bool backspace = true);
 		void addCharacter(const sf::Uint32 character);
+		void getClickedCharacter(const float x, const float y);
 
 		sf::Vector2f                           m_position = sf::Vector2f(0, 0);
 		sf::Text                               m_input, m_cursor;
 		std::function<void(const sf::String&)> m_processingFunction;
-		bool                                   m_active = false, m_allowClipboard = false;
+		bool                                   m_active = false, m_clearAfterInputProcessed = true;
 		unsigned short                         m_cursorPosition = 0;
 		std::unique_ptr<sf::Text>              m_prompt = nullptr;
 		mutable sf::View                       m_box;

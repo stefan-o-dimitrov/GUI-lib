@@ -26,18 +26,17 @@
 
 namespace gui
 {
-	TextField::TextField(const std::function<void(const sf::String&)>& processTextInputFunction, const unsigned short fieldWidth,
-		const sf::Font& font, const unsigned char characterSize)
-		: m_processingFunction(processTextInputFunction), m_input("", font, characterSize), m_cursor("|", font, characterSize)
+	TextField::TextField(const sf::Font& font, const unsigned short fieldWidth, const unsigned char characterSize)
+		: m_input("", font, characterSize), m_cursor("|", font, characterSize)
 	{
 		m_box.reset(sf::FloatRect(0, 0, fieldWidth, m_cursor.getGlobalBounds().height * 2));
 	}
 
 	TextField::TextField(const TextField& source)
 		: m_box(source.m_box), m_input(source.m_input), m_processingFunction(source.m_processingFunction),
-		m_allowClipboard(source.m_allowClipboard), m_position(source.m_position), m_cursor(source.m_cursor)
+		m_position(source.m_position), m_cursor(source.m_cursor)
 	{
-		if (source.m_prompt) m_prompt.reset(new sf::Text(*source.m_prompt));
+		if (source.m_prompt) m_prompt.reset(new auto(*source.m_prompt));
 	}
 
 	TextField::TextField()
@@ -62,14 +61,12 @@ namespace gui
 		case sf::Event::MouseMoved:
 			return getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y);
 		case sf::Event::MouseButtonPressed:
-			return getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y) || m_active;
+			return (getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y) || m_active);
 		case sf::Event::MouseButtonReleased:
 		{	
 			if (getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y))
 			{
-				for (m_cursorPosition = 0; m_cursorPosition < m_input.getString().getSize() &&
-					event.mouseButton.x > m_input.findCharacterPos(m_cursorPosition).x + m_position.x; ++m_cursorPosition);
-				setCursorPosition(m_cursorPosition != 0 ? m_cursorPosition - 1 : m_cursorPosition);
+				getClickedCharacter(event.mouseButton.x, event.mouseButton.y);
 				return m_active = true;
 			}
 			else return !(m_active = false);
@@ -89,26 +86,10 @@ namespace gui
 		{
 			if (!m_active) return false;
 
-			if (event.key.code == sf::Keyboard::V)
-			{
-				if (m_allowClipboard && event.key.control)
-				{
-					// to do
-				}
-			}
-			else if (event.key.code == sf::Keyboard::C)
-			{
-				if (m_allowClipboard && event.key.control)
-				{
-					// to do
-				}
-			}
-			else if (event.key.code == sf::Keyboard::Return)
+			 if (event.key.code == sf::Keyboard::Return)
 				processCurrentInput();
 			else if (event.key.code == sf::Keyboard::Left)
-			{
-				if (m_cursorPosition != 0) setCursorPosition(m_cursorPosition - 1);
-			}
+				m_cursorPosition != 0 ? setCursorPosition(m_cursorPosition - 1) : 0;
 			else if (event.key.code == sf::Keyboard::Right)
 				setCursorPosition(m_cursorPosition + 1);
 			else if (event.key.code == sf::Keyboard::Delete)
@@ -121,13 +102,28 @@ namespace gui
 		return false;
 	}
 
-	void TextField::processCurrentInput()
+	void TextField::lostFocus()
 	{
-		if(m_processingFunction) m_processingFunction(m_input.getString());
+		m_active = false;
+	}
+
+	void TextField::setInactive()
+	{
+		m_active = false;
+	}
+
+	void TextField::clear()
+	{
 		m_input.setString("");
 		m_input.setPosition(0, 0);
 		setCursorPosition(0);
+	}
+
+	void TextField::processCurrentInput()
+	{
+		if(m_processingFunction) m_processingFunction(m_input.getString());
 		m_active = false;
+		if (m_clearAfterInputProcessed) clear();
 	}
 
 	void TextField::setCursorPosition(size_t position)
@@ -194,11 +190,18 @@ namespace gui
 		return *this;
 	}
 
-	TextField& TextField::setPrompt(const sf::String& str, const sf::Color& color)
+	TextField& TextField::setCursorColor(const sf::Color& color)
 	{
-		if (!m_prompt) m_prompt.reset(new sf::Text(str, *m_input.getFont(), m_input.getCharacterSize()));
-		else m_prompt->setString(str);
-		m_prompt->setColor(color);
+		m_cursor.setColor(color);
+		return *this;
+	}
+
+	TextField& TextField::setPrompt(const ColoredString& prompt)
+	{
+		if (!m_prompt) m_prompt.reset(new sf::Text(prompt.first, *m_input.getFont(), m_input.getCharacterSize()));
+		else m_prompt->setString(prompt.first);
+		m_prompt->setColor(prompt.second.first);
+		m_prompt->setStyle(prompt.second.second);
 		m_prompt->setPosition(m_position);
 		m_prompt->setCharacterSize(m_input.getCharacterSize());
 
@@ -209,6 +212,13 @@ namespace gui
 	{
 		if (!m_prompt) m_prompt.reset(new sf::Text("", *m_input.getFont(), m_input.getCharacterSize()));
 		m_prompt->setColor(color);
+		return *this;
+	}
+
+	TextField& TextField::setPromptStyle(const sf::Text::Style style)
+	{
+		if (!m_prompt) m_prompt.reset(new sf::Text("", *m_input.getFont(), m_input.getCharacterSize()));
+		m_prompt->setStyle(style);
 		return *this;
 	}
 
@@ -231,6 +241,16 @@ namespace gui
 		return setPosition(newPosition.x, newPosition.y);
 	}
 
+	TextField& TextField::setInputProcessingFunction(const std::function<void(const sf::String&)>& function)
+	{
+		m_processingFunction = function;
+	}
+
+	TextField& TextField::setInputProcessingFunction(std::function<void(const sf::String&)>&& function)
+	{
+		m_processingFunction = std::move(function);
+	}
+
 	TextField& TextField::setFont(const sf::Font& font)
 	{
 		m_input.setFont(font);
@@ -246,12 +266,12 @@ namespace gui
 		return *this;
 	}
 
-	TextField& TextField::setClipboardPermission(const bool permission)
+	TextField& TextField::clearAfterInputIsProcessed(const bool shoudlClear)
 	{
-		m_allowClipboard = permission;
+		m_clearAfterInputProcessed = shoudlClear;
 		return *this;
 	}
-
+	
 	void TextField::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		if (m_prompt && m_input.getString().isEmpty())
@@ -288,5 +308,12 @@ namespace gui
 	{
 		m_input.setString(m_input.getString().substring(0, m_cursorPosition) + character + m_input.getString().substring(m_cursorPosition));
 		setCursorPosition(m_cursorPosition + 1);
+	}
+
+	void TextField::getClickedCharacter(const float x, const float y)
+	{
+		for (m_cursorPosition = 0; m_cursorPosition < m_input.getString().getSize() &&
+			x > m_input.findCharacterPos(m_cursorPosition).x + m_position.x; ++m_cursorPosition);
+		setCursorPosition(m_cursorPosition != 0 ? m_cursorPosition - 1 : m_cursorPosition);
 	}
 }

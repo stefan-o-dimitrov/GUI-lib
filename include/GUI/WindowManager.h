@@ -45,6 +45,9 @@ namespace gui
 		Window& at(const std::string& key, const bool fullscreen);
 		const Window& at(const std::string& key, const bool fullscreen)const;
 
+		void sendToTop(const std::string& key, const bool fullscreen);
+		void sendToBottom(const std::string& key, const bool fullscreen);
+
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states)const;
 

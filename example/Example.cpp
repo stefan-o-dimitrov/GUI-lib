@@ -1,4 +1,5 @@
 #include <GUI\GUI.h>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 #include <sstream> // Items needed only for this example start here.
 
@@ -46,10 +47,10 @@ void main()
 			.setBackgroundTexture(windowBackground, true)
 			.setMovable(true)
 
-			.add("Txt Field", gui::TextField().setPosition(50, 130).setPrompt("Click here to type.").setFont(font).setColor(sf::Color::Red).setCharacterSize(13).setWidth(100))
+			.add("Txt Field", gui::TextField().setPosition(50, 130).setPrompt(gui::bind("Click here to type.")).setFont(font).setColor(sf::Color::Red).setCharacterSize(13).setWidth(100))
 
 			.add("1st Button", gui::Button(gui::Icon(buttonTex, false))
-				.bindAction(gui::Button::Released, std::bind([](const int amount) 
+				.bindAction(gui::Released, std::bind([](const int amount) 
 					{
 						integer += amount;
 					}, AMOUNT))
@@ -100,7 +101,7 @@ void main()
 					+ gui::bind(std::to_string(LIMIT), sf::Color::White), font).setBackgroundFill(sf::Color(20, 30, 40, 210))))
 					
 			.add("Close Btn", gui::Button(gui::Icon(closeButtonTex, true))
-				.bindAction(gui::Button::Released, [&]()
+				.bindAction(gui::Released, [&]()
 					{
 						main.at("First Window", false).setActive(false);
 					})
@@ -131,11 +132,11 @@ void main()
 				.setCharacterSize(30))
 
 			.add("Btn", gui::Button(gui::Icon(buttonTex, true))
-				.bindAction(gui::Button::Released, std::bind([](const int amount)
+				.bindAction(gui::Released, std::bind([](const int amount)
 				{
 					integer += amount;
 				}, -AMOUNT))
-				.bindAction(gui::Button::PredicatesUnfulfilled, [&]()
+				.bindAction(gui::PredicatesUnfulfilled, [&]()
 				{
 					main.at("First Window", false).setActive(true);
 				})

@@ -35,6 +35,28 @@
 #include "TextArea.h"
 #include "Icon.h"
 
+namespace gui
+{
+	enum Event
+	{
+		Pressed,
+		Released,
+		PredicatesFulfilled,
+		PredicatesUnfulfilled
+	};
+}
+
+namespace std
+{
+	template <> struct hash<gui::Event>
+	{
+		size_t operator()(const gui::Event& key) const
+		{
+			return size_t(key);
+		}
+	};
+}
+
 namespace gui 
 {
 	class Button : public Icon
@@ -45,14 +67,6 @@ namespace gui
 			Hot,
 			Idle,
 			PressedDown
-		};
-
-		enum Event
-		{
-			Pressed,
-			Released,
-			PredicatesFulfilled,
-			PredicatesUnfulfilled
 		};
 
 		typedef std::vector<std::function<const bool()>>(PredicateArray);
@@ -73,6 +87,7 @@ namespace gui
 		
 		const std::shared_ptr<HoverMessage> getMessage()const override;
 
+		virtual const bool isActive()const;
 		virtual const State getState()const;
 		const std::shared_ptr<HoverMessage> getPredicateMessage()const;
 		const std::shared_ptr<TextArea> getName()const;

@@ -113,6 +113,28 @@ namespace gui
 		return fullscreen ? *m_windows.m_map.at(key) : *m_dialogBoxes.m_map.at(key);
 	}
 
+	void WindowManager::sendToTop(const std::string& key, const bool fullscreen)
+	{
+		const Window* const target((fullscreen ? m_windows : m_dialogBoxes).m_map.at(key));
+		for (auto& it : (fullscreen ? m_windows : m_dialogBoxes).m_elements)
+			if (&*it == target)
+			{
+				it.swap((fullscreen ? m_windows : m_dialogBoxes).m_elements.front());
+				break;
+			}
+	}
+
+	void WindowManager::sendToBottom(const std::string& key, const bool fullscreen)
+	{
+		const Window* const target((fullscreen ? m_windows : m_dialogBoxes).m_map.at(key));
+		for (auto& it : (fullscreen ? m_windows : m_dialogBoxes).m_elements)
+			if (&*it == target)
+			{
+				it.swap((fullscreen ? m_windows : m_dialogBoxes).m_elements.back());
+				break;
+			}
+	}
+
 	void WindowManager::draw(sf::RenderTarget& target, sf::RenderStates states)const
 	{
 		for (auto it = m_windows.m_elements.rbegin(), end = m_windows.m_elements.rend(); it != end; ++it)
