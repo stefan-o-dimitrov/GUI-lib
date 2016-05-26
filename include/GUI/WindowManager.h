@@ -40,7 +40,7 @@ namespace gui
 		WindowManager& emplace(const std::string& key, Window&& window, const bool fullscreen = false);
 
 		void clear(const bool fullscreen = false);
-		const size_t size(const bool fullscreen = false)const;
+		const size_t count(const bool fullscreen = false)const;
 
 		Window& at(const std::string& key, const bool fullscreen);
 		const Window& at(const std::string& key, const bool fullscreen)const;

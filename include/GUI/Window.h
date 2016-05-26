@@ -116,6 +116,7 @@ namespace gui
 		const bool isActive();
 		void close();
 		const bool isClosed();
+		const size_t count()const;
 
 		const bool exists(const std::string& key);
 

@@ -306,7 +306,7 @@ namespace gui
 
 	void TextField::addCharacter(const sf::Uint32 character)
 	{
-		m_input.setString(m_input.getString().substring(0, m_cursorPosition) + character + m_input.getString().substring(m_cursorPosition));
+		m_input.setString(operator+(m_input.getString().substring(0, m_cursorPosition), character) + m_input.getString().substring(m_cursorPosition));
 		setCursorPosition(m_cursorPosition + 1);
 	}
 

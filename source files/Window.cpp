@@ -73,6 +73,11 @@ namespace gui
 		return m_closed;
 	}
 
+	const size_t Window::count() const
+	{
+		return m_elements.m_elements.size();
+	}
+
 	const bool Window::exists(const std::string& key)
 	{
 		return m_elements.m_map.count(key);

@@ -98,7 +98,7 @@ namespace gui
 		fullscreen ? m_windows.clear() : m_dialogBoxes.clear();
 	}
 	
-	const size_t WindowManager::size(const bool fullscreen) const
+	const size_t WindowManager::count(const bool fullscreen) const
 	{
 		return fullscreen ? m_windows.m_elements.size() : m_dialogBoxes.m_elements.size();
 	}
