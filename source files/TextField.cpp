@@ -276,9 +276,7 @@ namespace gui
 	{
 		if (m_prompt && m_input.getString().isEmpty())
 			target.draw(*m_prompt, states);
-
-		if (!m_active) return;
-
+		
 		if (Duration(gui::Internals::timeSinceStart() - m_timeOfLastCursorFlick).count() > 0.5f)
 		{
 			m_cursorVisible = !m_cursorVisible;
@@ -292,7 +290,7 @@ namespace gui
 		const sf::View buffer(target.getView());
 		target.setView(m_box);
 		target.draw(m_input);
-		if (m_cursorVisible) target.draw(m_cursor);
+		if (m_active && m_cursorVisible) target.draw(m_cursor);
 		target.setView(buffer);
 	}
 
