@@ -46,7 +46,7 @@ namespace gui
 	ProgressBar::ProgressBar(const ProgressBar& copy)
 		: Icon(copy),
 		m_fill(copy.m_fill),
-		m_updateFunction(copy.m_updateFunction ? new std::function<const float()>(*copy.m_updateFunction) : nullptr),
+		m_updateFunction(copy.m_updateFunction ? new auto(*copy.m_updateFunction) : nullptr),
 		m_progress(copy.m_progress) {}
 
 	std::unique_ptr<Interactive> ProgressBar::copy() const
@@ -67,6 +67,7 @@ namespace gui
 
 	const bool ProgressBar::input(const sf::Event& event)
 	{
+		m_fill.setParentToSame(*this);
 		if (m_fill.input(event))
 		{
 			if (!m_fill.getMessage()) Icon::input(event);
@@ -86,7 +87,7 @@ namespace gui
 		return m_progress;
 	}
 
-	const sf::Texture& ProgressBar::getFillTexture()const
+	const sf::Texture* ProgressBar::getFillTexture()const
 	{
 		return m_fill.getTexture();
 	}
@@ -115,8 +116,8 @@ namespace gui
 
 		m_progress = newProgress;
 		m_fill.setTextureRect(sf::IntRect(0, 0,
-			m_fill.getTexture().getSize().x * m_progress,
-			m_fill.getTexture().getSize().y));
+			m_fill.getTexture() ? m_fill.getTexture()->getSize().x * m_progress : 0,
+			m_fill.getTexture() ? m_fill.getTexture()->getSize().y : 0));
 		return (ProgressBar&)*this;
 	}
 
@@ -135,8 +136,8 @@ namespace gui
 	ProgressBar& ProgressBar::setPosition(const float x, const float y)
 	{
 		Icon::setPosition(x, y);
-		m_fill.setPosition(x + (Icon::getTexture().getSize().x - m_fill.getTexture().getSize().x) / 2.0f,
-			y + (Icon::getTexture().getSize().y - m_fill.getTexture().getSize().y) / 2.0f);
+		m_fill.setPosition(x + ((Icon::getTexture() ? Icon::getTexture()->getSize().x : 0) - (m_fill.getTexture() ? m_fill.getTexture()->getSize().x : 0)) / 2.0f,
+			y + ((Icon::getTexture() ? Icon::getTexture()->getSize().y : 0) - (m_fill.getTexture() ? m_fill.getTexture()->getSize().y : 0)) / 2.0f);
 		return *this;
 	}
 
@@ -144,7 +145,7 @@ namespace gui
 	{
 		return setPosition(newPosition.x, newPosition.y);
 	}
-	
+
 	const std::shared_ptr<const HoverMessage> ProgressBar::getFillMessage() const
 	{
 		return m_fill.getMessage();
@@ -184,6 +185,6 @@ namespace gui
 
 		target.draw(Icon::m_icon, states);
 		target.draw(m_fill, states);
-		Hoverable::draw(target, states);
+		if (!m_fill.getMessage() || !m_fill.hasMessageDelayPassed()) Hoverable::draw(target, states);
 	}
 }

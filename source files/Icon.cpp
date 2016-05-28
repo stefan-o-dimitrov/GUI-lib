@@ -70,9 +70,9 @@ namespace gui
 		return m_icon.getPosition();
 	}
 
-	const sf::Texture& Icon::getTexture()const
+	const sf::Texture* Icon::getTexture()const
 	{
-		return *m_icon.getTexture();
+		return m_icon.getTexture();
 	}
 
 	const bool Icon::getTransparencyCheck()const

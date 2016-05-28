@@ -23,9 +23,12 @@
 ////////////////////////////////////////////////////////////
 
 #include "../include/GUI/WindowManager.h"
+#include "../include/GUI/Hoverable.h"
 
 namespace gui
 {
+	const Hoverable* WindowManager::m_message = nullptr;
+
 	void WindowManager::input(const sf::Event& event)
 	{
 		if (m_currentlyDraggedFullscreenWindow && fullscreenWindowInput(*m_currentlyDraggedFullscreenWindow, event)) return;
@@ -84,12 +87,14 @@ namespace gui
 	WindowManager& WindowManager::emplace(const std::string& key, const Window& window, const bool fullscreen)
 	{
 		(fullscreen ? m_windows : m_dialogBoxes).emplace(key, window);
+		(fullscreen ? m_windows : m_dialogBoxes).m_map.at(key)->m_parent = this;
 		return *this;
 	}
 
 	WindowManager& WindowManager::emplace(const std::string& key, Window&& window, const bool fullscreen)
 	{
 		(fullscreen ? m_windows : m_dialogBoxes).emplace(key, std::move(window));
+		(fullscreen ? m_windows : m_dialogBoxes).m_map.at(key)->m_parent = this;
 		return *this;
 	}
 
@@ -141,6 +146,12 @@ namespace gui
 			target.draw(**it, states);
 		for (auto it = m_dialogBoxes.m_elements.rbegin(), end = m_dialogBoxes.m_elements.rend(); it != end; ++it)
 			target.draw(**it, states);
+
+		if (m_message)
+		{
+			m_message->display(target, states);
+			m_message = nullptr;
+		}
 	}
 
 	const bool WindowManager::fullscreenWindowInput(std::vector<std::unique_ptr<gui::Window>>::iterator& window, const sf::Event& event)

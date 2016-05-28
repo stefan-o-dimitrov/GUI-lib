@@ -34,47 +34,22 @@
 #include <SFML/Window/Event.hpp>
 
 #include "Interactive.h"
-#include "TransparencyMap.h"
+#include "Icon.h"
 
 namespace gui
 {
 	template <typename StorageType>
 	struct ordered_map
 	{
-		ordered_map(const ordered_map& copy)
-		{
-			for (const auto& it : copy.m_map)
-				emplace(it.first, *it.second);
-		}
+		ordered_map(const ordered_map& copy);
 		ordered_map(ordered_map&& temp) = default;
 		ordered_map() = default;
 		~ordered_map() = default;
 
-		ordered_map& emplace(const std::string& key, const StorageType& element)
-		{
-			m_elements.emplace_back(std::move(element.copy()));
-			m_map.emplace(key, &*m_elements.back());
+		ordered_map& emplace(const std::string& key, const StorageType& element);
+		ordered_map& emplace(const std::string& key, StorageType&& element);
 
-			return *this;
-		}
-		ordered_map& emplace(const std::string& key, StorageType&& element)
-		{
-			m_elements.emplace_back(std::move(element.move()));
-			m_map.emplace(key, &*m_elements.back());
-
-			return *this;
-		}
-
-		void reserve(const size_t amount)
-		{
-			m_map.reserve(amount);
-			m_elements.reserve(amount);
-		}
-		void clear()
-		{
-			m_map.clear();
-			m_elements.clear();
-		}
+		void clear();
 		
 		std::unordered_map<std::string, StorageType* const> m_map;
 		std::vector<std::unique_ptr<StorageType>>           m_elements;
@@ -82,6 +57,8 @@ namespace gui
 
 	class Window : public sf::Drawable
 	{
+		friend class Hoverable;
+		friend class WindowManager;
 	public:
 		Window(const Window& copy);
 		Window(Window&& temp) = default;
@@ -122,18 +99,25 @@ namespace gui
 
 		Interactive& at(const std::string& key);
 		const Interactive& at(std::string& key)const;
+		void erase(const std::string& key);
 
 	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
 
-		const sf::Sprite& background()const;
+		const Icon& background()const;
+		std::unordered_map<std::string, Interactive* const>::const_iterator begin()const;
+		std::unordered_map<std::string, Interactive* const>::const_iterator end()const;
+		std::unordered_map<std::string, Interactive* const>::iterator begin();
+		std::unordered_map<std::string, Interactive* const>::iterator end();
 
 	private:
-		sf::Sprite                       m_background;
-		ordered_map<Interactive>         m_elements;
-		std::unique_ptr<TransparencyMap> m_transparency = nullptr;
-		bool                             m_movable = false, m_active = true, m_closed = false;
-		std::unique_ptr<sf::Vector2f>    m_mouseDragOffset = nullptr;
+		Icon                          m_background;
+		ordered_map<Interactive>      m_elements;
+		bool                          m_movable = false, m_active = true, m_closed = false;
+		std::unique_ptr<sf::Vector2f> m_mouseDragOffset = nullptr;
+		WindowManager*                m_parent = nullptr;
+
+		static const Hoverable*       m_message;
 	};
 }
 

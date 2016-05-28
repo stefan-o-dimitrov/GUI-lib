@@ -1,3 +1,5 @@
+#include "../include/GUI/Window.h"
+
 #include "../include/GUI/Interactive.h"
 
 namespace gui
@@ -30,5 +32,15 @@ namespace gui
 	Interactive& gui::Interactive::setPosition(const sf::Vector2f& position)
 	{
 		return setPosition(position.x, position.y);
+	}
+
+	const Window* const Interactive::getParent() const
+	{
+		return m_parent;
+	}
+
+	void Interactive::setParentToSame(const Interactive& source)
+	{
+		m_parent = source.m_parent;
 	}
 }

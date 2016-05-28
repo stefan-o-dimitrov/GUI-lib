@@ -58,6 +58,7 @@ namespace gui
 	{
 		if (m_checked)
 		{
+			trueState.setParentToSame(*this);
 			if (event.type == sf::Event::MouseButtonReleased && trueState.getState() == PressedDown)
 				m_checked = false;
 			return trueState.input(event);

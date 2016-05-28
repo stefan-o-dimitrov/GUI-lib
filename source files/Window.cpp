@@ -24,31 +24,74 @@
 
 #include <SFML/Window/Event.hpp>
 
+#include "../include/GUI/WindowManager.h"
 #include "../include/GUI/Window.h"
 #include "../include//GUI/Hoverable.h"
 
 namespace gui
 {
+	const Hoverable* Window::m_message = nullptr;
+
+	template class ordered_map<gui::Interactive>;
+	template class ordered_map<gui::Window>;
+
+	template<typename StorageType>
+	ordered_map<StorageType>::ordered_map(const ordered_map& copy)
+	{
+		for (const auto& it : copy.m_map)
+			emplace(it.first, *it.second);
+	}
+
+	template<typename StorageType>
+	ordered_map<StorageType>& ordered_map<StorageType>::emplace(const std::string& key, const StorageType& element)
+	{
+		m_elements.emplace_back(std::move(element.copy()));
+		m_map.emplace(key, &*m_elements.back());
+
+		return *this;
+	}
+
+	template<typename StorageType>
+	ordered_map<StorageType>& ordered_map<StorageType>::emplace(const std::string& key, StorageType&& element)
+	{
+		m_elements.emplace_back(std::move(element.move()));
+		m_map.emplace(key, &*m_elements.back());
+
+		return *this;
+	}
+
+	template<typename StorageType>
+	void ordered_map<StorageType>::clear()
+	{
+		m_map.clear();
+		m_elements.clear();
+	}
+	
 	Window::Window(const Window& copy)
 		: m_background(copy.m_background), m_movable(copy.m_movable), m_active(copy.m_active), m_closed(copy.m_closed), m_elements(copy.m_elements)
 	{
-		copy.m_transparency ? m_transparency.reset(new TransparencyMap(*copy.m_transparency)) : 0;
 		copy.m_mouseDragOffset ? m_mouseDragOffset.reset(new sf::Vector2f(*copy.m_mouseDragOffset)) : 0;
 	}
 
 	Window& Window::add(const std::string& key, Interactive&& element)
 	{
 		m_elements.emplace(key, std::move(element));
+		m_elements.m_map.at(key)->m_parent = this;
+
 		m_elements.m_elements.back()->setPosition(m_elements.m_elements.back()->getPosition().x + m_background.getPosition().x,
 			m_elements.m_elements.back()->getPosition().y + m_background.getPosition().y);
+
 		return *this;
 	}
 
 	Window& Window::add(const std::string& key, const Interactive& element)
 	{
 		m_elements.emplace(key, element);
+		m_elements.m_map.at(key)->m_parent = this;
+
 		m_elements.m_elements.back()->setPosition(m_elements.m_elements.back()->getPosition().x + m_background.getPosition().x,
 			m_elements.m_elements.back()->getPosition().y + m_background.getPosition().y);
+
 		return *this;
 	}
 
@@ -93,6 +136,18 @@ namespace gui
 		return *m_elements.m_map.at(key);
 	}
 
+	void Window::erase(const std::string& key)
+	{
+		const auto target(m_elements.m_map.at(key));
+		for (auto it(m_elements.m_elements.begin()), end(m_elements.m_elements.end()); it != end; ++it)
+			if (&*(*it) == target)
+			{
+				m_elements.m_elements.erase(it);
+				m_elements.m_map.erase(key);
+				return;
+			}
+	}
+
 	void Window::close()
 	{
 		m_closed = true;
@@ -122,7 +177,7 @@ namespace gui
 
 	Window& Window::setTransparencyCheck(const bool transparencyCheck)
 	{
-		transparencyCheck ? m_transparency.reset(new TransparencyMap(*m_background.getTexture())) : m_transparency.reset();
+		m_background.setTransparencyCheck(transparencyCheck);
 		return *this;
 	}
 
@@ -156,12 +211,7 @@ namespace gui
 
 	const bool Window::contains(const sf::Vector2f& point) const
 	{
-		if (m_background.getGlobalBounds().contains(point))
-		{
-			if (!m_transparency) return true;
-			if (!(*m_transparency)[sf::Vector2i(point.x - m_background.getPosition().x, point.y - m_background.getPosition().y)]) return true;
-		}
-		return false;
+		return m_background.contains(point);
 	}
 
 	const bool Window::input(const sf::Event& event)
@@ -204,6 +254,10 @@ namespace gui
 				return contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
 			}
 
+		if (!returnValue && m_background.getTexture() && ((event.type == sf::Event::MouseMoved && m_background.contains(event.mouseMove.x, event.mouseMove.y)) ||
+			((event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased) &&
+				m_background.contains(event.mouseButton.x, event.mouseButton.y)))) return true;
+
 		return returnValue;
 	}
 	
@@ -235,10 +289,37 @@ namespace gui
 		target.draw(m_background, states);
 		for (auto it = m_elements.m_elements.rbegin(), end = m_elements.m_elements.rend(); it != end; ++it)
 			target.draw(**it, states);
+		
+		if (m_message)
+		{
+			if (m_parent) WindowManager::m_message = m_message;
+			else m_message->display(target, states);
+			if (m_message->getMessage()->getFadeAmount() == 0.0f) m_message = nullptr;
+		}
 	}
 
-	const sf::Sprite& Window::background() const
+	const Icon& Window::background() const
 	{
 		return m_background;
+	}
+
+	std::unordered_map<std::string, Interactive*const>::const_iterator Window::begin() const
+	{
+		return m_elements.m_map.begin();
+	}
+
+	std::unordered_map<std::string, Interactive*const>::const_iterator Window::end() const
+	{
+		return m_elements.m_map.end();
+	}
+
+	std::unordered_map<std::string, Interactive*const>::iterator Window::begin()
+	{
+		return m_elements.m_map.begin();
+	}
+
+	std::unordered_map<std::string, Interactive*const>::iterator Window::end()
+	{
+		return m_elements.m_map.end();
 	}
 }

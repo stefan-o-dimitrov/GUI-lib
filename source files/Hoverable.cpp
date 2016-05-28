@@ -22,6 +22,8 @@
 //
 ////////////////////////////////////////////////////////////
 
+#include "../include/GUI/WindowManager.h"
+#include "../include/GUI/Window.h"
 #include "../include/GUI/Hoverable.h"
 #include "../include/GUI/Internals.h"
 
@@ -94,6 +96,7 @@ namespace gui
 	}
 
 	Hoverable::Hoverable(const Hoverable& copy)
+		: Interactive(copy)
 	{
 		setDelay(copy.m_delay);
 		if (copy.m_message) m_message.reset(new HoverMessage(*copy.m_message));
@@ -101,6 +104,7 @@ namespace gui
 
 	Hoverable& Hoverable::operator=(const Hoverable& copy)
 	{
+		Interactive::operator=(copy);
 		setDelay(copy.m_delay);
 		if (copy.m_message) m_message.reset(new HoverMessage(*copy.m_message));
 		return *this;
@@ -122,16 +126,28 @@ namespace gui
 
 	const bool Hoverable::hasMessageDelayPassed() const
 	{
-		return m_timeMouseEntered ? Duration(Internals::timeSinceStart() - *m_timeMouseEntered).count() > m_delay :
-			false;
+		return m_timeMouseEntered ? Duration(Internals::timeSinceStart() - *m_timeMouseEntered).count() > m_delay : false;
+	}
+
+	void Hoverable::display(sf::RenderTarget& target, sf::RenderStates states) const
+	{
+		if (m_message)
+		{
+			m_message->setFadeDirection(hasMessageDelayPassed());
+			target.draw(*m_message, states);
+		}
 	}
 
 	void Hoverable::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		if (m_message)
 		{
-			m_message->setFadeDirection(hasMessageDelayPassed());
-			target.draw(*m_message, states);
+			if (m_parent)
+			{ 
+				if (!Window::m_message || Window::m_message->getMessage()->getFadeAmount() == 0.0f)
+					Window::m_message = this;
+			}
+			else display(target, states);
 		}
 	}
 }

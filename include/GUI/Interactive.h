@@ -34,11 +34,17 @@
 
 namespace gui 
 {
-	class Window;
 	class Interactive : public virtual sf::Drawable
 	{
+		friend class Window;
 	public:
+		Interactive(const Interactive& copy) = default;
+		Interactive(Interactive&& temp) = default;
+		Interactive() = default;
 		virtual ~Interactive() = default;
+
+		Interactive& operator=(const Interactive& copy) = default;
+		Interactive& operator=(Interactive&& temp) = default;
 
 		virtual std::unique_ptr<Interactive> copy()const = 0;
 		virtual std::unique_ptr<Interactive> move() = 0;
@@ -55,8 +61,13 @@ namespace gui
 		virtual Interactive& setPosition(const float x, const float y) = 0;
 		virtual Interactive& setPosition(const sf::Vector2f& position);
 
+		const Window* const getParent()const;
+		void setParentToSame(const Interactive& source);
+
 	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const = 0;
+
+		Window* m_parent = nullptr;
 	};
 };
 

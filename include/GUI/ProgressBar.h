@@ -54,7 +54,7 @@ namespace gui
 		using Interactive::contains;
 
 		const float getProgress()const;
-		const sf::Texture& getFillTexture()const;
+		const sf::Texture* getFillTexture()const;
 		const bool getFillTransparencyCheck()const;
 		const std::shared_ptr<const HoverMessage> getFillMessage()const;
 
@@ -75,7 +75,7 @@ namespace gui
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-		std::unique_ptr<std::function<const float()>> m_updateFunction;
+		std::unique_ptr<std::function<const float()>> m_updateFunction = nullptr;
 		mutable TimePoint                             m_timeOfLastUpdate;
 		mutable float                                 m_progress = 0.0f;
 		mutable Icon                                  m_fill;

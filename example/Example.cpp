@@ -7,7 +7,6 @@
 #define AMOUNT 1
 
 int integer = 0;
-bool running = true;
 
 const bool canChange(const int limit, const bool increaseOrDecrease = 0)
 {
@@ -148,18 +147,17 @@ int main()
 					std::to_string(AMOUNT), font, 18).setColor(sf::Color(175, 45, 65, 220))))
 				.setPosition(30, 100))), true);
 
-	main.emplace("Third Window", gui::Window(main.at("Second Window", true)).setBackgroundColor(sf::Color(255, 255, 200)).setPosition(45, 80), false);
-	
-	while (running)
+	main.emplace("Third Window", gui::Window(main.at("Second Window", true)).setBackgroundColor(sf::Color(255, 255, 200)).setPosition(90, 130), false);
+
+	sf::Event event;
+	while (true) // After all that, the main program loop can be as simple as possible, everything will update and act accordingly :)
 	{
-		sf::Event event;
 		while (window.pollEvent(event))
-			if (event.type == sf::Event::Closed) running = false;
+			if (event.type == sf::Event::Closed) std::exit(0);
 			else main.input(event);
 
+		window.clear(sf::Color(128, 128, 128));
 		window.draw(main);
-
 		window.display();
-		window.clear(sf::Color(150, 150, 150, 255));
 	}
 }

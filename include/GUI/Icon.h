@@ -58,7 +58,7 @@ namespace gui
 		virtual const sf::Vector2f& getPosition()const override;
 
 		virtual const sf::FloatRect getGlobalBounds()const;
-		const sf::Texture& getTexture()const;
+		const sf::Texture* getTexture()const;
 		const bool getTransparencyCheck()const;
 		const sf::IntRect& getTextureRect()const;
 		

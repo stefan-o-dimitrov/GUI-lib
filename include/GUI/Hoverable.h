@@ -34,6 +34,7 @@ namespace gui
 {
 	class Hoverable : public Interactive
 	{
+		friend class WindowManager;
 	public:
 		Hoverable(const HoverMessage& message, const float delay = 0.75f);
 		Hoverable(const Hoverable& copy);
@@ -42,6 +43,8 @@ namespace gui
 
 		Hoverable& operator=(const Hoverable& copy);
 		Hoverable& operator=(Hoverable&& temp) = default;
+
+		void display(sf::RenderTarget& target, sf::RenderStates states)const;
 
 		virtual void lostFocus()override;
 		virtual const bool input(const sf::Event& event)override;
@@ -53,16 +56,16 @@ namespace gui
 		virtual Hoverable& setMessage(const HoverMessage& message);
 		virtual Hoverable& setMessage(HoverMessage&& messageTemp);
 		Hoverable& setDelay(const float delaySeconds);
+		const bool hasMessageDelayPassed()const;
 
 	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const;
 
 		void mouseEntered(const sf::Vector2f& position);
 		void mouseLeft();
-		const bool hasMessageDelayPassed()const;
 
 		mutable std::shared_ptr<HoverMessage> m_message = nullptr;
-		
+
 	private:
 		float                          m_delay = 0.75f;
 		bool                           m_hasBeenPressed = false;

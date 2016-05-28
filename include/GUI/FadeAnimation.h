@@ -51,10 +51,10 @@ namespace gui
 
 		const sf::Shader& getShaderNonTextured()const;
 		const sf::Shader& getShaderTextured()const;
+		virtual void step()const override;
 
 	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
-		virtual void step()const override;
 	
 	private:
 		mutable float m_fadeAmount = 0.0f;
