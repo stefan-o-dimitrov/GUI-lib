@@ -24,5 +24,6 @@ compileable and including the image and font resources used.
 Below are screenshots of the compiled example code; everything (textures, fonts, colors, numerous object settings etc.) you see can be changed and modified however you like:
 ![First Image](http://i.imgur.com/fPuKcan.png)
 ![Second Image](http://i.imgur.com/jesojYX.png)
+![Third Image](https://i.imgur.com/hv4IZMc.png)
   
 Should you encounter any bugs or issues, please do not hesitate to contact us at: shtgamessts@gmail.com
