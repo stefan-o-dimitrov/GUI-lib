@@ -44,7 +44,7 @@ namespace gui
 		TextPane(const TextPane& copy);
 		TextPane(TextPane&& temp) = default;
 		TextPane() = default;
-		~TextPane() = default;
+		virtual ~TextPane() = default;
 
 		TextPane& operator=(const TextPane& copy);
 		TextPane& operator=(TextPane&& temp) = default;

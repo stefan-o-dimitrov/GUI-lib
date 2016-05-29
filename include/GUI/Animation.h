@@ -37,7 +37,7 @@ namespace gui
 		Animation(const Animation& copy) = default;
 		Animation(Animation&& copy) = default;
 		Animation() = default;
-		~Animation() = default;
+		virtual ~Animation() = default;
 
 		Animation& operator=(const Animation& copy) = default;
 		Animation& operator=(Animation&& copy) = default;

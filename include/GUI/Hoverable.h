@@ -40,6 +40,7 @@ namespace gui
 		Hoverable(const Hoverable& copy);
 		Hoverable(Hoverable&& temp) = default;
 		Hoverable() = default;
+		virtual ~Hoverable() = default;
 
 		Hoverable& operator=(const Hoverable& copy);
 		Hoverable& operator=(Hoverable&& temp) = default;

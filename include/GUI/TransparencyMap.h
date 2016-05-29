@@ -6,12 +6,13 @@
 
 namespace gui
 {
-	class TransparencyMap
+	class TransparencyMap final
 	{
 	public:
-		TransparencyMap(const sf::Texture& texture);
 		TransparencyMap(const TransparencyMap& copy);
 		TransparencyMap(TransparencyMap&& temp) = default;
+		TransparencyMap(const sf::Texture& texture);
+		~TransparencyMap() = default;
 
 		const bool operator[](const sf::Vector2i& coordinates)const;
 

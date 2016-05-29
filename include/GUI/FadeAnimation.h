@@ -37,7 +37,7 @@ namespace gui
 		FadeAnimation(const FadeAnimation& copy) = default;
 		FadeAnimation(FadeAnimation&& temp) = default;
 		FadeAnimation() = default;
-		~FadeAnimation() = default;
+		virtual ~FadeAnimation() = default;
 
 		FadeAnimation& operator=(const FadeAnimation& copy) = default;
 		FadeAnimation& operator=(FadeAnimation&& temp) = default;

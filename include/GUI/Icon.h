@@ -45,7 +45,7 @@ namespace gui
 		Icon(const Icon& copy);
 		Icon(Icon&& temp);
 		Icon() = default;
-		~Icon() = default;
+		virtual ~Icon() = default;
 		
 		virtual std::unique_ptr<Interactive> copy()const override;
 		virtual std::unique_ptr<Interactive> move()override;
