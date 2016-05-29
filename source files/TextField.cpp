@@ -69,7 +69,7 @@ namespace gui
 				getClickedCharacter(event.mouseButton.x, event.mouseButton.y);
 				return m_active = true;
 			}
-			else return !(m_active = false);
+			else if (m_active) return !(m_active = false);
 		}
 		case sf::Event::TextEntered:
 		{

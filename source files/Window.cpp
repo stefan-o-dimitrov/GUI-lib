@@ -227,7 +227,7 @@ namespace gui
 				returnValue = true;
 			}
 
-		if (m_movable)
+		if ((!returnValue || event.type == sf::Event::MouseButtonReleased) && m_movable)
 			switch (event.type)
 			{
 			case sf::Event::MouseMoved:
@@ -240,7 +240,7 @@ namespace gui
 				return contains(sf::Vector2f(event.mouseMove.x, event.mouseMove.y));
 			}
 			case sf::Event::MouseButtonPressed:
-			{	
+			{
 				if (contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)))
 				{
 					m_mouseDragOffset.reset(new sf::Vector2f(event.mouseButton.x - getPosition().x,
@@ -253,7 +253,7 @@ namespace gui
 				m_mouseDragOffset.reset();
 				return contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
 			}
-
+					
 		if (!returnValue && m_background.getTexture() && ((event.type == sf::Event::MouseMoved && m_background.contains(event.mouseMove.x, event.mouseMove.y)) ||
 			((event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased) &&
 				m_background.contains(event.mouseButton.x, event.mouseButton.y)))) return true;
