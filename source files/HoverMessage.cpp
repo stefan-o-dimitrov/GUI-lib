@@ -96,7 +96,7 @@ namespace gui
 	void HoverMessage::updateBox()const
 	{
 		const sf::FloatRect rect = TextPane::getGlobalBounds();
-		m_textBox.setSize(sf::Vector2f(rect.width + TEXT_BOX_X_SPACING * 2, rect.height + TEXT_BOX_Y_SPACING * 2));
+		m_textBox.setSize(sf::Vector2f(bool(rect.width) * (rect.width + TEXT_BOX_X_SPACING * 2), bool(rect.height) * (rect.height + TEXT_BOX_Y_SPACING * 2)));
 	}
 
 	void HoverMessage::update() const
@@ -110,7 +110,7 @@ namespace gui
 		return m_position;
 	}
 
-	const sf::Font& HoverMessage::getFont() const
+	const sf::Font* const HoverMessage::getFont() const
 	{
 		return TextPane::getFont();
 	}

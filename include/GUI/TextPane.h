@@ -61,7 +61,7 @@ namespace gui
 		const ColoredText& getText()const;
 		ColoredText& getText();
 		virtual const sf::Vector2f& getPosition()const;
-		virtual const sf::Font& getFont()const;
+		virtual const sf::Font* const getFont()const;
 		virtual const unsigned char getCharacterSize()const;
 
 		virtual TextPane& setPosition(const float x, const float y) override;
@@ -80,7 +80,7 @@ namespace gui
 
 	private:
 		mutable unique_ptr_vector<sf::Text> m_text;
-		const sf::Font*                     m_font = nullptr;
+		mutable const sf::Font*             m_font = nullptr;
 		unsigned char                       m_characterSize = 13;
 		ColoredText                         m_string;
 		mutable TimePoint                   m_timeOfLastUpdate;

@@ -50,7 +50,7 @@ namespace gui
 		HoverMessage& operator=(HoverMessage&& temp);
 
 		const sf::Vector2f& getPosition()const override;
-		const sf::Font& getFont()const override;
+		const sf::Font* const getFont()const override;
 		const unsigned char getCharacterSize()const override;
 
 		const sf::FloatRect getGlobalBounds()const;

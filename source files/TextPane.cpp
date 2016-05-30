@@ -26,8 +26,6 @@
 #include "../include/GUI/HoverMessage.h"
 #include "../include/GUI/Internals.h"
 
-#include <sstream>
-
 namespace gui
 {
 	TextPane::TextPane(const ColoredText& newString, const sf::Font& newFont, const unsigned char newCharacterSize)
@@ -45,7 +43,7 @@ namespace gui
 	}
 
 	TextPane::TextPane(const TextPane& copy)
-		: m_position(copy.m_position), m_string(copy.m_string)
+		: m_position(copy.m_position), m_string(copy.m_string), m_font(copy.m_font)
 	{
 		for (auto it = copy.m_text.begin(), end = copy.m_text.end(); it != end; ++it)
 			m_text.push_back(std::unique_ptr<sf::Text>(new sf::Text(*(*it))));
@@ -55,6 +53,7 @@ namespace gui
 	{
 		m_position = copy.m_position;
 		m_string = copy.m_string;
+		m_font = copy.m_font;
 		for (auto it = copy.m_text.begin(), end = copy.m_text.end(); it != end; ++it)
 			m_text.push_back(std::unique_ptr<sf::Text>(new sf::Text(*(*it))));
 		return *this;
@@ -108,9 +107,9 @@ namespace gui
 		return m_position;
 	}
 
-	const sf::Font& TextPane::getFont()const
+	const sf::Font* const TextPane::getFont()const
 	{
-		return *m_font;
+		return m_font;
 	}
 
 	const unsigned char TextPane::getCharacterSize()const
@@ -170,7 +169,8 @@ namespace gui
 
 	void TextPane::update() const
 	{
-		m_string.getText(m_text, m_text.size() != 0 ? *m_text.front()->getFont() : *m_font, m_characterSize);
+		if (!m_font) return;
+		m_string.getText(m_text, *m_font, m_characterSize);
 		m_timeOfLastUpdate = Internals::timeSinceStart();
 	}
 }

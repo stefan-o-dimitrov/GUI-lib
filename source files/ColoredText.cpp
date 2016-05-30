@@ -73,7 +73,7 @@ namespace gui
 
 	void ColoredText::getText(unique_ptr_vector<sf::Text>& target, const sf::Font& font, const unsigned char characterSize)const
 	{
-		const float TEXT_HEIGHT = font.getLineSpacing(characterSize) + LINE_SPACING;
+		const float TEXT_HEIGHT(font.getLineSpacing(characterSize) + LINE_SPACING);
 		sf::Vector2f addPosition(0, 0);
 		target.clear();
 
