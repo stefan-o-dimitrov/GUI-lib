@@ -36,6 +36,12 @@ namespace gui
 		friend class Window;
 		friend class Hoverable;
 	public:
+		WindowManager() = default;
+		WindowManager(WindowManager&& temp) = default;
+		~WindowManager() = default;
+
+		WindowManager& operator=(WindowManager&& temp) = default;
+
 		void input(const sf::Event& event);
 
 		WindowManager& emplace(const std::string& key, const Window& window, const bool fullscreen = false);

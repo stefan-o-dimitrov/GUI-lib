@@ -45,6 +45,9 @@ namespace gui
 		ProgressBar() = default;
 		~ProgressBar() = default;
 
+		ProgressBar& operator=(const ProgressBar& copy);
+		ProgressBar& operator=(ProgressBar&& temp) = default;
+
 		std::unique_ptr<Interactive> copy()const override;
 		std::unique_ptr<Interactive> move()override;
 

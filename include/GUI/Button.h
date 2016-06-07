@@ -78,6 +78,9 @@ namespace gui
 		Button();
 		virtual ~Button() = default;
 
+		Button& operator=(const Button& copy);
+		Button& operator=(Button&& temp) = default;
+
 		virtual std::unique_ptr<Interactive> copy()const override;
 		virtual std::unique_ptr<Interactive> move()override;
 

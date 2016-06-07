@@ -46,6 +46,8 @@ namespace gui
 		ordered_map() = default;
 		~ordered_map() = default;
 
+		ordered_map& operator=(ordered_map&& temp) = default;
+
 		ordered_map& emplace(const std::string& key, const StorageType& element);
 		ordered_map& emplace(const std::string& key, StorageType&& element);
 
@@ -64,6 +66,8 @@ namespace gui
 		Window(Window&& temp) = default;
 		Window() = default;
 		virtual ~Window() = default;
+
+		Window& operator=(Window&& temp) = default;
 
 		virtual std::unique_ptr<Window> copy()const;
 		virtual std::unique_ptr<Window> move();

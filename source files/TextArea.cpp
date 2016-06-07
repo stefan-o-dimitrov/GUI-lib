@@ -31,11 +31,7 @@ namespace gui
 {
 	TextArea::TextArea(const sf::String& text, const sf::Font & font, const unsigned char characterSize)
 		: m_text(text, font, characterSize) {}
-
-	TextArea::TextArea(const TextArea& copy)
-		: Hoverable(copy), m_text(copy.m_text),
-		m_updateFunction(copy.m_updateFunction) {}
-
+	
 	std::unique_ptr<Interactive> TextArea::copy() const
 	{
 		return std::unique_ptr<TextArea>(new TextArea(*this));

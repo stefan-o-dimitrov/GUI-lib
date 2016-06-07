@@ -49,6 +49,14 @@ namespace gui
 		m_updateFunction(copy.m_updateFunction ? new auto(*copy.m_updateFunction) : nullptr),
 		m_progress(copy.m_progress) {}
 
+	ProgressBar& ProgressBar::operator=(const ProgressBar& copy)
+	{
+		Icon::operator=(copy);
+		m_fill = copy.m_fill;
+		m_progress = copy.m_progress;
+		m_updateFunction.reset(copy.m_updateFunction ? new auto(*copy.m_updateFunction) : nullptr);
+	}
+
 	std::unique_ptr<Interactive> ProgressBar::copy() const
 	{ 
 		return std::unique_ptr<ProgressBar>(new ProgressBar(*this));

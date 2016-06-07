@@ -44,6 +44,16 @@ namespace gui
 		m_cursor.setString("|");
 	}
 
+	TextField& TextField::operator=(const TextField& source)
+	{
+		m_box = source.m_box;
+		m_input = source.m_input;
+		m_processingFunction = source.m_processingFunction;
+		m_position = source.m_position;
+		m_cursor = source.m_cursor;
+		if (source.m_prompt) m_prompt.reset(new auto(*source.m_prompt));
+	}
+
 	std::unique_ptr<Interactive> TextField::copy() const
 	{
 		return std::unique_ptr<TextField>(new TextField(*this));

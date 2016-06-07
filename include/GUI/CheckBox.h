@@ -39,6 +39,9 @@ namespace gui
 		CheckBox() = default;
 		~CheckBox() = default;
 
+		CheckBox& operator=(const CheckBox& copy) = default;
+		CheckBox& operator=(CheckBox&& temp) = default;
+
 		std::unique_ptr<Interactive> copy()const override;
 		std::unique_ptr<Interactive> move()override;
 

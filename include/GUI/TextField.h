@@ -46,6 +46,9 @@ namespace gui
 		TextField();
 		~TextField() = default;
 
+		TextField& operator=(const TextField& copy);
+		TextField& operator=(TextField&& temp) = default;
+
 		std::unique_ptr<Interactive> copy()const override;
 		std::unique_ptr<Interactive> move()override;
 

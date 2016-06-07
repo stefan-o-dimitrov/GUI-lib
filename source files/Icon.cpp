@@ -40,6 +40,20 @@ namespace gui
 	Icon::Icon(Icon&& temp)
 		: Hoverable(std::move(temp)), m_transparency(std::move(temp.m_transparency)), m_icon(temp.m_icon) {}
 
+	Icon& Icon::operator=(const Icon& copy)
+	{
+		Hoverable::operator=(copy);
+		m_icon = copy.m_icon;
+		if (copy.m_transparency) m_transparency.reset(new TransparencyMap(*copy.m_transparency));
+	}
+
+	Icon& Icon::operator=(Icon&& temp)
+	{
+		Hoverable::operator=(std::move(temp));
+		m_icon = temp.m_icon;
+		if (temp.m_transparency) m_transparency.reset(new TransparencyMap(std::move(*temp.m_transparency)));
+	}
+
 	std::unique_ptr<Interactive> Icon::copy() const
 	{ 
 		return std::unique_ptr<Icon>(new Icon(*this));

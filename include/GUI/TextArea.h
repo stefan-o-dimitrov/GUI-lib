@@ -43,10 +43,13 @@ namespace gui
 		friend class Button;
 	public:
 		TextArea(const sf::String& text, const sf::Font& font, const unsigned char characterSize = 13);
-		TextArea(const TextArea& copy);
+		TextArea(const TextArea& copy) = default;
 		TextArea(TextArea&& temp) = default;
 		TextArea() = default;
 		~TextArea() = default;
+
+		TextArea& operator=(const TextArea& copy) = default;
+		TextArea& operator=(TextArea&& temp) = default;
 
 		std::unique_ptr<Interactive> copy()const override;
 		std::unique_ptr<Interactive> move()override;
