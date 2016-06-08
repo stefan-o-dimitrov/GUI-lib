@@ -45,6 +45,7 @@ namespace gui
 		Hoverable::operator=(copy);
 		m_icon = copy.m_icon;
 		if (copy.m_transparency) m_transparency.reset(new TransparencyMap(*copy.m_transparency));
+		return *this;
 	}
 
 	Icon& Icon::operator=(Icon&& temp)
