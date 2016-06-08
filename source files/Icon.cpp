@@ -52,6 +52,7 @@ namespace gui
 		Hoverable::operator=(std::move(temp));
 		m_icon = temp.m_icon;
 		if (temp.m_transparency) m_transparency.reset(new TransparencyMap(std::move(*temp.m_transparency)));
+		return *this;
 	}
 
 	std::unique_ptr<Interactive> Icon::copy() const

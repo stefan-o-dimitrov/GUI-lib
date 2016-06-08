@@ -52,6 +52,7 @@ namespace gui
 		m_position = source.m_position;
 		m_cursor = source.m_cursor;
 		if (source.m_prompt) m_prompt.reset(new auto(*source.m_prompt));
+		return *this;
 	}
 
 	std::unique_ptr<Interactive> TextField::copy() const

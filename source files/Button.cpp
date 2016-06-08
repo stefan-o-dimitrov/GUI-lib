@@ -80,6 +80,7 @@ namespace gui
 		if (copy.m_messageBuffer) m_messageBuffer.reset(new HoverMessage(*copy.m_messageBuffer));
 		if (copy.m_name) m_name.reset(new TextArea(*copy.m_name));
 		if (copy.m_predicates) m_predicates.reset(new PredicateArray(*copy.m_predicates));
+		return *this;
 	}
 
 	std::unique_ptr<Interactive> Button::copy() const
