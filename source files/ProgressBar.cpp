@@ -130,9 +130,17 @@ namespace gui
 		return (ProgressBar&)*this;
 	}
 
+	ProgressBar& ProgressBar::setTexture(const sf::Texture& texture, const bool transparencyCheck)
+	{
+		Icon::setTexture(texture, transparencyCheck);
+		setPosition(Icon::getPosition());
+		return *this;
+	}
+
 	ProgressBar& ProgressBar::setFillTexture(const sf::Texture& newTexture, const bool transparencyCheck)
 	{
 		m_fill.setTexture(newTexture, transparencyCheck);
+		setPosition(Icon::getPosition());
 		return *this;
 	}
 
@@ -145,8 +153,10 @@ namespace gui
 	ProgressBar& ProgressBar::setPosition(const float x, const float y)
 	{
 		Icon::setPosition(x, y);
-		m_fill.setPosition(x + ((Icon::getTexture() ? Icon::getTexture()->getSize().x : 0) - (m_fill.getTexture() ? m_fill.getTexture()->getSize().x : 0)) / 2.0f,
-			y + ((Icon::getTexture() ? Icon::getTexture()->getSize().y : 0) - (m_fill.getTexture() ? m_fill.getTexture()->getSize().y : 0)) / 2.0f);
+		if (m_fill.getTexture() && Icon::getTexture())
+			m_fill.setPosition(x + ((Icon::getTexture() ? Icon::getTexture()->getSize().x : 0) - (m_fill.getTexture() ? m_fill.getTexture()->getSize().x : 0)) / 2.0f,
+				y + ((Icon::getTexture() ? Icon::getTexture()->getSize().y : 0) - (m_fill.getTexture() ? m_fill.getTexture()->getSize().y : 0)) / 2.0f);
+		else m_fill.setPosition(x, y);
 		return *this;
 	}
 
