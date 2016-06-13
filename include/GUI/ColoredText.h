@@ -46,6 +46,8 @@ namespace gui
 
 		ColoredText(const ColoredText& copy) = default;
 		ColoredText(ColoredText&& temp) = default;
+		ColoredText(const std::function<ColoredText()>& function);
+		ColoredText(std::function<ColoredText()>&& function);
 		~ColoredText() = default;
 
 		ColoredText& operator=(const ColoredText& copy) = default;

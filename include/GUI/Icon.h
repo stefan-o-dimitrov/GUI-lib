@@ -75,6 +75,7 @@ namespace gui
 		virtual Icon& setTransparencyCheck(const bool transparencyCheck);
 		virtual Icon& setTextureRect(const sf::IntRect& textureRect);
 		virtual Icon& setColor(const sf::Color& color);
+		virtual Icon& setRotation(const float degrees);
 
 	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const;

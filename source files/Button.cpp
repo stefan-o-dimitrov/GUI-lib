@@ -227,6 +227,12 @@ namespace gui
 		return *this;
 	}
 
+	Button& Button::setRotation(const float degrees)
+	{
+		Icon::setRotation(degrees);
+		return *this;
+	}
+
 	Button& Button::setPredicateMessage(const HoverMessage& newMessage)
 	{
 		m_predicatesFulfilled ? m_messageBuffer.reset(new HoverMessage(newMessage))
@@ -290,14 +296,39 @@ namespace gui
 	{
 		m_stateShader.reset(new sf::Shader());
 		m_stateShader->loadFromMemory(GLSLCode, sf::Shader::Fragment);
-		m_stateShader->setParameter("tex", sf::Shader::CurrentTexture);
 
 		return *this;
 	}
 
 	Button& Button::resetShader()
 	{
+		m_stateShader.reset(new sf::Shader());
+		m_stateShader->loadFromMemory(DEFAULT_STATE_SHADER_CODE, sf::Shader::Fragment);
+		m_stateShader->setParameter("tex", sf::Shader::CurrentTexture);
+		return *this;
+	}
+
+	Button& Button::removeShader()
+	{
 		m_stateShader.reset();
+		return *this;
+	}
+
+	Button& Button::setShaderParameter(const std::string& name, const sf::Texture& texture)
+	{
+		if (m_stateShader) m_stateShader->setParameter(name, texture); 
+		return *this;
+	}
+
+	Button& Button::setShaderParameter(const std::string& name, const sf::Shader::CurrentTextureType texture)
+	{
+		if (m_stateShader) m_stateShader->setParameter(name, texture);
+		return *this;
+	}
+
+	Button& Button::setShaderParameter(const std::string& name, const float number)
+	{
+		if (m_stateShader) m_stateShader->setParameter(name, number);
 		return *this;
 	}
 

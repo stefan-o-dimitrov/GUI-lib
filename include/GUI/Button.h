@@ -102,6 +102,7 @@ namespace gui
 		Button& setMessage(HoverMessage&& tempMessage)override;
 		Button& setTexture(const sf::Texture& texture, const bool transparencyCheck = false)override;
 		Button& setColor(const sf::Color& color)override;
+		Button& setRotation(const float degrees)override;
 
 		Button& setName(const TextArea& name);
 		Button& setName(TextArea&& nameTemp);
@@ -115,6 +116,10 @@ namespace gui
 		Button& bindAction(const Event event, std::function<void()>&& action);
 		Button& resetShader(const std::string& GLSLCode);
 		Button& resetShader();
+		Button& removeShader();
+		Button& setShaderParameter(const std::string& name, const sf::Shader::CurrentTextureType texture);
+		Button& setShaderParameter(const std::string& name, const sf::Texture& texture);
+		Button& setShaderParameter(const std::string& name, const float number);
 
 		static const std::string& getDefaultStateShader();
 

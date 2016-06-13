@@ -137,6 +137,12 @@ namespace gui
 		return *this;
 	}
 
+	Icon& Icon::setRotation(const float degrees)
+	{
+		m_icon.setRotation(degrees);
+		return *this;
+	}
+
 	Icon& Icon::clearMessage()
 	{
 		Hoverable::clearMessage();

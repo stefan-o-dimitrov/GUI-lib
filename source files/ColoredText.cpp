@@ -29,6 +29,16 @@
 
 namespace gui
 {
+	ColoredText::ColoredText(const std::function<ColoredText()>& function)
+	{
+		m_volatileText.insert(std::move(std::make_pair(0, function)));
+	}
+
+	ColoredText::ColoredText(std::function<ColoredText()>&& function)
+	{
+		m_volatileText.insert(std::move(std::make_pair(0, std::move(function))));
+	}
+
 	gui::ColoredText::operator ColoredString()
 	{
 		return ColoredString(m_text.empty() ? "" : m_text.front()->first,
