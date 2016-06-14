@@ -102,11 +102,12 @@ namespace gui
 		const bool exists(const std::string& key);
 
 		Interactive& at(const std::string& key);
-		const Interactive& at(std::string& key)const;
+		const Interactive& at(const std::string& key)const;
 		void erase(const std::string& key);
 
 	protected:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
+		virtual void setParent(const WindowManager* const parent);
 
 		const Icon& background()const;
 		std::unordered_map<std::string, Interactive* const>::const_iterator begin()const;
@@ -114,14 +115,14 @@ namespace gui
 		std::unordered_map<std::string, Interactive* const>::iterator begin();
 		std::unordered_map<std::string, Interactive* const>::iterator end();
 
+		static const Hoverable* m_message;
+
 	private:
 		Icon                          m_background;
 		ordered_map<Interactive>      m_elements;
 		bool                          m_movable = false, m_active = true, m_closed = false;
 		std::unique_ptr<sf::Vector2f> m_mouseDragOffset = nullptr;
 		WindowManager*                m_parent = nullptr;
-
-		static const Hoverable*       m_message;
 	};
 }
 

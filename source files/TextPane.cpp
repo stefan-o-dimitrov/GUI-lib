@@ -49,6 +49,8 @@ namespace gui
 			m_text.push_back(std::unique_ptr<sf::Text>(new sf::Text(*(*it))));
 	}
 
+	TextPane::TextPane() : m_string(gui::bind("")) {}
+
 	TextPane& TextPane::operator=(const TextPane& copy)
 	{
 		m_position = copy.m_position;
@@ -146,8 +148,7 @@ namespace gui
 	TextPane& TextPane::setFont(const sf::Font& newFont)
 	{
 		m_font = &newFont;
-		for (auto it = m_text.begin(), end = m_text.end(); it != end; ++it)
-			(*it)->setFont(*m_font);
+		update();
 		return *this;
 	}
 

@@ -150,6 +150,10 @@ namespace gui
 		/// States with which to draw the object.
 		/// </param>
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const = 0;
+		/// <summary>
+		/// Sets this entity's parent Window to the one given.
+		/// </summary>
+		virtual void setParent(const Window* const parent);
 
 		/// <summary>
 		/// Pointer to the object's parent gui::Window.

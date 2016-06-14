@@ -74,7 +74,7 @@ namespace gui
 		TextArea& setPosition(const float x, const float y)override;
 		TextArea& setPosition(const sf::Vector2f& position)override;
 
-		TextArea& setStyle(const sf::Text::Style style)const;
+		TextArea& setStyle(const sf::Uint32 style)const;
 		TextArea& setText(const sf::String& text)const;
 		TextArea& setFont(const sf::Font& font);
 		TextArea& setCharacterSize(const unsigned char characterSize);

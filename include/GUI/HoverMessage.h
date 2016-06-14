@@ -44,6 +44,7 @@ namespace gui
 		HoverMessage(ColoredText&& string, const sf::Font& font, const unsigned char characterSize = 13);
 		HoverMessage(const HoverMessage& copy);
 		HoverMessage(HoverMessage&& temp);
+		HoverMessage();
 		~HoverMessage() = default;
 
 		HoverMessage& operator=(const HoverMessage& copy);

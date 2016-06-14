@@ -40,7 +40,7 @@ namespace gui
 		{
 		case sf::Event::MouseMoved:
 		{
-			const sf::Vector2f mousePos = sf::Vector2f(event.mouseMove.x, event.mouseMove.y);
+			const sf::Vector2f mousePos(event.mouseMove.x, event.mouseMove.y);
 			if (!contains(mousePos)) { mouseLeft(); return false; }
 			else { if (!m_hasBeenPressed) mouseEntered(mousePos); return true; }
 		}

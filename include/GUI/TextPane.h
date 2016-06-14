@@ -43,7 +43,7 @@ namespace gui
 		TextPane(ColoredText&& text, const sf::Font& font, const unsigned char characterSize = 13);
 		TextPane(const TextPane& copy);
 		TextPane(TextPane&& temp) = default;
-		TextPane() = default;
+		TextPane();
 		virtual ~TextPane() = default;
 
 		TextPane& operator=(const TextPane& copy);

@@ -43,4 +43,9 @@ namespace gui
 	{
 		m_parent = source.m_parent;
 	}
+
+	void Interactive::setParent(const Window* const parent)
+	{
+		m_parent = (Window*)parent;
+	}
 }

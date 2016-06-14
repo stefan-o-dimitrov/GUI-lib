@@ -87,14 +87,14 @@ namespace gui
 	WindowManager& WindowManager::emplace(const std::string& key, const Window& window, const bool fullscreen)
 	{
 		(fullscreen ? m_windows : m_dialogBoxes).emplace(key, window);
-		(fullscreen ? m_windows : m_dialogBoxes).m_map.at(key)->m_parent = this;
+		(fullscreen ? m_windows : m_dialogBoxes).m_map.at(key)->setParent(this);
 		return *this;
 	}
 
 	WindowManager& WindowManager::emplace(const std::string& key, Window&& window, const bool fullscreen)
 	{
 		(fullscreen ? m_windows : m_dialogBoxes).emplace(key, std::move(window));
-		(fullscreen ? m_windows : m_dialogBoxes).m_map.at(key)->m_parent = this;
+		(fullscreen ? m_windows : m_dialogBoxes).m_map.at(key)->setParent(this);
 		return *this;
 	}
 

@@ -76,7 +76,7 @@ namespace gui
 	Window& Window::add(const std::string& key, Interactive&& element)
 	{
 		m_elements.emplace(key, std::move(element));
-		m_elements.m_map.at(key)->m_parent = this;
+		m_elements.m_map.at(key)->setParent(this);
 
 		m_elements.m_elements.back()->setPosition(m_elements.m_elements.back()->getPosition().x + m_background.getPosition().x,
 			m_elements.m_elements.back()->getPosition().y + m_background.getPosition().y);
@@ -87,7 +87,7 @@ namespace gui
 	Window& Window::add(const std::string& key, const Interactive& element)
 	{
 		m_elements.emplace(key, element);
-		m_elements.m_map.at(key)->m_parent = this;
+		m_elements.m_map.at(key)->setParent(this);
 
 		m_elements.m_elements.back()->setPosition(m_elements.m_elements.back()->getPosition().x + m_background.getPosition().x,
 			m_elements.m_elements.back()->getPosition().y + m_background.getPosition().y);
@@ -131,7 +131,7 @@ namespace gui
 		return *m_elements.m_map.at(key);
 	}
 
-	const Interactive& Window::at(std::string& key) const
+	const Interactive& Window::at(const std::string& key) const
 	{
 		return *m_elements.m_map.at(key);
 	}
@@ -294,8 +294,13 @@ namespace gui
 		{
 			if (m_parent) WindowManager::m_message = m_message;
 			else m_message->display(target, states);
-			if (m_message->getMessage()->getFadeAmount() == 0.0f) m_message = nullptr;
+			if (m_message->getMessage()->getFadeAmount() == 0.0f && m_message->getMessage()->getFadeDirection() == 0) m_message = nullptr;
 		}
+	}
+
+	void Window::setParent(const WindowManager* const parent)
+	{
+		m_parent = (WindowManager*)parent;
 	}
 
 	const Icon& Window::background() const

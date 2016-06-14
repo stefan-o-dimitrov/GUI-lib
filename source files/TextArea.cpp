@@ -111,7 +111,7 @@ namespace gui
 		return setPosition(newPosition.x, newPosition.y);
 	}
 
-	TextArea& TextArea::setStyle(const sf::Text::Style style)const
+	TextArea& TextArea::setStyle(const sf::Uint32 style)const
 	{
 		m_text.setStyle(style);
 		return (TextArea&)*this;

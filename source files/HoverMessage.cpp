@@ -49,6 +49,8 @@ namespace gui
 	HoverMessage::HoverMessage(HoverMessage&& temp)
 		: TextPane(std::move(temp)), FadeAnimation(std::move(temp)), m_textBox(temp.m_textBox) {}
 
+	HoverMessage::HoverMessage() {}
+	
 	HoverMessage& HoverMessage::operator=(const HoverMessage& copy)
 	{
 		TextPane::operator=(copy);
