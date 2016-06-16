@@ -54,7 +54,6 @@ namespace gui
 
 		const bool input(const sf::Event& event)override;
 		void lostFocus()override;
-		void setInactive();
 		void clear();
 		void processCurrentInput();
 		void setCursorPosition(size_t position);
@@ -66,6 +65,7 @@ namespace gui
 		const unsigned char getCharacterSize()const;
 		const sf::Color& getTextColor()const;
 		size_t getCursorPosition()const;
+		const float getHeight()const;
 		
 		TextField& setPosition(const float x, const float y)override;
 		TextField& setPosition(const sf::Vector2f& position)override;
@@ -82,11 +82,13 @@ namespace gui
 		TextField& setFont(const sf::Font& font);
 		TextField& setWidth(const unsigned short width);
 		TextField& clearAfterInputIsProcessed(const bool shoudlClear);
+		TextField& setActive(const bool active = false);
+
+		void removeCharacter(const bool backspace = true);
+		void addCharacter(const sf::Uint32 character);
 
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-		void removeCharacter(const bool backspace = true);
-		void addCharacter(const sf::Uint32 character);
 		void getClickedCharacter(const float x, const float y);
 
 		sf::Vector2f                           m_position = sf::Vector2f(0, 0);

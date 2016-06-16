@@ -29,7 +29,7 @@ namespace gui
 	TextField::TextField(const sf::Font& font, const unsigned short fieldWidth, const unsigned char characterSize)
 		: m_input("", font, characterSize), m_cursor("|", font, characterSize)
 	{
-		m_box.reset(sf::FloatRect(0, 0, fieldWidth, m_cursor.getGlobalBounds().height * 2));
+		m_box.reset(sf::FloatRect(-3, 0, fieldWidth + 6, m_cursor.getGlobalBounds().height * 2));
 	}
 
 	TextField::TextField(const TextField& source)
@@ -65,6 +65,8 @@ namespace gui
 		return std::unique_ptr<TextField>(new TextField(std::move(*this)));
 	}
 
+	bool returnGuard = false;
+
 	const bool TextField::input(const sf::Event& event)
 	{
 		switch (event.type)
@@ -85,6 +87,7 @@ namespace gui
 		case sf::Event::TextEntered:
 		{
 			if (!m_active) return false;
+			if (returnGuard) return !(returnGuard = false);
 			if (event.text.unicode == '\b')
 			{
 				removeCharacter();
@@ -97,8 +100,11 @@ namespace gui
 		{
 			if (!m_active) return false;
 
-			 if (event.key.code == sf::Keyboard::Return)
+			if (event.key.code == sf::Keyboard::Return)
+			{
+				returnGuard = true;
 				processCurrentInput();
+			}
 			else if (event.key.code == sf::Keyboard::Left)
 				m_cursorPosition != 0 ? setCursorPosition(m_cursorPosition - 1) : 0;
 			else if (event.key.code == sf::Keyboard::Right)
@@ -118,11 +124,6 @@ namespace gui
 		m_active = false;
 	}
 
-	void TextField::setInactive()
-	{
-		m_active = false;
-	}
-
 	void TextField::clear()
 	{
 		m_input.setString("");
@@ -133,7 +134,6 @@ namespace gui
 	void TextField::processCurrentInput()
 	{
 		if(m_processingFunction) m_processingFunction(m_input.getString());
-		m_active = false;
 		if (m_clearAfterInputProcessed) clear();
 	}
 
@@ -182,6 +182,11 @@ namespace gui
 	size_t TextField::getCursorPosition() const
 	{
 		return m_cursorPosition;
+	}
+
+	const float TextField::getHeight() const
+	{
+		return m_cursor.getLocalBounds().height;
 	}
 
 	TextField& TextField::setCharacterSize(const unsigned char characterSize)
@@ -255,11 +260,13 @@ namespace gui
 	TextField& TextField::setInputProcessingFunction(const std::function<void(const sf::String&)>& function)
 	{
 		m_processingFunction = function;
+		return *this;
 	}
 
 	TextField& TextField::setInputProcessingFunction(std::function<void(const sf::String&)>&& function)
 	{
 		m_processingFunction = std::move(function);
+		return *this;
 	}
 
 	TextField& TextField::setFont(const sf::Font& font)
@@ -282,6 +289,12 @@ namespace gui
 		m_clearAfterInputProcessed = shoudlClear;
 		return *this;
 	}
+
+	TextField& TextField::setActive(const bool active)
+	{
+		m_active = active;
+		return *this;
+	}
 	
 	void TextField::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
@@ -301,8 +314,13 @@ namespace gui
 		const sf::View buffer(target.getView());
 		target.setView(m_box);
 		target.draw(m_input);
-		if (m_active && m_cursorVisible) target.draw(m_cursor);
 		target.setView(buffer);
+
+		if (m_active && m_cursorVisible)
+		{
+			states.transform.translate(m_position.x + int(getHeight() / 4), m_position.y);
+			target.draw(m_cursor, states);
+		}
 	}
 
 	void TextField::removeCharacter(const bool backspace)
