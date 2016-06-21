@@ -22,28 +22,35 @@
 //
 ////////////////////////////////////////////////////////////
 
-#ifndef GUI_LIBRARY
-#define GUI_LIBRARY
+#ifndef GUI_BACKGROUND
+#define GUI_BACKGROUND
 
-#include "AudioSystem.h"
-#include "Background.h"
-#include "Button.h"
-#include "CheckBox.h"
-#include "ColoredText.h"
-#include "FadeAnimation.h"
-#include "FPSMeter.h"
-#include "Hoverable.h"
-#include "HoverMessage.h"
-#include "Icon.h"
-#include "Interactive.h"
-#include "Internals.h"
-#include "ProgressBar.h"
-#include "ScrollList.h"
-#include "Slider.h"
-#include "TextArea.h"
-#include "TextField.h"
-#include "TextPane.h"
-#include "Window.h"
-#include "WindowManager.h"
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/View.hpp>
+
+namespace gui
+{
+	class Background final : public sf::Drawable
+	{
+	public:
+		Background(const Background& copy) = default;
+		Background(Background&& temp) = default;
+		Background(const sf::Texture& texture, const sf::FloatRect& target = sf::FloatRect(0, 0, 1, 1));
+		Background();
+		~Background() = default;
+
+		Background& operator=(const Background& copy) = default;
+		Background& operator=(Background&& copy) = default;
+
+		Background& setTexture(const sf::Texture& texture);
+		Background& setTargetRect(const sf::FloatRect& target);
+
+	private:
+		void draw(sf::RenderTarget& target, sf::RenderStates states)const override;
+
+		sf::Sprite m_background;
+		sf::View m_view;
+	};
+}
 
 #endif

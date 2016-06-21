@@ -46,7 +46,7 @@ int main()
 			.setBackgroundTexture(windowBackground, true)
 			.setMovable(true)
 
-			.add("Txt Field", gui::TextField().setPosition(50, 130).setPrompt(gui::bind("Click here to type.")).setFont(font).setColor(sf::Color::Red).setCharacterSize(13).setWidth(100))
+			.add("Txt Field", gui::TextField().clearAfterInputIsProcessed(false).setPosition(50, 130).setPrompt(gui::bind("Click here to type.")).setFont(font).setColor(sf::Color::Red).setCharacterSize(13).setWidth(100))
 
 			.add("1st Button", gui::Button(gui::Icon(buttonTex, false))
 				.bindAction(gui::Released, std::bind([](const int amount) 

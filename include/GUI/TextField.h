@@ -81,7 +81,7 @@ namespace gui
 		TextField& clearPrompt();
 		TextField& setFont(const sf::Font& font);
 		TextField& setWidth(const unsigned short width);
-		TextField& clearAfterInputIsProcessed(const bool shoudlClear);
+		TextField& clearAfterInputIsProcessed(const bool shouldClear);
 		TextField& setActive(const bool active = false);
 
 		void removeCharacter(const bool backspace = true);

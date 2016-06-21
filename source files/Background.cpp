@@ -22,28 +22,44 @@
 //
 ////////////////////////////////////////////////////////////
 
-#ifndef GUI_LIBRARY
-#define GUI_LIBRARY
+#include "../include/GUI/Background.h"
 
-#include "AudioSystem.h"
-#include "Background.h"
-#include "Button.h"
-#include "CheckBox.h"
-#include "ColoredText.h"
-#include "FadeAnimation.h"
-#include "FPSMeter.h"
-#include "Hoverable.h"
-#include "HoverMessage.h"
-#include "Icon.h"
-#include "Interactive.h"
-#include "Internals.h"
-#include "ProgressBar.h"
-#include "ScrollList.h"
-#include "Slider.h"
-#include "TextArea.h"
-#include "TextField.h"
-#include "TextPane.h"
-#include "Window.h"
-#include "WindowManager.h"
+#include <SFML/Graphics/RenderTarget.hpp>
 
-#endif
+namespace gui
+{
+	Background::Background(const sf::Texture& texture, const sf::FloatRect& target)
+	{
+		setTexture(texture);
+		setTargetRect(target);
+	}
+
+	Background::Background()
+	{
+		setTargetRect(sf::FloatRect(0, 0, 1, 1));
+	}
+
+	Background& Background::setTexture(const sf::Texture& texture)
+	{
+		m_background.setTexture(texture);
+		m_view.setSize(m_background.getLocalBounds().width, m_background.getLocalBounds().height);
+		m_view.setCenter(m_background.getLocalBounds().width / 2, m_background.getLocalBounds().height / 2);
+		return *this;
+	}
+
+	Background& Background::setTargetRect(const sf::FloatRect& target)
+	{
+		m_view.setViewport(target);
+		return *this;
+	}
+
+	void Background::draw(sf::RenderTarget& target, sf::RenderStates states) const
+	{
+		const auto prev(target.getView());
+		target.setView(m_view);
+		
+		target.draw(m_background, states);
+		
+		target.setView(prev);
+	}
+}

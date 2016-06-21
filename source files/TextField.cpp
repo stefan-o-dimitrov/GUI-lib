@@ -34,7 +34,7 @@ namespace gui
 
 	TextField::TextField(const TextField& source)
 		: m_box(source.m_box), m_input(source.m_input), m_processingFunction(source.m_processingFunction),
-		m_position(source.m_position), m_cursor(source.m_cursor)
+		m_position(source.m_position), m_cursor(source.m_cursor), m_clearAfterInputProcessed(source.m_clearAfterInputProcessed)
 	{
 		if (source.m_prompt) m_prompt.reset(new auto(*source.m_prompt));
 	}
@@ -51,6 +51,7 @@ namespace gui
 		m_processingFunction = source.m_processingFunction;
 		m_position = source.m_position;
 		m_cursor = source.m_cursor;
+		m_clearAfterInputProcessed = source.m_clearAfterInputProcessed;
 		if (source.m_prompt) m_prompt.reset(new auto(*source.m_prompt));
 		return *this;
 	}
@@ -103,6 +104,7 @@ namespace gui
 			if (event.key.code == sf::Keyboard::Return)
 			{
 				returnGuard = true;
+				m_active = false;
 				processCurrentInput();
 			}
 			else if (event.key.code == sf::Keyboard::Left)
@@ -134,7 +136,7 @@ namespace gui
 	void TextField::processCurrentInput()
 	{
 		if(m_processingFunction) m_processingFunction(m_input.getString());
-		if (m_clearAfterInputProcessed) clear();
+		if (m_clearAfterInputProcessed)	clear();
 	}
 
 	void TextField::setCursorPosition(size_t position)
