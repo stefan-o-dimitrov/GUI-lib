@@ -304,7 +304,7 @@ namespace gui
 	{
 		m_stateShader.reset(new sf::Shader());
 		m_stateShader->loadFromMemory(DEFAULT_STATE_SHADER_CODE, sf::Shader::Fragment);
-		m_stateShader->setParameter("tex", sf::Shader::CurrentTexture);
+		m_stateShader->setUniform("tex", sf::Shader::CurrentTexture);
 		return *this;
 	}
 
@@ -316,19 +316,19 @@ namespace gui
 
 	Button& Button::setShaderParameter(const std::string& name, const sf::Texture& texture)
 	{
-		if (m_stateShader) m_stateShader->setParameter(name, texture); 
+		if (m_stateShader) m_stateShader->setUniform(name, texture); 
 		return *this;
 	}
 
 	Button& Button::setShaderParameter(const std::string& name, const sf::Shader::CurrentTextureType texture)
 	{
-		if (m_stateShader) m_stateShader->setParameter(name, texture);
+		if (m_stateShader) m_stateShader->setUniform(name, texture);
 		return *this;
 	}
 
 	Button& Button::setShaderParameter(const std::string& name, const float number)
 	{
-		if (m_stateShader) m_stateShader->setParameter(name, number);
+		if (m_stateShader) m_stateShader->setUniform(name, number);
 		return *this;
 	}
 
@@ -344,8 +344,8 @@ namespace gui
 
 		if (m_stateShader)
 		{
-			m_stateShader->setParameter("state", m_state);
-			m_stateShader->setParameter("active", m_predicatesFulfilled);
+			m_stateShader->setUniform("state", m_state);
+			m_stateShader->setUniform("active", m_predicatesFulfilled);
 		}
 		states.shader = &*m_stateShader;
 

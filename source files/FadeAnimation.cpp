@@ -72,8 +72,8 @@ namespace gui
 
 		if (shaderLoadSuccessful)
 		{
-			fadeShaderNoTexture.setParameter("amount", m_fadeAmount);
-			fadeShaderTextured.setParameter("amount", m_fadeAmount);
+			fadeShaderNoTexture.setUniform("amount", m_fadeAmount);
+			fadeShaderTextured.setUniform("amount", m_fadeAmount);
 		}
 	}
 
@@ -109,7 +109,7 @@ namespace gui
 		if (fadeShaderNoTexture.loadFromMemory(FADE_SHADER_NO_TEXTURE, sf::Shader::Fragment) &&
 			fadeShaderTextured.loadFromMemory(FADE_SHADER_TEXTURED, sf::Shader::Fragment))
 		{
-			fadeShaderTextured.setParameter("tex", sf::Shader::CurrentTexture);
+			fadeShaderTextured.setUniform("tex", sf::Shader::CurrentTexture);
 			return true;
 		}
 		return true;

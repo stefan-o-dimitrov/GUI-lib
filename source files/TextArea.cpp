@@ -69,7 +69,7 @@ namespace gui
 
 	const sf::Color& TextArea::getColor() const
 	{
-		return m_text.getColor();
+		return m_text.getFillColor();
 	}
 
 	const sf::String& TextArea::getText() const
@@ -137,7 +137,7 @@ namespace gui
 
 	TextArea& TextArea::setColor(const sf::Color& color)const
 	{ 
-		m_text.setColor(color);
+		m_text.setFillColor(color);
 		return (TextArea&)*this;
 	}
 

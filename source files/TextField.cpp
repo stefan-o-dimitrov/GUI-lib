@@ -178,7 +178,7 @@ namespace gui
 
 	const sf::Color& TextField::getTextColor()const
 	{
-		return m_input.getColor();
+		return m_input.getFillColor();
 	}
 
 	size_t TextField::getCursorPosition() const
@@ -203,14 +203,14 @@ namespace gui
 
 	TextField& TextField::setColor(const sf::Color& color)
 	{
-		m_input.setColor(color);
-		m_cursor.setColor(color);
+		m_input.setFillColor(color);
+		m_cursor.setFillColor(color);
 		return *this;
 	}
 
 	TextField& TextField::setCursorColor(const sf::Color& color)
 	{
-		m_cursor.setColor(color);
+		m_cursor.setFillColor(color);
 		return *this;
 	}
 
@@ -218,7 +218,8 @@ namespace gui
 	{
 		if (!m_prompt) m_prompt.reset(new sf::Text(prompt.first, *m_input.getFont(), m_input.getCharacterSize()));
 		else m_prompt->setString(prompt.first);
-		m_prompt->setColor(prompt.second.first);
+		m_prompt->setOutlineColor(sf::Color(15, 15, 15, 230));
+		m_prompt->setFillColor(prompt.second.first);
 		m_prompt->setStyle(prompt.second.second);
 		m_prompt->setPosition(m_position);
 		m_prompt->setCharacterSize(m_input.getCharacterSize());
@@ -229,7 +230,7 @@ namespace gui
 	TextField& TextField::setPromptColor(const sf::Color& color)
 	{
 		if (!m_prompt) m_prompt.reset(new sf::Text("", *m_input.getFont(), m_input.getCharacterSize()));
-		m_prompt->setColor(color);
+		m_prompt->setFillColor(color);
 		return *this;
 	}
 

@@ -57,7 +57,8 @@ namespace gui
 			else
 			{
 				target.emplace_back(new sf::Text(buffer, font, characterSize));
-				target.back()->setColor(str.second.first);
+				target.back()->setOutlineColor(sf::Color(15, 15, 15, 230));
+				target.back()->setFillColor(str.second.first);
 				target.back()->setStyle(str.second.second);
 				target.back()->setPosition(addPosition);
 				addPosition.x = 0;
@@ -69,7 +70,8 @@ namespace gui
 		if (!buffer.isEmpty())
 		{
 			target.emplace_back(new sf::Text(buffer, font, characterSize));
-			target.back()->setColor(str.second.first);
+			target.back()->setOutlineColor(sf::Color(15, 15, 15, 230));
+			target.back()->setFillColor(str.second.first);
 			target.back()->setStyle(str.second.second);
 			target.back()->setPosition(addPosition);
 			addPosition.x += target.back()->getGlobalBounds().width + 1.0f;

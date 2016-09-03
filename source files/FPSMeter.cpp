@@ -74,7 +74,7 @@ namespace gui
 
 	const sf::Color& FPSMeter::getColor() const
 	{
-		return m_text.getColor();
+		return m_text.getFillColor();
 	}
 
 	FPSMeter& FPSMeter::setFont(const sf::Font& font)
@@ -91,7 +91,7 @@ namespace gui
 
 	FPSMeter& FPSMeter::setColor(const sf::Color& color)
 	{
-		m_text.setColor(color);
+		m_text.setFillColor(color);
 		return *this;
 	}
 
