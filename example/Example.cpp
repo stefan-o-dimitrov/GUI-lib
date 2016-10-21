@@ -1,4 +1,4 @@
-#include <GUI/GUI.h>
+#include "../include/GUI.h"
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <sstream> // Items needed only for this example start here.
@@ -38,7 +38,7 @@ int main()
 	font.loadFromFile("resources/font.ttf"); // Loading resources ends here.
 
 	sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Example", sf::Style::None); // Creating Render Window.
-
+	
 	gui::WindowManager main; // Creating main Window Manager
 	
 	main.emplace("First Window", std::move(gui::Window() // Populating main with windows.
@@ -46,7 +46,16 @@ int main()
 			.setBackgroundTexture(windowBackground, true)
 			.setMovable(true)
 
-			.add("Txt Field", gui::TextField().clearAfterInputIsProcessed(false).setPosition(50, 130).setPrompt(gui::bind("Click here to type.")).setFont(font).setColor(sf::Color::Red).setCharacterSize(13).setWidth(100))
+			.add("Txt Field", gui::TextField()
+				.clearAfterInputIsProcessed(false)
+				.setPosition(50, 130)
+				.setPrompt(gui::bind("Click here to type."))
+				.setPromptColor(sf::Color(170, 170, 170, 230))
+				.setFont(font)
+				.setColor(sf::Color::Red)
+				.setCharacterSize(13)
+				.setWidth(100)
+				.setCursorColor(sf::Color(220, 220, 220, 240)))
 
 			.add("1st Button", gui::Button(gui::Icon(buttonTex, false))
 				.bindAction(gui::Released, std::bind([](const int amount) 

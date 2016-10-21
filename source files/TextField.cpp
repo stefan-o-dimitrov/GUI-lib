@@ -108,11 +108,13 @@ namespace gui
 				processCurrentInput();
 			}
 			else if (event.key.code == sf::Keyboard::Left)
-				m_cursorPosition != 0 ? setCursorPosition(m_cursorPosition - 1) : 0;
+				m_cursorPosition != 0 ? setCursorPosition(m_cursorPosition - 1) : m_cursorVisible = true;
 			else if (event.key.code == sf::Keyboard::Right)
 				setCursorPosition(m_cursorPosition + 1);
 			else if (event.key.code == sf::Keyboard::Delete)
 				removeCharacter(false);
+			else if (event.key.code == sf::Keyboard::Escape)
+				m_active = false;
 			return true;
 		}
 		case sf::Event::LostFocus:
@@ -141,19 +143,22 @@ namespace gui
 
 	void TextField::setCursorPosition(size_t position)
 	{
+		m_cursorVisible = true;
 		auto pos(m_input.findCharacterPos(m_cursorPosition = (position > m_input.getString().getSize() ? m_input.getString().getSize() :
-			(m_cursorVisible = true) * position)));
+			position)));
+		(pos.x /= 2) += m_cursorPosition != 0 ? m_input.findCharacterPos(m_cursorPosition - 1).x / 2.f : -m_cursor.getGlobalBounds().width / 2;
 		if (pos.x < 0)
 		{
-			m_input.setPosition(m_input.getPosition().x - pos.x, 0);
-			pos.x = 0;
+			m_input.setPosition(int(m_cursorPosition != 0 ? m_input.getPosition().x - pos.x : 0), 0);
+			pos.x = m_cursorPosition != 0 ? 0 : -2 * m_cursor.getGlobalBounds().width;
 		}
 		else if (pos.x + m_cursor.getGlobalBounds().width > m_box.getSize().x)
 		{
-			m_input.setPosition(m_input.getPosition().x  - pos.x + m_box.getSize().x - m_cursor.getGlobalBounds().width, 0);
+			m_input.setPosition(int(m_input.getPosition().x  - pos.x + m_box.getSize().x - m_cursor.getGlobalBounds().width), 0);
 			pos.x = m_box.getSize().x - m_cursor.getGlobalBounds().width;
 		}
-		m_cursor.setPosition(pos.x - m_cursor.getGlobalBounds().width, pos.y);
+
+		m_cursor.setPosition(pos.x - m_cursor.getGlobalBounds().width / 2, pos.y);
 	}
 
 	const sf::Vector2f& TextField::getPosition() const
@@ -178,7 +183,7 @@ namespace gui
 
 	const sf::Color& TextField::getTextColor()const
 	{
-		return m_input.getColor();
+		return m_input.getFillColor();
 	}
 
 	size_t TextField::getCursorPosition() const
@@ -203,14 +208,14 @@ namespace gui
 
 	TextField& TextField::setColor(const sf::Color& color)
 	{
-		m_input.setColor(color);
-		m_cursor.setColor(color);
+		m_input.setFillColor(color);
+		m_cursor.setFillColor(color);
 		return *this;
 	}
 
 	TextField& TextField::setCursorColor(const sf::Color& color)
 	{
-		m_cursor.setColor(color);
+		m_cursor.setFillColor(color);
 		return *this;
 	}
 
@@ -218,7 +223,8 @@ namespace gui
 	{
 		if (!m_prompt) m_prompt.reset(new sf::Text(prompt.first, *m_input.getFont(), m_input.getCharacterSize()));
 		else m_prompt->setString(prompt.first);
-		m_prompt->setColor(prompt.second.first);
+		m_prompt->setOutlineColor(sf::Color(15, 15, 15, 230));
+		m_prompt->setFillColor(prompt.second.first);
 		m_prompt->setStyle(prompt.second.second);
 		m_prompt->setPosition(m_position);
 		m_prompt->setCharacterSize(m_input.getCharacterSize());
@@ -229,7 +235,7 @@ namespace gui
 	TextField& TextField::setPromptColor(const sf::Color& color)
 	{
 		if (!m_prompt) m_prompt.reset(new sf::Text("", *m_input.getFont(), m_input.getCharacterSize()));
-		m_prompt->setColor(color);
+		m_prompt->setFillColor(color);
 		return *this;
 	}
 
@@ -250,7 +256,7 @@ namespace gui
 	{
 		m_position.x = x;
 		m_position.y = y;
-		if (m_prompt) m_prompt->setPosition(x, y + m_prompt->getGlobalBounds().height * 0.25f);
+		if (m_prompt) m_prompt->setPosition(int(x), int(y + m_prompt->getGlobalBounds().height * 0.25f));
 		return *this;
 	}
 
@@ -320,7 +326,7 @@ namespace gui
 
 		if (m_active && m_cursorVisible)
 		{
-			states.transform.translate(m_position.x + int(getHeight() / 4), m_position.y);
+			states.transform.translate(int(m_position.x) + int(getHeight() / 4), int(m_position.y));
 			target.draw(m_cursor, states);
 		}
 	}
@@ -341,8 +347,10 @@ namespace gui
 
 	void TextField::getClickedCharacter(const float x, const float y)
 	{
-		for (m_cursorPosition = 0; m_cursorPosition < m_input.getString().getSize() &&
-			x > m_input.findCharacterPos(m_cursorPosition).x + m_position.x; ++m_cursorPosition);
+		for (m_cursorPosition = 0; m_cursorPosition <= m_input.getString().getSize() &&
+			x > (m_input.findCharacterPos(m_cursorPosition).x + (m_cursorPosition == 0 ? m_input.findCharacterPos(m_cursorPosition).x :
+				m_input.findCharacterPos(m_cursorPosition - 1).x)) / 2 + m_position.x;
+			++m_cursorPosition);
 		setCursorPosition(m_cursorPosition != 0 ? m_cursorPosition - 1 : m_cursorPosition);
 	}
 }

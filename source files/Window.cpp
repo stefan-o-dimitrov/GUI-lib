@@ -28,6 +28,8 @@
 #include "../include/GUI/Window.h"
 #include "../include//GUI/Hoverable.h"
 
+#include <iostream>
+
 namespace gui
 {
 	const Hoverable* Window::m_message = nullptr;
@@ -292,9 +294,11 @@ namespace gui
 		
 		if (m_message)
 		{
-			if (m_parent) WindowManager::m_message = m_message;
+			if (m_parent && m_message && m_message->getMessage()) WindowManager::m_message = m_message;
 			else m_message->display(target, states);
-			if (m_message->getMessage()->getFadeAmount() == 0.0f && m_message->getMessage()->getFadeDirection() == 0) m_message = nullptr;
+			
+			if (!m_message->getMessage() || (m_message->getMessage() && m_message->getMessage()->getFadeAmount() == 0.0f && m_message->getMessage()->getFadeDirection() == 0))
+				m_message = nullptr;
 		}
 	}
 

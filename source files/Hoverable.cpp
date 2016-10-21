@@ -27,6 +27,8 @@
 #include "../include/GUI/Hoverable.h"
 #include "../include/GUI/Internals.h"
 
+#include <iostream>
+
 namespace gui
 {
 	void gui::Hoverable::lostFocus()
@@ -143,8 +145,8 @@ namespace gui
 		if (m_message)
 		{
 			if (m_parent)
-			{ 
-				if (!Window::m_message || Window::m_message->getMessage()->getFadeAmount() == 0.0f)
+			{
+				if (!Window::m_message || !Window::m_message->getMessage() || Window::m_message->getMessage()->getFadeAmount() == 0)
 					Window::m_message = this;
 			}
 			else display(target, states);

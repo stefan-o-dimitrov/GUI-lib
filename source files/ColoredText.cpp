@@ -57,9 +57,10 @@ namespace gui
 			else
 			{
 				target.emplace_back(new sf::Text(buffer, font, characterSize));
-				target.back()->setColor(str.second.first);
+				target.back()->setOutlineColor(sf::Color(15, 15, 15, 230));
+				target.back()->setFillColor(str.second.first);
 				target.back()->setStyle(str.second.second);
-				target.back()->setPosition(addPosition);
+				target.back()->setPosition(int(addPosition.x), int(addPosition.y));
 				addPosition.x = 0;
 				addPosition.y += TEXT_HEIGHT + LINE_SPACING;
 				buffer.clear();
@@ -69,9 +70,10 @@ namespace gui
 		if (!buffer.isEmpty())
 		{
 			target.emplace_back(new sf::Text(buffer, font, characterSize));
-			target.back()->setColor(str.second.first);
+			target.back()->setOutlineColor(sf::Color(15, 15, 15, 230));
+			target.back()->setFillColor(str.second.first);
 			target.back()->setStyle(str.second.second);
-			target.back()->setPosition(addPosition);
+			target.back()->setPosition(int(addPosition.x), int(addPosition.y));
 			addPosition.x += target.back()->getGlobalBounds().width + 1.0f;
 		}
 	}
@@ -115,9 +117,9 @@ namespace gui
 		{
 			target.front()->setPosition(0, 0);
 			for (auto it = target.begin() + 1, end = target.end(); it != end; ++it)
-				(*it)->setPosition((*it)->getPosition().y > (*(it - 1))->getPosition().y ? 0 : (*(it - 1))->getPosition().x + (*(it - 1))->getGlobalBounds().width,
-					(*it)->getPosition().y > (*(it - 1))->getPosition().y ?
-					(*(it - 1))->getPosition().y + (*(it - 1))->getGlobalBounds().height + LINE_SPACING : (*(it - 1))->getPosition().y);
+				(*it)->setPosition(int((*it)->getPosition().y > (*(it - 1))->getPosition().y ? 0 : (*(it - 1))->getPosition().x + (*(it - 1))->getGlobalBounds().width),
+					int((*it)->getPosition().y > (*(it - 1))->getPosition().y ?
+					(*(it - 1))->getPosition().y + (*(it - 1))->getGlobalBounds().height + LINE_SPACING : (*(it - 1))->getPosition().y));
 		}
 	}
 
