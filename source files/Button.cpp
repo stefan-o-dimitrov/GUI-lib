@@ -171,8 +171,6 @@ namespace gui
 	{
 		m_name.reset(new TextArea(newName));
 		m_name->m_message.reset();
-		m_name->setPosition(getPosition().x + m_name->getPosition().x + (getGlobalBounds().width - m_name->getGlobalBounds().width) / 2,
-			getPosition().y + m_name->getPosition().y + (getGlobalBounds().height - m_name->getGlobalBounds().height) / 2);
 		return *this;
 	}
 
@@ -180,8 +178,6 @@ namespace gui
 	{
 		m_name.reset(new TextArea(std::move(tempName)));
 		m_name->m_message.reset();
-		m_name->setPosition(getPosition().x + m_name->getPosition().x + (getGlobalBounds().width - m_name->getGlobalBounds().width) / 2,
-			getPosition().y + m_name->getPosition().y + (getGlobalBounds().height - m_name->getGlobalBounds().height) / 2);
 		return *this;
 	}
 
@@ -216,9 +212,6 @@ namespace gui
 	Button& Button::setTexture(const sf::Texture& texture, const bool transparencyCheck)
 	{
 		Icon::setTexture(texture, transparencyCheck);
-		if (m_name)
-			m_name->setPosition(getPosition().x + getGlobalBounds().width / 2 - m_name->getGlobalBounds().width / 2,
-				getPosition().y + getGlobalBounds().height / 2 - m_name->getGlobalBounds().height / 2);
 		return *this;
 	}
 
@@ -257,7 +250,6 @@ namespace gui
 
 	Button& Button::setPosition(const float x, const float y)
 	{
-		if (m_name) m_name->setPosition(x + m_name->getPosition().x - getPosition().x, y + m_name->getPosition().y - getPosition().y);
 		Icon::setPosition(x, y);
 		return *this;
 	}
@@ -351,7 +343,14 @@ namespace gui
 		states.shader = &*m_stateShader;
 
 		target.draw(m_icon, states);
-		if (m_name) target.draw(*m_name, states);
+		if (m_name)
+		{
+			states.transform.translate(getPosition().x + int(getGlobalBounds().width - m_name->getGlobalBounds().width) / 2,
+				getPosition().y + int(getGlobalBounds().height - m_name->getGlobalBounds().height) / 2);
+			target.draw(*m_name, states);
+			states.transform.translate(-getPosition().x - int(getGlobalBounds().width - m_name->getGlobalBounds().width) / 2,
+				-getPosition().y - int(getGlobalBounds().height - m_name->getGlobalBounds().height) / 2);
+		}
 		Hoverable::draw(target, states);
 	}
 

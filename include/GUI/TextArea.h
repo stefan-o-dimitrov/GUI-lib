@@ -65,6 +65,8 @@ namespace gui
 		const sf::Font& getFont()const;
 		const unsigned char getCharacterSize()const;
 		const sf::Color& getColor()const;
+		const sf::Color& getOutlineColor()const;
+		const char getOutlineThickness()const;
 		const sf::String& getText()const;
 		const sf::Text::Style getStyle()const;
 
@@ -79,6 +81,8 @@ namespace gui
 		TextArea& setFont(const sf::Font& font);
 		TextArea& setCharacterSize(const unsigned char characterSize);
 		TextArea& setColor(const sf::Color& color)const;
+		TextArea& setOutlineThickness(const char pixels)const;
+		TextArea& setOutlineColor(const sf::Color& color)const;
 		TextArea& setUpdateFunction(const std::function<ColoredString()>& func);
 		TextArea& setUpdateFunction(std::function<ColoredString()>&& func);
 		

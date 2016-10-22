@@ -28,8 +28,6 @@
 #include "../include/GUI/Window.h"
 #include "../include//GUI/Hoverable.h"
 
-#include <iostream>
-
 namespace gui
 {
 	const Hoverable* Window::m_message = nullptr;

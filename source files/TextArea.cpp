@@ -72,6 +72,16 @@ namespace gui
 		return m_text.getFillColor();
 	}
 
+	const sf::Color& TextArea::getOutlineColor() const
+	{
+		return m_text.getOutlineColor();
+	}
+
+	const char TextArea::getOutlineThickness() const
+	{
+		return m_text.getOutlineThickness();
+	}
+
 	const sf::String& TextArea::getText() const
 	{
 		return m_text.getString();
@@ -138,6 +148,18 @@ namespace gui
 	TextArea& TextArea::setColor(const sf::Color& color)const
 	{ 
 		m_text.setFillColor(color);
+		return (TextArea&)*this;
+	}
+
+	TextArea& TextArea::setOutlineThickness(const char pixels) const
+	{
+		m_text.setOutlineThickness(pixels);
+		return (TextArea&)*this;
+	}
+
+	TextArea& TextArea::setOutlineColor(const sf::Color& color) const
+	{
+		m_text.setOutlineColor(color);
 		return (TextArea&)*this;
 	}
 

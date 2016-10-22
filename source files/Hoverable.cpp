@@ -27,8 +27,6 @@
 #include "../include/GUI/Hoverable.h"
 #include "../include/GUI/Internals.h"
 
-#include <iostream>
-
 namespace gui
 {
 	void gui::Hoverable::lostFocus()
