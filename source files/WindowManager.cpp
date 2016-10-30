@@ -31,7 +31,8 @@ namespace gui
 
 	void WindowManager::input(const sf::Event& event)
 	{
-		if (m_currentlyDraggedFullscreenWindow && fullscreenWindowInput(*m_currentlyDraggedFullscreenWindow, event)) return;
+		if (m_currentlyDraggedFullscreenWindow &&
+				fullscreenWindowInput(*m_currentlyDraggedFullscreenWindow, event)) return;
 
 		if (!m_dialogBoxes.m_elements.empty())
 		{
@@ -156,28 +157,31 @@ namespace gui
 
 	const bool WindowManager::fullscreenWindowInput(std::vector<std::unique_ptr<gui::Window>>::iterator& window, const sf::Event& event)
 	{
-		if ((*window)->input(event))
-		{
-			if ((*window)->isClosed())
-			{
-				for (auto it1(m_windows.m_map.begin()), end1(m_windows.m_map.end()); it1 != end1; ++it1)
-					if (it1->second == &*m_windows.m_elements.front())
-					{
-						m_windows.m_map.erase(it1);
-						break;
-					}
-				m_windows.m_elements.erase(window);
-			}
-			else if ((*window)->isBeingMoved())
-				m_currentlyDraggedFullscreenWindow.reset(new auto(window));
-			else m_currentlyDraggedFullscreenWindow.reset();
+		if (!(*window) || !(*window)->input(event)) return false;
 
-			for (const auto& it1 : m_windows.m_elements)
-				if (*window != it1) it1->lostFocus();
-			for (const auto& it1 : m_dialogBoxes.m_elements)
-				it1->lostFocus();
-			return true;
+		if ((*window)->isClosed())
+		{
+			for (auto it1(m_windows.m_map.begin()), end1(m_windows.m_map.end()); it1 != end1; ++it1)
+				if (it1->second == &*m_windows.m_elements.front())
+				{
+					m_windows.m_map.erase(it1);
+					break;
+				}
+			m_windows.m_elements.erase(window);
 		}
-		return false;
+		else if ((*window)->isBeingMoved())
+		{
+			if ((!m_currentlyDraggedFullscreenWindow ||
+					*m_currentlyDraggedFullscreenWindow != window))
+				m_currentlyDraggedFullscreenWindow.reset(new auto(window));
+		}
+		else m_currentlyDraggedFullscreenWindow.reset();
+
+		for (const auto& it1 : m_windows.m_elements)
+			if (&**window != &*it1 && it1) it1->lostFocus();
+		for (const auto& it1 : m_dialogBoxes.m_elements)
+			if (it1) it1->lostFocus();
+
+		return true;
 	}
 }

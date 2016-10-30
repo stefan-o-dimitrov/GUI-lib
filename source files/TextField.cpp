@@ -33,8 +33,9 @@ namespace gui
 	}
 
 	TextField::TextField(const TextField& source)
-		: m_box(source.m_box), m_input(source.m_input), m_processingFunction(source.m_processingFunction),
-		m_position(source.m_position), m_cursor(source.m_cursor), m_clearAfterInputProcessed(source.m_clearAfterInputProcessed)
+		: m_position(source.m_position), m_input(source.m_input), m_cursor(source.m_cursor),
+		m_processingFunction(source.m_processingFunction),
+		m_clearAfterInputProcessed(source.m_clearAfterInputProcessed), m_box(source.m_box)
 	{
 		if (source.m_prompt) m_prompt.reset(new auto(*source.m_prompt));
 	}
@@ -72,53 +73,59 @@ namespace gui
 	{
 		switch (event.type)
 		{
-		case sf::Event::MouseMoved:
-			return getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y);
-		case sf::Event::MouseButtonPressed:
-			return (getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y) || m_active);
-		case sf::Event::MouseButtonReleased:
-		{	
-			if (getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y))
+			case sf::Event::MouseMoved:
+				return getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y);
+			case sf::Event::MouseButtonPressed:
+				return (getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y) || m_active);
+			case sf::Event::MouseButtonReleased:
 			{
-				getClickedCharacter(event.mouseButton.x, event.mouseButton.y);
-				return m_active = true;
+				if (getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y))
+				{
+					getClickedCharacter(event.mouseButton.x, event.mouseButton.y);
+					return m_active = true;
+				}
+				else if (m_active) return !(m_active = false);
+				break;
 			}
-			else if (m_active) return !(m_active = false);
-		}
-		case sf::Event::TextEntered:
-		{
-			if (!m_active) return false;
-			if (returnGuard) return !(returnGuard = false);
-			if (event.text.unicode == '\b')
+			case sf::Event::TextEntered:
 			{
-				removeCharacter();
+				if (!m_active) return false;
+				if (returnGuard) return !(returnGuard = false);
+				if (event.text.unicode == '\b')
+				{
+					removeCharacter();
+					return true;
+				}
+				addCharacter(event.text.unicode);
 				return true;
 			}
-			addCharacter(event.text.unicode);
-			return true;
-		}
-		case sf::Event::KeyPressed:
-		{
-			if (!m_active) return false;
-
-			if (event.key.code == sf::Keyboard::Return)
+			case sf::Event::KeyPressed:
 			{
-				returnGuard = true;
-				m_active = false;
-				processCurrentInput();
+				if (!m_active) return false;
+
+				if (event.key.code == sf::Keyboard::Return)
+				{
+					returnGuard = true;
+					m_active = false;
+					processCurrentInput();
+				}
+				else if (event.key.code == sf::Keyboard::Left)
+				{
+					if (m_cursorPosition != 0)
+						setCursorPosition(m_cursorPosition - 1);
+					else m_cursorVisible = true;
+				}
+				else if (event.key.code == sf::Keyboard::Right)
+					setCursorPosition(m_cursorPosition + 1);
+				else if (event.key.code == sf::Keyboard::Delete)
+					removeCharacter(false);
+				else if (event.key.code == sf::Keyboard::Escape)
+					m_active = false;
+				return true;
 			}
-			else if (event.key.code == sf::Keyboard::Left)
-				m_cursorPosition != 0 ? setCursorPosition(m_cursorPosition - 1) : m_cursorVisible = true;
-			else if (event.key.code == sf::Keyboard::Right)
-				setCursorPosition(m_cursorPosition + 1);
-			else if (event.key.code == sf::Keyboard::Delete)
-				removeCharacter(false);
-			else if (event.key.code == sf::Keyboard::Escape)
-				m_active = false;
-			return true;
-		}
-		case sf::Event::LostFocus:
-			lostFocus();
+			case sf::Event::LostFocus:
+				lostFocus();
+			default: return false;
 		}
 		return false;
 	}

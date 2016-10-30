@@ -34,6 +34,8 @@
 
 namespace gui 
 {
+	class Window;
+
 	/// <summary>
 	/// Specialised class from which every GUI element should inherit.
 	/// </summary>

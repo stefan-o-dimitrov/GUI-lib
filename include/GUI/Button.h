@@ -31,7 +31,6 @@
 #include <SFML/Graphics/Shader.hpp>
 
 #include "Internals.h"
-#include "Interactive.h"
 #include "TextArea.h"
 #include "Icon.h"
 

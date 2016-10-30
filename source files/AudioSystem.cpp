@@ -37,9 +37,11 @@ namespace gui
 
 	const bool AudioSystem::loadMusicFile(const unsigned short key, const std::string& path)
 	{
-		if (key == unsigned short(-1))	return false;
+		if (key == -1)	return false;
 
-		music[key] ? 0 : music.at(key).reset(new sf::Music());
+		if (music[key])
+			music.at(key).reset(new sf::Music());
+
 		if (!music.at(key)->openFromFile(path))
 		{
 			music.erase(key);

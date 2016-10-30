@@ -38,7 +38,7 @@ namespace gui
 	}
 
 	Icon::Icon(Icon&& temp)
-		: Hoverable(std::move(temp)), m_transparency(std::move(temp.m_transparency)), m_icon(temp.m_icon) {}
+		: Hoverable(std::move(temp)), m_icon(temp.m_icon), m_transparency(std::move(temp.m_transparency)) {}
 
 	Icon& Icon::operator=(const Icon& copy)
 	{

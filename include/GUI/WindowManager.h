@@ -31,6 +31,7 @@
 
 namespace gui
 {
+	class Window;
 	class WindowManager final : public sf::Drawable
 	{
 		friend class Window;

@@ -68,9 +68,11 @@ namespace gui
 	}
 	
 	Window::Window(const Window& copy)
-		: m_background(copy.m_background), m_movable(copy.m_movable), m_active(copy.m_active), m_closed(copy.m_closed), m_elements(copy.m_elements)
+		: m_background(copy.m_background), m_elements(copy.m_elements),
+		  m_movable(copy.m_movable), m_active(copy.m_active), m_closed(copy.m_closed)
 	{
-		copy.m_mouseDragOffset ? m_mouseDragOffset.reset(new sf::Vector2f(*copy.m_mouseDragOffset)) : 0;
+		if (copy.m_mouseDragOffset)
+			m_mouseDragOffset.reset(new sf::Vector2f(*copy.m_mouseDragOffset));
 	}
 
 	Window& Window::add(const std::string& key, Interactive&& element)
@@ -230,28 +232,30 @@ namespace gui
 		if ((!returnValue || event.type == sf::Event::MouseButtonReleased) && m_movable)
 			switch (event.type)
 			{
-			case sf::Event::MouseMoved:
-			{
-				if (m_mouseDragOffset)
+				case sf::Event::MouseMoved:
 				{
-					setPosition(sf::Vector2f(event.mouseMove.x - m_mouseDragOffset->x, event.mouseMove.y - m_mouseDragOffset->y));
-					return true;
+					if (m_mouseDragOffset)
+					{
+						setPosition(sf::Vector2f(event.mouseMove.x - m_mouseDragOffset->x,
+								event.mouseMove.y - m_mouseDragOffset->y));
+						return true;
+					}
+					return contains(sf::Vector2f(event.mouseMove.x, event.mouseMove.y));
 				}
-				return contains(sf::Vector2f(event.mouseMove.x, event.mouseMove.y));
-			}
-			case sf::Event::MouseButtonPressed:
-			{
-				if (contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)))
+				case sf::Event::MouseButtonPressed:
 				{
-					m_mouseDragOffset.reset(new sf::Vector2f(event.mouseButton.x - getPosition().x,
-						event.mouseButton.y - getPosition().y));
-					return true;
+					if (contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)))
+					{
+						m_mouseDragOffset.reset(new sf::Vector2f(event.mouseButton.x - getPosition().x,
+							event.mouseButton.y - getPosition().y));
+						return true;
+					}
+					return returnValue;
 				}
-				return returnValue;
-			}
-			case sf::Event::MouseButtonReleased:
-				m_mouseDragOffset.reset();
-				return contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+				case sf::Event::MouseButtonReleased:
+					m_mouseDragOffset.reset();
+					return contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+				default: return false;
 			}
 					
 		if (!returnValue && m_background.getTexture() && ((event.type == sf::Event::MouseMoved && m_background.contains(event.mouseMove.x, event.mouseMove.y)) ||

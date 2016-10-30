@@ -33,7 +33,6 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Window/Event.hpp>
 
-#include "Interactive.h"
 #include "Icon.h"
 
 namespace gui
@@ -56,6 +55,9 @@ namespace gui
 		std::unordered_map<std::string, StorageType* const> m_map;
 		std::vector<std::unique_ptr<StorageType>>           m_elements;
 	};
+
+	class Hoverable;
+	class WindowManager;
 
 	class Window : public sf::Drawable
 	{

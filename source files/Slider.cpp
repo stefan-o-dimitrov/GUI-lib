@@ -30,19 +30,18 @@ namespace gui
 	{
 		switch (event.type)
 		{
-		case sf::Event::MouseButtonPressed:
-			if (m_slider.input(event) || (m_plus && m_plus->input(event)) || (m_minus && m_minus->input(event)))
-				return true;
-			else if (m_sliderBar.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y))
-			{
-				setSliderPosition(event.mouseButton.x - m_slider.getGlobalBounds().width / 2);
-				return true;
-			}
-			return false;
-		case sf::Event::MouseButtonReleased:
-			break;
-		case sf::Event::MouseMoved:
-			break;
+			case sf::Event::MouseButtonPressed:
+				if (m_slider.input(event) || (m_plus && m_plus->input(event)) || (m_minus && m_minus->input(event)))
+					return true;
+				else if (m_sliderBar.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y))
+				{
+					setSliderPosition(event.mouseButton.x - m_slider.getGlobalBounds().width / 2);
+					return true;
+				}
+				return false;
+			case sf::Event::MouseButtonReleased: break;
+			case sf::Event::MouseMoved: break;
+			default: break;
 		}
 		return false;
 	}

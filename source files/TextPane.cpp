@@ -43,7 +43,7 @@ namespace gui
 	}
 
 	TextPane::TextPane(const TextPane& copy)
-		: m_position(copy.m_position), m_string(copy.m_string), m_font(copy.m_font)
+		: m_position(copy.m_position), m_font(copy.m_font), m_string(copy.m_string)
 	{
 		for (auto it = copy.m_text.begin(), end = copy.m_text.end(); it != end; ++it)
 			m_text.push_back(std::unique_ptr<sf::Text>(new sf::Text(*(*it))));

@@ -45,9 +45,9 @@ namespace gui
 
 	ProgressBar::ProgressBar(const ProgressBar& copy)
 		: Icon(copy),
-		m_fill(copy.m_fill),
 		m_updateFunction(copy.m_updateFunction ? new auto(*copy.m_updateFunction) : nullptr),
-		m_progress(copy.m_progress) {}
+		m_progress(copy.m_progress),
+		m_fill(copy.m_fill) {}
 
 	ProgressBar& ProgressBar::operator=(const ProgressBar& copy)
 	{
@@ -108,13 +108,17 @@ namespace gui
 
 	ProgressBar& ProgressBar::setUpdateFunction(const std::function<const float()>& function)
 	{
-		m_updateFunction ? *m_updateFunction = function : m_updateFunction.reset(new std::function<const float()>(function));
+		if (m_updateFunction)
+			*m_updateFunction = function;
+		else m_updateFunction.reset(new std::function<const float()>(function));
 		return *this;
 	}
 
 	ProgressBar& ProgressBar::setUpdateFunction(std::function<const float()>&& function)
 	{
-		m_updateFunction ? *m_updateFunction = std::move(function) : m_updateFunction.reset(new std::function<const float()>(std::move(function)));
+		if (m_updateFunction)
+			*m_updateFunction = std::move(function);
+		else m_updateFunction.reset(new std::function<const float()>(std::move(function)));
 		return *this;
 	}
 
